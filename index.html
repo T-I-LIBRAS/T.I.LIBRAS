@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>T.I. Libras - Aprenda TI em Libras</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/inicio.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <script src="js/components.js"></script>
+</head>
+<body>
+  <!-- Header 1 (exclusivo da página de Início / área pré-login) -->
+  <app-header-home></app-header-home>
+
+  <main class="main-inicio">
+    <!-- ========================================================
+         ESTADO 1 — CONTEÚDO INICIAL (apresentação)
+         Trocado pelas telas de Login/Cadastro via js/inicio.js
+         ======================================================== -->
+    <div id="viewInicio" class="landing">
+      <section class="hero" id="inicio">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="hero-brand">
+              <span class="hero-tag">Plataforma Educacional</span>
+              <img src="img/logo.png" alt="T.I. Libras" class="hero-logo">
+            </div>
+            <h1>Aprenda TI em <span class="hero-highlight">Libras</span></h1>
+            <p>Vídeos de sinais, quizzes interativos e dicionário completo. Tecnologia acessível, do jeito que você precisa.</p>
+            <div class="hero-actions">
+              <button class="btn btn-light" id="openLogin"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button>
+              <button class="btn btn-ghost-light" id="openRegister"><i class="fa-solid fa-user-plus"></i> Criar conta gratuita</button>
+            </div>
+          </div>
+
+          <div class="hero-media">
+            <!-- ========================================================
+                 >>> CARD DE VÍDEO DO YOUTUBE <<<
+                 Para colocar o seu vídeo, SUBSTITUA a parte "SEU_VIDEO_AQUI"
+                 no atributo src do <iframe> abaixo pelo ID do vídeo.
+                 Exemplo:
+                   https://www.youtube.com/embed/dQw4w9WgXcQ
+                 Basta trocar "SEU_VIDEO_AQUI" pelo ID exibido na URL do
+                 YouTube (a parte após youtube.com/watch?v=).
+                 ======================================================== -->
+            <div class="video-card">
+              <div class="video-card-top">
+                <span class="video-card-title">Conheça o T.I. Libras</span>
+              </div>
+              <div class="video-card-frame">
+                <iframe
+                  id="videoApresentacao"
+                  src="https://www.youtube.com/embed/SEU_VIDEO_AQUI"
+                  title="Vídeo de apresentação do T.I. Libras"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen>
+                </iframe>
+              </div>
+              <p class="video-card-hint">Assista e descubra como aprender TI em Libras na prática.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="presentation" id="sobre">
+        <div class="pres-card pres-feature">
+          <div class="pres-media">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="pres-body">
+            <span class="pres-tag">SOBRE NÓS</span>
+            <h2>Quem somos</h2>
+            <p>Somos um grupo de <strong>projeto de extensão e pesquisa do IFRN Campus Santa Cruz</strong>, unindo Tecnologia da Informação e Libras para ensinar de forma acessível e inclusiva.</p>
+            <p>Nosso objetivo é democratizar o acesso ao conhecimento, oferecendo um site acessível e prático, focado em termos e categorias de Tecnologia da Informação (TI) em Libras.</p>
+            <p>A plataforma foi desenvolvida para ser um espaço interativo, onde os usuários podem aprender e praticar esses conceitos de forma totalmente gratuita.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="presentation" id="recursos">
+        <div class="perks">
+          <div class="perk-card">
+            <span class="perk-icon"><i class="fa-solid fa-hand-holding-heart"></i></span>
+            <div>
+              <strong>100% Gratuito</strong>
+              <p>Ensino acessível e sem custo</p>
+            </div>
+          </div>
+          <div class="perk-card">
+            <span class="perk-icon"><i class="fa-solid fa-universal-access"></i></span>
+            <div>
+              <strong>Acessível</strong>
+              <p>Feito para todos os públicos</p>
+            </div>
+          </div>
+          <div class="perk-card">
+            <span class="perk-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <div>
+              <strong>Progresso Sincronizado</strong>
+              <p>Salve favoritos e acompanhe seu avanço na conta.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ========================================================
+         ESTADO 2 — LOGIN (exibido na própria página, sem pop-up)
+         ======================================================== -->
+    <section class="auth-inline" id="viewLogin" hidden>
+      <div class="auth-topbar">
+        <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+        <span class="auth-breadcrumb"><i class="fa-solid fa-lock"></i> Acesso à plataforma</span>
+      </div>
+
+      <div class="auth-page container">
+        <section class="auth-visual">
+          <div class="visual-inner">
+            <div class="brand-area">
+              <img src="img/logo.png" alt="T.I. Libras" class="visual-logo-large">
+            </div>
+            <h1 class="visual-title">Domine a Libras de forma prática e conectiva</h1>
+            <p class="visual-sub">Aprenda sinais com exemplos reais, pratique passo a passo e acompanhe seu progresso. Salve favoritos, reveja sinais já estudados e avance no seu ritmo — tudo sincronizado na sua conta.</p>
+          </div>
+        </section>
+
+        <section class="auth-card">
+          <div class="auth-inner">
+            <h2 class="auth-heading">Entrar</h2>
+
+            <div class="social-row">
+              <button id="btnGoogle" class="btn btn-google btn-google-wide" type="button">
+                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <g fill="none" fill-rule="evenodd">
+                    <path d="M17.64 9.2045c0-.638-.0573-1.252-.164-1.839H9v3.48h4.84c-.208 1.12-.84 2.07-1.792 2.71v2.25h2.9c1.696-1.565 2.676-3.864 2.676-6.6z" fill="#4285F4"/>
+                    <path d="M9 18c2.43 0 4.47-.8 5.96-2.17l-2.9-2.25c-.8.54-1.82.86-3.06.86-2.35 0-4.34-1.58-5.05-3.72H1.02v2.34C2.5 15.98 5.5 18 9 18z" fill="#34A853"/>
+                    <path d="M3.95 11.77A5.96 5.96 0 0 1 3.6 9c0-.96.23-1.87.65-2.68V3.98H1.02A9.002 9.002 0 0 0 0 9c0 1.45.33 2.82.9 4.02l3.05-1.25z" fill="#FBBC05"/>
+                    <path d="M9 3.58c1.32 0 2.5.45 3.43 1.33l2.58-2.58C13.48.98 11.46 0 9 0 5.5 0 2.5 2.02 1.02 4.98l2.93 2.34C4.66 5.16 6.65 3.58 9 3.58z" fill="#EA4335"/>
+                  </g>
+                </svg>
+                Continuar com Google
+              </button>
+            </div>
+
+            <div class="divider">ou</div>
+
+            <form id="loginForm" class="form">
+              <label>E-mail
+                <input id="loginEmail" type="email" required placeholder="seu@exemplo.com">
+              </label>
+              <label>Senha
+                <input id="loginPass" type="password" minlength="6" required placeholder="••••••••">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+              </div>
+              <div id="loginFeedback" class="feedback"></div>
+            </form>
+
+            <p class="auth-switch">Novo por aqui? <button type="button" id="switchToRegister">Criar conta</button></p>
+
+            <div class="small-info">
+              <p>Ao entrar, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         ESTADO 3 — CADASTRO (exibido na própria página, sem pop-up)
+         ======================================================== -->
+    <section class="auth-inline" id="viewRegister" hidden>
+      <div class="auth-topbar">
+        <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+        <span class="auth-breadcrumb"><i class="fa-solid fa-user-plus"></i> Criar sua conta</span>
+      </div>
+
+      <div class="auth-page container">
+        <section class="auth-visual">
+          <div class="visual-inner">
+            <div class="brand-area">
+              <img src="img/logo.png" alt="T.I. Libras" class="visual-logo-large">
+            </div>
+            <h1 class="visual-title">Crie sua conta e comece a aprender</h1>
+            <p class="visual-sub">Cadastre-se gratuitamente para salvar favoritos, marcar sinais como vistos e acompanhar o seu progresso nos quizzes. Tudo sincronizado e acessível.</p>
+          </div>
+        </section>
+
+        <section class="auth-card">
+          <div class="auth-inner">
+            <h2 class="auth-heading">Criar conta</h2>
+
+            <div class="social-row">
+              <button id="btnGoogleRegister" class="btn btn-google btn-google-wide" type="button">
+                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <g fill="none" fill-rule="evenodd">
+                    <path d="M17.64 9.2045c0-.638-.0573-1.252-.164-1.839H9v3.48h4.84c-.208 1.12-.84 2.07-1.792 2.71v2.25h2.9c1.696-1.565 2.676-3.864 2.676-6.6z" fill="#4285F4"/>
+                    <path d="M9 18c2.43 0 4.47-.8 5.96-2.17l-2.9-2.25c-.8.54-1.82.86-3.06.86-2.35 0-4.34-1.58-5.05-3.72H1.02v2.34C2.5 15.98 5.5 18 9 18z" fill="#34A853"/>
+                    <path d="M3.95 11.77A5.96 5.96 0 0 1 3.6 9c0-.96.23-1.87.65-2.68V3.98H1.02A9.002 9.002 0 0 0 0 9c0 1.45.33 2.82.9 4.02l3.05-1.25z" fill="#FBBC05"/>
+                    <path d="M9 3.58c1.32 0 2.5.45 3.43 1.33l2.58-2.58C13.48.98 11.46 0 9 0 5.5 0 2.5 2.02 1.02 4.98l2.93 2.34C4.66 5.16 6.65 3.58 9 3.58z" fill="#EA4335"/>
+                  </g>
+                </svg>
+                Continuar com Google
+              </button>
+            </div>
+
+            <div class="divider">ou</div>
+
+            <form id="registerForm" class="form">
+              <label>Nome
+                <input id="regName" type="text" required placeholder="Seu nome">
+              </label>
+              <label>E-mail
+                <input id="regEmail" type="email" required placeholder="seu@exemplo.com">
+              </label>
+              <label>Senha
+                <input id="regPass" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
+              </div>
+              <div id="registerFeedback" class="feedback"></div>
+            </form>
+
+            <p class="auth-switch">Já tem conta? <button type="button" id="switchToLogin">Entrar</button></p>
+
+            <div class="small-info">
+              <p>Ao criar uma conta, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé padrão (o mesmo em todas as páginas e estados) -->
+  <app-footer></app-footer>
+
+  <script src="js/inicio.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script src="js/auth-guard.js"></script>
+</body>
+</html>

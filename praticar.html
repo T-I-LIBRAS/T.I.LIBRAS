@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>T.I Libras - Quiz Prático</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/praticar.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="js/components.js"></script>
+</head>
+<body>
+  <app-header></app-header>
+
+  <div class="quiz-container-box">
+    <!-- Tela de seleção de categorias -->
+    <div id="selectionScreen">
+      <div class="progress-section">
+        <div class="progress-info">
+          <h4><i class="fa-solid fa-chart-simple"></i> Progresso nos Quizes</h4>
+          <span class="progress-pct" id="progressText">0 / 6 Concluídos (0%)</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+        <p class="progress-message" id="progressMessage">Vamos começar? Escolha uma categoria abaixo!</p>
+      </div>
+
+      <div class="card carousel-card">
+        <div class="carousel-header">
+          <div>
+            <h2><i class="fa-solid fa-bullseye"></i> Praticar Quiz de TI em Libras</h2>
+            <p class="carousel-sub">Escolha uma categoria técnica para testar seus conhecimentos. Ao errar uma questão, o quiz é reiniciado!</p>
+          </div>
+          <div class="carousel-nav-btns">
+            <button class="btn-scroll" type="button" onclick="rolarCarrossel(-360)" title="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="btn-scroll" type="button" onclick="rolarCarrossel(360)" title="Próximo"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+
+        <div class="selection-grid" id="selectionGrid">
+          <div class="category-card cat-hardware" id="card-Hardware">
+            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+            <div>
+              <span class="badge-icon"><i class="fa-solid fa-desktop"></i></span>
+              <h3>Hardware</h3>
+              <p class="desc-text">Aprenda e fixe os sinais dos componentes físicos de computadores, periféricos e peças internas.</p>
+            </div>
+            <div>
+              <div class="meta-info">17 Questões · Peças e Componentes</div>
+              <div class="card-actions">
+                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Hardware')">Começar</button>
+                <a href="sinalario.html?cat=Hardware" class="btn-card-consult">Consultar</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="category-card cat-software" id="card-Software">
+            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+            <div>
+              <span class="badge-icon"><i class="fa-solid fa-compact-disc"></i></span>
+              <h3>Software</h3>
+              <p class="desc-text">Testes com conceitos de sistemas operacionais, aplicativos de escritório e programas essenciais.</p>
+            </div>
+            <div>
+              <div class="meta-info">11 Questões · Sistemas e Apps</div>
+              <div class="card-actions">
+                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Software')">Começar</button>
+                <a href="sinalario.html?cat=Software" class="btn-card-consult">Consultar</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="category-card cat-programacao" id="card-Programação">
+            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+            <div>
+              <span class="badge-icon"><i class="fa-solid fa-laptop-code"></i></span>
+              <h3>Programação</h3>
+              <p class="desc-text">Pratique a sinalização de algoritmos, linguagens de programação, variáveis e estruturas de código.</p>
+            </div>
+            <div>
+              <div class="meta-info">12 Questões · Código e Algoritmos</div>
+              <div class="card-actions">
+                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Programação')">Começar</button>
+                <a href="sinalario.html?cat=Programacao" class="btn-card-consult">Consultar</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="category-card cat-eletricidade" id="card-Eletricidade">
+            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+            <div>
+              <span class="badge-icon"><i class="fa-solid fa-plug"></i></span>
+              <h3>Eletricidade</h3>
+              <p class="desc-text">Conceitos fundamentais de circuitos, tensão, ferramentas elétricas e grandezas físicas em Libras.</p>
+            </div>
+            <div>
+              <div class="meta-info">11 Questões · Circuitos Elétricos</div>
+              <div class="card-actions">
+                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Eletricidade')">Começar</button>
+                <a href="sinalario.html?cat=Eletricidade" class="btn-card-consult">Consultar</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="category-card cat-redes" id="card-Redes">
+            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+            <div>
+              <span class="badge-icon"><i class="fa-solid fa-tower-broadcast"></i></span>
+              <h3>Redes</h3>
+              <p class="desc-text">Termos relacionados à internet, navegadores, conexões, links e segurança digital.</p>
+            </div>
+            <div>
+              <div class="meta-info">12 Questões · Internet e Conexões</div>
+              <div class="card-actions">
+                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Redes')">Começar</button>
+                <a href="sinalario.html?cat=Redes" class="btn-card-consult">Consultar</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="category-card cat-todos" id="card-Todos">
+            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+            <div>
+              <span class="badge-icon"><i class="fa-solid fa-trophy"></i></span>
+              <h3>Simulado Geral</h3>
+              <p class="desc-text">Desafio completo reunindo todas as 5 categorias misturadas aleatoriamente em um só teste.</p>
+            </div>
+            <div>
+              <div class="meta-info">63 Questões · Todas as Áreas</div>
+              <div class="card-actions">
+                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Todos')">Começar</button>
+                <a href="sinalario.html" class="btn-card-consult">Consultar</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tela do quiz -->
+    <div id="quizScreen" class="quiz-card quiz-screen">
+      <div class="quiz-header">
+        <div>
+          <button class="btn-back" type="button" onclick="voltarParaSelecao()"><i class="fa-solid fa-arrow-left"></i> Voltar à Seleção</button>
+          <div class="quiz-header-info">
+            <span class="category-tag" id="qCategory">HARDWARE</span>
+            <h2 id="qTitle">Pergunta 1 de 17</h2>
+          </div>
+        </div>
+        <div class="timer-badge"><i class="fa-solid fa-clock"></i> Tempo: <span id="timer">01:00</span></div>
+      </div>
+
+      <div class="quiz-body-grid">
+        <div class="quiz-media-col">
+          <div class="video-placeholder-box">
+            <span class="video-icon"><i class="fa-solid fa-video"></i></span>
+            <span class="video-label" id="qVideoText">Sinal Demonstrativo em Libras</span>
+          </div>
+          <p class="quiz-media-hint">Assista ao vídeo e selecione o termo correspondente à direita:</p>
+        </div>
+
+        <div class="quiz-options-col">
+          <h3 class="options-title">Qual é a resposta correta?</h3>
+          <div class="options-list" id="optionsContainer"></div>
+        </div>
+      </div>
+
+      <div id="feedbackBanner" class="feedback-banner error">
+        <i class="fa-solid fa-circle-xmark"></i> Resposta Incorreta ou Tempo Esgotado! Reiniciando o quiz...
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+
+  <script src="js/praticar.js"></script>
+</body>
+</html>

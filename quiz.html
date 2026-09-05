@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>T.I. Libras - Quiz Interativo</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/quiz.css">
+  <script src="js/components.js"></script>
+</head>
+<body>
+  <app-header></app-header>
+
+  <div class="quiz-top-bar">
+    <span id="quizBreadcrumb">Hardware · Questão 1 de 3</span>
+    <span id="quizPercent">0% concluído</span>
+  </div>
+
+  <div class="container quiz-container">
+    <div class="card quiz-card">
+      <div class="quiz-header">
+        <span class="q-number" id="qNum">1</span>
+        <h2>Qual termo está sendo sinalizado?</h2>
+      </div>
+      <div class="video-quiz-box">
+        <div class="video-content">
+          <span class="video-emoji">🤟</span>
+          <h4>Vídeo do Sinal em Libras</h4>
+          <p>Observe atentamente e identifique o termo</p>
+          <button class="quiz-play-btn" type="button">▶</button>
+        </div>
+      </div>
+    </div>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="quiz-actions">
+      <button id="btnNext" class="btn-next" type="button">Próxima →</button>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+
+  <script src="js/quizes.js"></script>
+</body>
+</html>

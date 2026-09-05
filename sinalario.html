@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>T.I Libras - Sinalário</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/sinalario.css">
+  <script src="js/components.js"></script>
+  <script src="js/dados.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+  <app-header></app-header>
+
+  <div class="container main-layout">
+    <aside class="sidebar-filtros">
+      <div class="filtros-panel">
+        <h2 class="filtros-title">Filtros</h2>
+
+        <select class="filtros-select" id="categorySelect" title="Filtrar por área">
+          <option value="todos">Todas as áreas</option>
+          <option value="hardware">Hardware</option>
+          <option value="software">Software</option>
+          <option value="programacao">Programação</option>
+          <option value="eletricidade">Eletricidade</option>
+          <option value="redes">Redes</option>
+          <option value="favoritos">Favoritos</option>
+        </select>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Buscar Termo...">
+        </div>
+
+        <span class="terms-count" id="termsCount">16 TERMOS</span>
+
+        <div class="terms-list" id="termsList"></div>
+      </div>
+    </aside>
+
+    <main class="content-column">
+      <div class="card term-detail-card">
+        <div class="term-header" id="termHeader">
+          <span class="category-tag" id="displayCategory">HARDWARE</span>
+          <div class="term-title-row">
+            <h2 id="displayTerm">Monitor</h2>
+            <button class="btn-fav-large" id="btnMainFav" title="Favoritar Termo"><i class="fa-regular fa-heart"></i></button>
+          </div>
+        </div>
+
+        <div class="term-body">
+          <div class="video-container">
+            <span class="section-title"><i class="fa-solid fa-play"></i> Vídeo do Sinal</span>
+            <div class="video-wrapper-yt">
+              <iframe
+                id="ytPlayer"
+                src="https://www.youtube.com/embed/?enablejsapi=1&rel=0"
+                title="Vídeo do Sinal em Libras"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+
+          <div class="image-section">
+            <span class="section-title"><i class="fa-solid fa-image"></i> Imagem do termo:</span>
+            <div class="image-content">
+              <img src="img/monitor.png" alt="Termo" id="termImage">
+              <span class="img-placeholder" id="imgPlaceholder">
+                <i class="fa-solid fa-image"></i>
+                <span>Imagem em breve</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="definicoes-column">
+      <div class="def-box">
+        <span class="def-label"><i class="fa-solid fa-book-open"></i> Definição do termo:</span>
+        <p id="displayDef">Dispositivo de saída que exibe a interface visual do computador.</p>
+      </div>
+
+      <div class="def-box">
+        <span class="def-label"><i class="fa-solid fa-language"></i> Exemplo em Português:</span>
+        <p id="displayExPt">"O monitor exibe a imagem em alta definição."</p>
+      </div>
+
+      <div class="def-box">
+        <span class="def-label"><i class="fa-solid fa-hand"></i> Exemplo em Libras:</span>
+        <p class="libras-text" id="displayExGlosa">MONITOR MOSTRAR IMAGEM BONITO</p>
+      </div>
+
+      <div class="def-box">
+        <span class="def-label"><i class="fa-solid fa-link"></i> Fonte do Sinal:</span>
+        <p><a href="#" id="displaySource" target="_blank" rel="noopener noreferrer">Infolibras (IFBA)</a></p>
+      </div>
+    </aside>
+  </div>
+  <app-footer></app-footer>
+
+  <script src="js/sinalario.js"></script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+/* ============================================================
+   T.I. Libras — telas de login/cadastro e formulários
+   ============================================================ */
+
+.auth-body {
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+.auth-page {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+  justify-content: center;
+  padding: 24px clamp(16px, 3vw, 24px) 32px;
+  min-height: calc(100vh - 140px);
+}
+
+/* Painel visual de apresentação — fundo em gradiente coeso com a
+   identidade do site (sem "card aninhado um dentro do outro") */
+.auth-visual {
+  flex: 1 1 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradiente-marca); /* azul-índigo → roxo (cores da logo) */
+  border-radius: var(--raio);
+  color: #ffffff;
+  padding: clamp(24px, 3vw, 44px);
+}
+
+.visual-inner {
+  width: 100%;
+  max-width: 620px;
+  padding: 0;
+}
+
+.visual-logo-large {
+  width: 88px;
+  height: auto;
+  display: block;
+  border-radius: var(--raio); /* leve curva nas bordas */
+  margin-bottom: 16px;
+}
+
+.visual-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  margin: 10px 0;
+}
+
+.visual-sub {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* Cartão do formulário */
+.auth-card {
+  flex: 1 1 42%;
+  max-width: 560px;
+  background: #ffffff;
+  border: var(--borda);
+  border-radius: var(--raio);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-heading {
+  font-size: 1.35rem;
+  margin-bottom: 12px;
+}
+
+/* Formulários */
+.form label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.form input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--raio);
+  font-size: 0.95rem;
+  margin-top: 6px;
+  background: #ffffff;
+  color: var(--cor-texto);
+  transition: var(--transicao);
+}
+
+.form input:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #ffffff;
+  color: var(--cor-texto);
+  border: var(--borda);
+  border-radius: var(--raio);
+  font-weight: 700;
+}
+
+.btn-google-wide {
+  width: 100%;
+}
+
+.divider {
+  text-align: center;
+  color: var(--cor-texto-suave);
+  margin: 14px 0;
+  font-size: 0.9rem;
+}
+
+.feedback {
+  margin-top: 8px;
+  color: #ef4444;
+  min-height: 18px;
+  font-size: 0.9rem;
+}
+
+.auth-links {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--cor-texto-suave);
+}
+
+.link {
+  color: var(--cor-primaria);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.small-info {
+  margin-top: 12px;
+  color: var(--cor-texto-suave);
+  font-size: 0.85rem;
+}
+
+.small-info a {
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.btn-create {
+  border-color: #cbd5e1;
+}
+
+app-footer {
+  margin-top: auto;
+}
+
+@media (max-width: 1000px) {
+  .auth-page {
+    flex-direction: column;
+    padding: 20px 16px 28px;
+    min-height: auto;
+  }
+
+  .auth-visual {
+    order: -1;
+    flex: none;
+    width: 100%;
+  }
+
+  .auth-card {
+    width: 100%;
+    flex: none;
+    max-width: none;
+  }
+
+  .visual-inner {
+    text-align: left;
+    padding: 0;
+  }
+}
+
+/* ============================================================
+   Login/Cadastro INLINE (exibidos na própria página de Início,
+   sem pop-up/modal)
+   ============================================================ */
+.auth-inline {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-inline[hidden] {
+  display: none;
+}
+
+/* Área compacta quando o formulário está dentro da página de Início */
+.auth-inline .auth-page {
+  min-height: auto;
+  padding: 8px clamp(16px, 3vw, 24px) 32px;
+}
+
+.auth-topbar {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px clamp(16px, 3vw, 24px) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.auth-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+
+.btn-back-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--raio);
+  background: #ffffff;
+  color: var(--cor-texto);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.btn-back-inline:hover {
+  background: #f1f5f9;
+}
+
+/* Troca entre Login e Cadastro dentro das seções inline */
+.auth-switch {
+  margin-top: 14px;
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+  text-align: center;
+}
+
+.auth-switch button {
+  border: none;
+  background: none;
+  color: var(--cor-primaria-2);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.auth-switch button:hover {
+  text-decoration: underline;
+}

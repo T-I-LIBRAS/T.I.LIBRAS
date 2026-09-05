@@ -1,0 +1,344 @@
+/* ============================================================
+   T.I. Libras — página de Início (apresentação + card de vídeo)
+
+   O conteúdo aproveita as laterais da tela (banda do hero em
+   largura total e seções com um respiro lateral enxuto), sem o
+   visual "espremido e centralizado".
+   ============================================================ */
+
+/* <main> da Início: ocupa o espaço entre header e footer para que o
+   rodapé fique sempre no fim da página em todos os estados. */
+.main-inicio {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Página de Início como um todo: ocupa 100% da largura. */
+.landing {
+  flex: 1;
+  width: 100%;
+}
+
+/* ============================================================
+   Card principal de apresentação (hero) — full-width com o
+   gradiente azul → roxo da identidade visual do site.
+   ============================================================ */
+.hero {
+  width: 100%;
+  background: var(--gradiente-marca); /* azul-índigo → roxo (cores da logo) */
+  color: #ffffff;
+  padding: clamp(40px, 6vw, 80px) clamp(16px, 3vw, 24px);
+  scroll-margin-top: 12px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hero-content {
+  min-width: 0;
+}
+
+/* Selo "Plataforma Educacional" + logo: empilhados no fluxo normal,
+   sem sobreposição nem deslocamento — o selo fica acima da logo. */
+.hero-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.hero-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--raio);
+  background: #ffffff;
+}
+
+.hero-tag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  line-height: 1.12;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 14px;
+}
+
+.hero-highlight {
+  /* Palavra "Libras" no título: branco sólido, sem opacidade,
+     gradiente interno de texto ou sombras. */
+  color: #ffffff;
+}
+
+.hero p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0 0 26px;
+  max-width: 620px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero .btn-light {
+  background: #ffffff;
+  color: var(--cor-primaria-2);
+  border: none;
+}
+
+.hero .btn-light:hover {
+  background: #eef2ff;
+}
+
+.hero .btn-ghost-light {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.hero .btn-ghost-light:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* ============================================================
+   Card de vídeo (YouTube) na coluna direita do hero
+   ============================================================ */
+.hero-media {
+  min-width: 0;
+}
+
+.video-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--raio);
+  padding: 12px;
+}
+
+.video-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 4px 10px;
+  flex-wrap: wrap;
+}
+
+.video-card-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.video-card-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--raio-pequeno);
+  overflow: hidden;
+}
+
+.video-card-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.video-card-hint {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 10px 4px 2px;
+}
+
+/* ============================================================
+   Conteúdo de apresentação (sobre + vantagens)
+   ============================================================ */
+.presentation {
+  /* Mesmo respiro lateral do Header para alinhar bordas verticais. */
+  width: 100%;
+  margin-top: 36px;
+  padding: 0 clamp(16px, 3vw, 24px);
+  scroll-margin-top: 12px;
+}
+
+.pres-card {
+  background: #ffffff;
+  border: var(--borda);
+  border-radius: var(--raio);
+}
+
+.pres-feature {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px;
+  border-left: 4px solid var(--cor-primaria);
+}
+
+.pres-media {
+  flex: 0 0 96px;
+  height: 96px;
+  border-radius: var(--raio);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ede9fe;
+  color: var(--cor-primaria);
+  font-size: 2.2rem;
+}
+
+.pres-body {
+  flex: 1;
+}
+
+.pres-tag {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--cor-primaria);
+  margin-bottom: 6px;
+}
+
+.pres-body h2 {
+  font-size: 1.5rem;
+  color: var(--cor-texto);
+  margin: 0 0 8px;
+}
+
+.pres-body p {
+  color: #475569;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+.pres-points {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+}
+
+.pres-points li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.pres-points i {
+  color: #10b981;
+}
+
+/* Vantagens: exatamente 3 cards lado a lado ocupando a largura útil */
+.perks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2vw, 24px);
+  margin-top: 24px;
+  margin-bottom: 48px;
+}
+
+/* Cards divididos em 2 partes horizontais:
+   1ª (menos larga): ícone sobre fundo em gradiente
+   2ª (mais larga): textos (título + descrição) */
+.perk-card {
+  display: grid;
+  grid-template-columns: 104px 1fr; /* coluna estreita (ícone) + coluna de texto */
+  background: #ffffff;
+  border: var(--borda);
+  border-radius: var(--raio);
+  overflow: hidden; /* gradiente respeita o raio do card */
+  min-height: 132px;
+}
+
+/* 1ª parte: ícone com fundo em gradiente (preenche toda a altura) */
+.perk-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradiente-marca);
+  color: #ffffff;
+  font-size: 1.7rem;
+}
+
+/* 2ª parte: área de texto, ocupa a maior largura do card */
+.perk-card > div:not(.perk-icon) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 20px 22px 20px 18px;
+}
+
+.perk-card strong {
+  font-size: 1.05rem;
+  line-height: 1.25;
+  color: var(--cor-texto);
+}
+
+.perk-card p {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--cor-texto-suave);
+  margin: 0;
+}
+
+/* Estados da página trocados por js/inicio.js (Início/Login/Cadastro) */
+.landing[hidden],
+.auth-inline[hidden] {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    padding: 32px 20px;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .pres-feature {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+
+  .perks {
+    grid-template-columns: 1fr;
+  }
+}

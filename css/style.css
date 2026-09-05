@@ -1,0 +1,381 @@
+/* ============================================================
+   T.I. Libras — estilos base (cabeçalho, rodapé, botões, layout)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ===== Paleta extraída da nova logo (img/logo.png) =====
+     Gradiente índigo/azul → roxo/violeta, com azul como acento. */
+  --cor-primaria: #7b46ce;   /* roxo/violeta da logo (destaques) */
+  --cor-primaria-2: #3e4bc6; /* azul-índigo da logo (botões/links) */
+  --cor-azul: #3f86dc;       /* azul da logo (acentos/categorias) */
+  --cor-fundo: #f8fafc;
+  --cor-card: #ffffff;
+  --cor-texto: #0f172a;
+  --cor-texto-suave: #64748b;
+  --borda: 1px solid #e2e8f0;
+  --raio: 6px;
+  --raio-pequeno: 4px;
+  --transicao: all 0.2s ease;
+  /* Gradiente padrão do site, baseado na logo */
+  --gradiente-marca: linear-gradient(135deg, #3e4bc6 0%, #5b45c8 45%, #7b46ce 100%);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  display: flex;
+  flex-direction: column;
+}
+
+app-header,
+app-footer {
+  display: block;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Cabeçalho (gerado por js/components.js)
+   ============================================================ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  height: 64px;
+  padding: 0 clamp(16px, 3vw, 24px);
+  background: #ffffff;
+  border-bottom: var(--borda);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--cor-texto);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand-logo {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  border-radius: var(--raio-pequeno);
+}
+
+.logo-text {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--cor-primaria);
+}
+
+/* Menu central */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-links a {
+  padding: 8px 14px;
+  border-radius: var(--raio);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.nav-links a:hover {
+  background: #f1f5f9;
+  color: var(--cor-texto);
+}
+
+.nav-links a.active {
+  background: #eef2ff;
+  color: var(--cor-primaria-2);
+}
+
+/* Ações à direita */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  border-radius: var(--raio);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.auth-btn.auth-login {
+  background: var(--cor-primaria-2);
+  color: #ffffff;
+}
+
+.auth-btn.auth-register {
+  background: transparent;
+  color: var(--cor-primaria-2);
+  border: var(--borda);
+}
+
+.auth-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* Botão Sair (logado) — discreto, alinhado aos demais botões do header */
+.auth-btn.auth-logout {
+  gap: 7px;
+  background: transparent;
+  color: #475569;
+  border: var(--borda);
+}
+
+.auth-btn.auth-logout:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+  filter: none;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: var(--raio);
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: var(--transicao);
+}
+
+.icon-btn:hover {
+  background: #e2e8f0;
+}
+
+/* ============================================================
+   Rodapé (gerado por js/components.js)
+   ============================================================ */
+.footer {
+  margin-top: auto;
+  background: #ffffff;
+  border-top: var(--borda);
+}
+
+.footer-top {
+  /* Mesmo respiro lateral do Header para alinhar as bordas verticais. */
+  width: 100%;
+  padding: 24px clamp(16px, 3vw, 24px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-brand .brand-logo {
+  height: 40px;
+}
+
+.footer-brand-text strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--cor-texto);
+}
+
+.footer-brand-text span {
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+.footer-social {
+  display: flex;
+  gap: 8px;
+}
+
+.social-round {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--raio);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.social-round:hover {
+  filter: brightness(1.1);
+}
+
+.social-round.github {
+  background: #24292e;
+}
+
+.social-round.youtube {
+  background: #dc2626;
+}
+
+.footer-links {
+  width: 100%;
+  padding: 16px clamp(16px, 3vw, 24px);
+  border-top: var(--borda);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  flex-wrap: wrap;
+}
+
+.footer-links-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  align-items: center;
+}
+
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: var(--transicao);
+}
+
+.footer-links a:hover {
+  color: var(--cor-primaria-2);
+}
+
+/* Contato formal no rodapé — sutil e integrado (sem ícone de envelope,
+   sem fundo/borda/destaque exagerado; mailto segue clicável) */
+.footer-contact {
+  display: inline-flex;
+  align-items: center;
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.footer-contact a {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.footer-contact a:hover {
+  color: var(--cor-primaria-2);
+  text-decoration: underline;
+}
+
+.footer-copy {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+/* ============================================================
+   Botões e cards compartilhados
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--raio);
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.btn-primary {
+  background: var(--cor-primaria);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #6a3dc4;
+}
+
+.btn-ghost,
+.btn-outline {
+  background: #ffffff;
+  color: var(--cor-texto);
+  border-color: #cbd5e1;
+}
+
+.btn-ghost:hover,
+.btn-outline:hover {
+  background: #f1f5f9;
+}
+
+.card {
+  background: var(--cor-card);
+  border: var(--borda);
+  border-radius: var(--raio);
+}
+.container {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px clamp(16px, 3vw, 24px);
+  box-sizing: border-box;
+}
+@media (max-width: 820px) {
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px clamp(14px, 3vw, 20px);
+    gap: 8px;
+  }
+
+  .nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nav-links a {
+    font-size: 0.9rem;
+  }
+}
