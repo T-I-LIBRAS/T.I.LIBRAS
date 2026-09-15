@@ -1,8 +1,9 @@
 /* =========================================================================
-   SINALÁRIO · Design System (Grid de 3 colunas com base alinhada)
-   Coluna 1: Filtros + lista de termos
+   SINALÁRIO · Design System (Grid de 3 colunas, fluxo vertical natural)
+   Coluna 1: Filtros + lista de termos (rolagem própria)
    Coluna 2: Header roxo + player de vídeo + definição do termo
    Coluna 3: Imagem do termo · Exemplo em português · Exemplo em Libras
+   Nenhuma altura global é travada: o layout flui e o scroll é da página.
    ========================================================================= */
 
 :root {
@@ -14,33 +15,34 @@
   --sl-gap: 22px;
 }
 
-/* --------------------- Grid principal (alturas iguais) --------------------- */
+/* --------------------- Grid principal (sem trava de altura) --------------------- */
 
 .container.main-layout {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr) 360px;
   grid-auto-rows: auto;
   gap: var(--sl-gap);
-  align-items: stretch;
-  align-content: stretch;
+  align-items: start;
+  align-content: start;
   width: 100%;
   max-width: 1600px;
+  height: auto;
+  min-height: 0;
 }
 
 /* ------------------------------ Coluna 1 · Filtros ------------------------------ */
 
 .sidebar-filtros {
-  display: flex;
+  display: block;
   min-width: 0;
+  height: auto;
 }
 
 .filtros-panel {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  background-color: #ffffff;
-  background: #ffffff;
+  height: auto;
+  background-color: #ffffff !important;
   border: var(--borda);
   border-radius: var(--sl-raio);
   padding: 16px;
@@ -50,7 +52,7 @@
 .filtros-title {
   font-size: 1rem;
   font-weight: 800;
-  color: var(--cor-texto);
+  color: #101a3d;
   margin: 0 0 12px;
 }
 
@@ -66,7 +68,7 @@
   position: absolute;
   left: 12px;
   font-size: 0.85rem;
-  color: var(--cor-primaria);
+  color: #3c50b4;
   pointer-events: none;
 }
 
@@ -110,22 +112,23 @@
 }
 
 .search-box input:focus {
-  border-color: var(--cor-primaria);
+  border-color: #3c50b4;
 }
 
 .terms-count {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.6px;
-  color: var(--cor-texto-suave);
+  color: #5a6a8f;
   display: block;
   margin-bottom: 8px;
 }
 
+/* Lista de termos com rolagem vertical individual */
 .terms-list {
-  flex: 1 1 auto;
-  min-height: 0;
+  max-height: calc(100vh - 200px);
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
 }
 
@@ -201,8 +204,8 @@
   flex-shrink: 0;
 }
 
-.dot.purple { background: var(--cor-lilas); }
-.dot.blue { background: var(--cor-azul); }
+.dot.purple { background: #783cc8; }
+.dot.blue { background: #3c8cdc; }
 .dot.yellow { background: #f59e0b; }
 .dot.red { background: #ef4444; }
 .dot.green { background: #10b981; }
@@ -212,16 +215,18 @@
 .content-column {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
   min-width: 0;
+  height: auto;
 }
 
-/* Header roxo do termo (restrito ao topo da coluna central) */
+/* Header roxo do termo (restrito ao topo da coluna central)
+   O !important é evitado aqui de propósito: a cor da área é aplicada
+   via JavaScript (inline style) mantendo o código de cores do setor. */
 .term-header {
   flex: 0 0 auto;
   background-color: #783cc8;
-  background: #783cc8;
   color: #ffffff;
   border-radius: var(--sl-raio-sm);
   padding: 18px 20px;
@@ -284,12 +289,13 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player de vídeo: largura total, cantos arredondados, sem borda sobressalente */
+/* Player de vídeo: largura total da coluna, 16:9 com teto de altura */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   aspect-ratio: 16 / 9;
+  max-height: 380px;
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
   background-color: #000000;
@@ -305,14 +311,13 @@
   display: block;
 }
 
-/* Card "Definição do termo" — cresce para travar a base da coluna */
+/* Card "Definição do termo" */
 .definicao-card {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background-color: #f0f3ff;
-  background: #f0f3ff;
+  justify-content: flex-start;
+  background-color: #f0f3ff !important;
   border: 1px solid #e2e8ff;
   border-radius: var(--sl-raio);
   padding: 18px 20px;
@@ -365,25 +370,20 @@
 .detalhes-column {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
   min-width: 0;
+  height: auto;
 }
 
 .info-card {
   display: flex;
   flex-direction: column;
   flex: 0 0 auto;
-  background-color: #f0f3ff;
-  background: #f0f3ff;
+  background-color: #f0f3ff !important;
   border: 1px solid #e2e8ff;
   border-radius: var(--sl-raio);
   padding: 18px;
-}
-
-/* Card da imagem (topo da coluna) cresce para alinhar a base */
-.info-card--imagem {
-  flex: 1 1 auto;
 }
 
 .info-card-head {
@@ -412,12 +412,12 @@
   font-weight: 800;
   letter-spacing: 0.4px;
   text-transform: uppercase;
+  color: #101a3d;
 }
 
 .imagem-content {
-  flex: 1 1 auto;
   min-height: 170px;
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   border-radius: var(--sl-raio-sm);
   padding: 12px;
   display: flex;
@@ -462,31 +462,19 @@
 @media (max-width: 1280px) {
   .container.main-layout {
     grid-template-columns: 270px minmax(0, 1fr);
-    align-content: start;
     gap: 20px;
-  }
-
-  .content-column {
-    justify-content: flex-start;
-  }
-
-  .definicao-card {
-    flex: 0 0 auto;
-    justify-content: flex-start;
   }
 
   .detalhes-column {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    justify-content: normal;
     align-items: start;
     gap: 20px;
   }
 
   .info-card--imagem {
     grid-column: 1 / -1;
-    flex: 0 0 auto;
   }
 
   .terms-list {
@@ -518,6 +506,7 @@
 
   .video-wrapper-yt {
     aspect-ratio: 16 / 10;
+    max-height: none;
   }
 
   .imagem-content {
