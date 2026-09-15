@@ -19,14 +19,24 @@ function estaNaPaginaInicial() {
   return caminho.endsWith('index.html') || caminho.endsWith('/') || caminho === '';
 }
 
-function redirecionarAposLogin(session) {
+/* Resolve o destino pós-login garantindo que ele nunca aponte de volta
+   para a apresentação, evitando qualquer laço de redirecionamento. */
+function destinoSeguro(next) {
+  if (!next) return PAGINA_INICIAL;
+  const alvo = decodeURIComponent(next);
+  if (alvo.includes('index.html') || alvo === '/' || alvo === '') return PAGINA_INICIAL;
+  return alvo;
+}
+
+/* Regra restritiva de sessão: enquanto houver sessão ativa o usuário não
+   pode permanecer na página de apresentação (index.html). Ele é sempre
+   enviado para o Sinalário — ou para o destino indicado em ?next=.
+   A apresentação só volta a ficar acessível após o logout. */
+function redirecionarUsuarioLogado(session) {
   if (!session) return;
   if (!estaNaPaginaInicial()) return;
   const parametros = new URLSearchParams(window.location.search);
-  const temIntencao = parametros.has('auth') || parametros.has('next');
-  if (!temIntencao) return;
-  const next = parametros.get('next');
-  window.location.href = next ? decodeURIComponent(next) : PAGINA_INICIAL;
+  window.location.replace(destinoSeguro(parametros.get('next')));
 }
 
 function aplicarUsuario(session) {
@@ -44,7 +54,7 @@ function aplicarUsuario(session) {
 
   window.sessaoSupabase = session || null;
   window.dispatchEvent(new CustomEvent('auth-changed'));
-  redirecionarAposLogin(session);
+  redirecionarUsuarioLogado(session);
 }
 
 function irParaLogin() {
@@ -162,8 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         await window.Auth.loginWithEmail(email, senha);
         const parametros = new URLSearchParams(window.location.search);
-        const next = parametros.get('next');
-        window.location.href = next ? decodeURIComponent(next) : PAGINA_INICIAL;
+        window.location.href = destinoSeguro(parametros.get('next'));
       } catch (erro) {
         if (retorno) {
           retorno.style.color = '#ef4444';
