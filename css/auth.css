@@ -30,6 +30,8 @@
   margin: 0;
   padding: 0;
   min-height: calc(100vh - 200px);
+  /* Gradiente oficial unificado, de ponta a ponta */
+  background: var(--gradiente-marca);
 }
 
 /* ----------------- Coluna esquerda (50%): formulário --------------------- */
@@ -39,17 +41,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
   padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 40px);
-  background: var(--cor-fundo);
-}
-
-.auth-topbar {
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: transparent;
 }
 
 /* Link "Voltar" limpo: sem caixa, fundo, borda ou sombra */
@@ -72,6 +65,12 @@
 .btn-back-inline:hover {
   color: var(--cor-primaria-2);
   text-decoration: underline;
+}
+
+/* Dentro do card branco, no topo e alinhado à esquerda */
+.auth-card .btn-back-inline {
+  align-self: flex-start;
+  margin-bottom: 14px;
 }
 
 .auth-form-wrap {
@@ -228,7 +227,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gradiente-marca);
+  background: transparent;
   border-radius: 0;
   box-shadow: none;
   color: #ffffff;
