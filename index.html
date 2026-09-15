@@ -130,28 +130,30 @@
         <div class="auth-form-side">
           <div class="auth-form-wrap">
             <div class="auth-card">
-              <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-              <h2 class="auth-heading">Entrar</h2>
-              <form id="loginForm" class="form">
-                <div class="field">
-                  <label for="loginEmail"><i class="fa-regular fa-envelope"></i> E-mail</label>
-                  <input id="loginEmail" type="email" required placeholder="seu@exemplo.com">
+              <div class="auth-card-inner">
+                <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                <h2 class="auth-heading">Entrar</h2>
+                <form id="loginForm" class="form">
+                  <div class="field">
+                    <label for="loginEmail"><i class="fa-regular fa-envelope"></i> E-mail</label>
+                    <input id="loginEmail" type="email" required placeholder="seu@exemplo.com">
+                  </div>
+                  <div class="field">
+                    <label for="loginPass"><i class="fa-solid fa-lock"></i> Senha</label>
+                    <span class="pass-field">
+                      <input id="loginPass" type="password" minlength="6" required placeholder="••••••••">
+                      <button type="button" class="toggle-pass" data-toggle-pass="loginPass" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
+                    </span>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+                  </div>
+                  <div id="loginFeedback" class="feedback"></div>
+                </form>
+                <p class="auth-switch">Novo por aqui? <button type="button" id="switchToRegister">Criar conta</button></p>
+                <div class="small-info">
+                  <p>Ao entrar, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
                 </div>
-                <div class="field">
-                  <label for="loginPass"><i class="fa-solid fa-lock"></i> Senha</label>
-                  <span class="pass-field">
-                    <input id="loginPass" type="password" minlength="6" required placeholder="••••••••">
-                    <button type="button" class="toggle-pass" data-toggle-pass="loginPass" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
-                  </span>
-                </div>
-                <div class="form-actions">
-                  <button type="submit" class="btn btn-primary btn-full">Entrar</button>
-                </div>
-                <div id="loginFeedback" class="feedback"></div>
-              </form>
-              <p class="auth-switch">Novo por aqui? <button type="button" id="switchToRegister">Criar conta</button></p>
-              <div class="small-info">
-                <p>Ao entrar, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
               </div>
             </div>
           </div>
@@ -170,32 +172,34 @@
         <div class="auth-form-side">
           <div class="auth-form-wrap">
             <div class="auth-card">
-              <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-              <h2 class="auth-heading">Criar conta</h2>
-              <form id="registerForm" class="form">
-                <div class="field">
-                  <label for="regName"><i class="fa-solid fa-user"></i> Nome</label>
-                  <input id="regName" type="text" required placeholder="Seu nome">
+              <div class="auth-card-inner">
+                <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                <h2 class="auth-heading">Criar conta</h2>
+                <form id="registerForm" class="form">
+                  <div class="field">
+                    <label for="regName"><i class="fa-solid fa-user"></i> Nome</label>
+                    <input id="regName" type="text" required placeholder="Seu nome">
+                  </div>
+                  <div class="field">
+                    <label for="regEmail"><i class="fa-regular fa-envelope"></i> E-mail</label>
+                    <input id="regEmail" type="email" required placeholder="seu@exemplo.com">
+                  </div>
+                  <div class="field">
+                    <label for="regPass"><i class="fa-solid fa-lock"></i> Senha</label>
+                    <span class="pass-field">
+                      <input id="regPass" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
+                      <button type="button" class="toggle-pass" data-toggle-pass="regPass" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
+                    </span>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
+                  </div>
+                  <div id="registerFeedback" class="feedback"></div>
+                </form>
+                <p class="auth-switch">Já tem conta? <button type="button" id="switchToLogin">Entrar</button></p>
+                <div class="small-info">
+                  <p>Ao criar uma conta, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
                 </div>
-                <div class="field">
-                  <label for="regEmail"><i class="fa-regular fa-envelope"></i> E-mail</label>
-                  <input id="regEmail" type="email" required placeholder="seu@exemplo.com">
-                </div>
-                <div class="field">
-                  <label for="regPass"><i class="fa-solid fa-lock"></i> Senha</label>
-                  <span class="pass-field">
-                    <input id="regPass" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
-                    <button type="button" class="toggle-pass" data-toggle-pass="regPass" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
-                  </span>
-                </div>
-                <div class="form-actions">
-                  <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
-                </div>
-                <div id="registerFeedback" class="feedback"></div>
-              </form>
-              <p class="auth-switch">Já tem conta? <button type="button" id="switchToLogin">Entrar</button></p>
-              <div class="small-info">
-                <p>Ao criar uma conta, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
               </div>
             </div>
           </div>

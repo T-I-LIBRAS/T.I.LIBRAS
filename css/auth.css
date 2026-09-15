@@ -7,9 +7,11 @@
    Split screen 50/50
    Duas colunas iguais (50% cada) ocupando 100% da largura e da altura
    disponíveis entre o header e o footer, com gradiente unificado de ponta
-   a ponta e sem sombras. O card branco do formulário cola na borda
-   esquerda da tela, com largura fixa (580px / 42vw) idêntica em Login e
-   Cadastro, cantos esquerdos retos e cantos direitos arredondados.
+   a ponta e sem sombras.
+   - Esquerda: card branco ocupando 100% da coluna (mesma largura e altura
+     em Login e Cadastro), colado na borda esquerda e na divisão central,
+     com cantos esquerdos retos e cantos direitos arredondados.
+   - Direita: texto da apresentação centralizado sobre o gradiente.
    --------------------------------------------------------------------------- */
 .auth-inline {
   width: 100%;
@@ -63,11 +65,11 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  /* Sem padding lateral: o card cola na borda esquerda da tela */
-  padding: clamp(24px, 4vw, 48px) 0;
+  /* O card ocupa a coluna inteira, de ponta a ponta */
+  padding: 0;
   background: transparent;
-  /* Em telas baixas o formulário rola dentro da própria coluna */
-  overflow-y: auto;
+  /* Sem scroll desnecessário: a altura vem do container pai */
+  overflow: hidden;
 }
 
 /* Link "Voltar" limpo: sem caixa, fundo, borda ou sombra */
@@ -99,31 +101,41 @@
 }
 
 .auth-form-wrap {
+  flex: 1;
   width: 100%;
+  min-height: 0;
   display: flex;
   justify-content: flex-start;
-  /* Centraliza na vertical sem cortar o topo quando há overflow */
-  margin: auto 0;
+  margin: 0;
 }
 
-/* Card colado na borda esquerda, com largura travada e idêntica
-   nas telas de Login e Cadastro */
+/* Card branco com 100% da coluna da esquerda (largura e altura),
+   idêntico nas telas de Login e Cadastro */
 .auth-card {
-  /* Medidas fixas: não estica nem encolhe ao trocar de tela */
-  flex: none;
-  width: 580px;
-  max-width: 42vw;
-  margin-left: 0;
-  min-height: 520px;
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
   background: #ffffff;
-  border: var(--borda);
-  border-left: none;
-  /* Cantos esquerdos retos (surge do canto da tela) e direitos bem curvados */
+  border: none;
+  /* Lado esquerdo reto (surge do canto da tela) e direito curvado */
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-top-right-radius: 28px;
-  border-bottom-right-radius: 28px;
-  padding: 40px 48px;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  padding: 40px clamp(24px, 4vw, 56px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+/* Conteúdo interno centralizado, com largura confortável para digitar */
+.auth-card-inner {
+  width: 100%;
+  max-width: 440px;
+  margin: auto 0;
   display: flex;
   flex-direction: column;
 }
@@ -316,22 +328,23 @@ app-footer {
   }
 
   .auth-form-side {
-    padding: 28px 16px 32px;
+    padding: 0;
     overflow: visible;
   }
 
   .auth-form-wrap {
+    flex: none;
     justify-content: center;
-    margin: 0;
   }
 
   .auth-card {
-    width: 100%;
+    flex: none;
+    padding: 32px 20px;
+    overflow: visible;
+  }
+
+  .auth-card-inner {
     max-width: none;
-    min-height: 0;
-    /* Empilhado, o card volta a ter moldura e raio completos */
-    border-left: var(--borda);
-    border-radius: 24px;
-    padding: 32px 24px;
+    margin: 0;
   }
 }
