@@ -17,6 +17,15 @@ const coresDasAreas = {
   Redes: '#10b981'
 };
 
+/* Ícone do setor exibido ao lado do nome da categoria no header do termo */
+const iconesDasAreas = {
+  Hardware: 'fa-microchip',
+  Software: 'fa-laptop-code',
+  'Programação': 'fa-code',
+  Eletricidade: 'fa-bolt',
+  Redes: 'fa-network-wired'
+};
+
 let categoriaSelecionada = 'todos';
 let busca = '';
 let termoAtual = dados[0];
@@ -190,6 +199,12 @@ function exibirTermoAtual() {
   document.getElementById('displayTerm').textContent = termoAtual.term;
   document.getElementById('displayCategory').textContent = termoAtual.cat.toUpperCase();
   document.getElementById('displayDef').textContent = termoAtual.def;
+
+  const iconeCategoria = document.getElementById('displayCategoryIcon');
+  if (iconeCategoria) {
+    iconeCategoria.className = `fa-solid ${iconesDasAreas[termoAtual.cat] || 'fa-folder-open'}`;
+  }
+
   document.getElementById('displayExPt').textContent = `"${termoAtual.exPt}"`;
   document.getElementById('displayExGlosa').textContent = termoAtual.exGlosa;
 
@@ -203,8 +218,15 @@ function exibirTermoAtual() {
   const placeholder = document.getElementById('imgPlaceholder');
   if (imagemEl && placeholder) {
     const slug = normalizar(termoAtual.term).replace(/\s+/g, '-');
-    imagemEl.style.display = '';
     placeholder.style.display = 'none';
+    imagemEl.style.display = '';
+
+    /* Termo ainda sem imagem: mostra o placeholder em vez de um ícone quebrado */
+    imagemEl.onerror = () => {
+      imagemEl.style.display = 'none';
+      placeholder.style.display = 'flex';
+    };
+
     imagemEl.src = `img/${slug}.png`;
   }
 
