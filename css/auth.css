@@ -7,8 +7,9 @@
    Split screen 50/50
    Duas colunas iguais (50% cada) ocupando 100% da largura e da altura
    disponíveis entre o header e o footer, com gradiente unificado de ponta
-   a ponta e sem sombras. O card branco do formulário fica alinhado à
-   esquerda da coluna, com os quatro cantos arredondados e ~88% de largura.
+   a ponta e sem sombras. O card branco do formulário cola na borda
+   esquerda da tela, com largura fixa (580px / 42vw) idêntica em Login e
+   Cadastro, cantos esquerdos retos e cantos direitos arredondados.
    --------------------------------------------------------------------------- */
 .auth-inline {
   width: 100%;
@@ -62,8 +63,8 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  /* Respiro lateral para o card alinhado à esquerda com os 4 cantos arredondados */
-  padding: clamp(24px, 4vw, 48px) clamp(16px, 2.5vw, 36px);
+  /* Sem padding lateral: o card cola na borda esquerda da tela */
+  padding: clamp(24px, 4vw, 48px) 0;
   background: transparent;
   /* Em telas baixas o formulário rola dentro da própria coluna */
   overflow-y: auto;
@@ -105,16 +106,24 @@
   margin: auto 0;
 }
 
-/* Card branco alinhado à esquerda, ~88% da coluna (máx. 520px) */
+/* Card colado na borda esquerda, com largura travada e idêntica
+   nas telas de Login e Cadastro */
 .auth-card {
-  width: 88%;
-  max-width: 520px;
+  /* Medidas fixas: não estica nem encolhe ao trocar de tela */
+  flex: none;
+  width: 580px;
+  max-width: 42vw;
   margin-left: 0;
   min-height: 520px;
   background: #ffffff;
   border: var(--borda);
-  border-radius: 24px;
-  padding: clamp(28px, 3.2vw, 44px);
+  border-left: none;
+  /* Cantos esquerdos retos (surge do canto da tela) e direitos bem curvados */
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 28px;
+  border-bottom-right-radius: 28px;
+  padding: 40px 48px;
   display: flex;
   flex-direction: column;
 }
@@ -320,5 +329,9 @@ app-footer {
     width: 100%;
     max-width: none;
     min-height: 0;
+    /* Empilhado, o card volta a ter moldura e raio completos */
+    border-left: var(--borda);
+    border-radius: 24px;
+    padding: 32px 24px;
   }
 }
