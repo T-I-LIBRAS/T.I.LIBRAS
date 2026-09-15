@@ -5,10 +5,8 @@
 
 /* ---------------------------------------------------------------------------
    Área de autenticação
-   - O painel em gradiente (direita) ocupa toda a altura disponível
-     entre o header e o footer.
-   - O formulário (esquerda) tem altura menor, fica centralizado na
-     vertical e se sobrepõe de leve à borda do painel.
+   Layout simples em Flexbox: formulário à esquerda, painel em gradiente
+   à direita. Sem position: absolute e sem margens negativas.
    --------------------------------------------------------------------------- */
 .auth-inline {
   width: 100%;
@@ -22,43 +20,32 @@
 }
 
 .auth-page {
-  --overlap: clamp(24px, 4vw, 56px);
   flex: 1;
   width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: stretch;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 4vw, 56px);
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 40px);
   min-height: calc(100vh - 200px);
 }
 
-/* ------------------------- Coluna do formulário ------------------------- */
+/* --------------------- Coluna do formulário (esquerda) -------------------- */
 
 .auth-form-side {
-  position: relative;
-  z-index: 2;
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 20px;
-  padding: 20px 0 28px clamp(20px, 4vw, 56px);
+  gap: 18px;
 }
 
 .auth-topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding-right: var(--overlap);
-}
-
-.auth-breadcrumb {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--cor-texto-suave);
 }
 
 /* Link "Voltar" limpo: sem caixa, fundo, borda ou sombra */
@@ -85,14 +72,12 @@
 
 .auth-form-wrap {
   display: flex;
-  justify-content: flex-end;
-  margin-right: calc(-1 * var(--overlap));
+  justify-content: flex-start;
 }
 
 .auth-card {
   width: 100%;
-  max-width: 440px;
-  margin-left: clamp(20px, 3vw, 40px);
+  max-width: 480px;
   background: #ffffff;
   border: var(--borda);
   border-radius: var(--raio);
@@ -113,10 +98,19 @@
 }
 
 .form label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   margin-bottom: 6px;
   font-weight: 600;
   color: var(--cor-texto);
+}
+
+.form label i {
+  width: 14px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--cor-primaria);
 }
 
 .form input {
@@ -226,26 +220,28 @@
 /* --------------------- Painel em gradiente (direita) --------------------- */
 
 .auth-visual {
-  z-index: 1;
+  flex: 0 0 clamp(300px, 40%, 520px);
+  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--gradiente-marca);
+  border-radius: 12px;
   color: #ffffff;
-  padding: clamp(28px, 4vw, 64px);
+  padding: clamp(28px, 4vw, 56px);
 }
 
 .visual-inner {
   width: 100%;
-  max-width: 560px;
+  max-width: 460px;
 }
 
 .visual-title {
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.2;
   color: #ffffff;
-  margin: 10px 0;
+  margin: 0 0 12px;
 }
 
 .visual-sub {
@@ -263,37 +259,26 @@ app-footer {
 
 @media (max-width: 1000px) {
   .auth-page {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    padding: 20px 16px 28px;
     min-height: auto;
-  }
-
-  .auth-form-side {
-    padding: 18px 16px 28px;
-    justify-content: flex-start;
-    gap: 14px;
-  }
-
-  .auth-topbar {
-    padding-right: 0;
-  }
-
-  .auth-form-wrap {
-    justify-content: center;
-    margin-right: 0;
-  }
-
-  .auth-card {
-    max-width: none;
-    margin-left: 0;
   }
 
   .auth-visual {
     order: -1;
-    min-height: 240px;
-    padding: 32px 20px;
+    flex: none;
+    width: 100%;
+    min-height: 220px;
+    padding: 32px 22px;
   }
 
-  .visual-inner {
-    text-align: left;
+  .auth-form-wrap {
+    justify-content: center;
+  }
+
+  .auth-card {
+    max-width: none;
   }
 }
