@@ -4,9 +4,10 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Área de autenticação
-   Layout simples em Flexbox: formulário à esquerda, painel em gradiente
-   à direita. Sem position: absolute e sem margens negativas.
+   Split screen 50/50
+   Duas colunas iguais (50% cada) ocupando 100% da largura e da altura
+   disponíveis entre o header e o footer, de ponta a ponta e sem margens
+   externas, sem border-radius nas bordas da tela e sem sombras.
    --------------------------------------------------------------------------- */
 .auth-inline {
   width: 100%;
@@ -22,30 +23,33 @@
 .auth-page {
   flex: 1;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: clamp(24px, 4vw, 56px);
-  padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 40px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  gap: 0;
+  margin: 0;
+  padding: 0;
   min-height: calc(100vh - 200px);
 }
 
-/* --------------------- Coluna do formulário (esquerda) -------------------- */
+/* ----------------- Coluna esquerda (50%): formulário --------------------- */
 
 .auth-form-side {
-  flex: 1 1 auto;
-  min-width: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   gap: 18px;
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 40px);
+  background: var(--cor-fundo);
 }
 
 .auth-topbar {
+  width: 100%;
+  max-width: 420px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 /* Link "Voltar" limpo: sem caixa, fundo, borda ou sombra */
@@ -71,13 +75,14 @@
 }
 
 .auth-form-wrap {
+  width: 100%;
+  max-width: 420px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .auth-card {
   width: 100%;
-  max-width: 480px;
   background: #ffffff;
   border: var(--borda);
   border-radius: var(--raio);
@@ -217,38 +222,39 @@
   border-color: #cfd9ee;
 }
 
-/* --------------------- Painel em gradiente (direita) --------------------- */
+/* -------------- Coluna direita (50%): gradiente oficial ------------------ */
 
 .auth-visual {
-  flex: 0 0 clamp(300px, 40%, 520px);
-  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--gradiente-marca);
-  border-radius: 12px;
+  border-radius: 0;
+  box-shadow: none;
   color: #ffffff;
-  padding: clamp(28px, 4vw, 56px);
+  padding: clamp(28px, 4vw, 64px);
+  text-align: center;
 }
 
 .visual-inner {
   width: 100%;
-  max-width: 460px;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .visual-title {
-  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+  font-size: clamp(1.7rem, 2.6vw, 2.4rem);
   font-weight: 800;
   line-height: 1.2;
   color: #ffffff;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
 }
 
 .visual-sub {
   color: rgba(255, 255, 255, 0.92);
   font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 0;
+  line-height: 1.65;
+  margin: 0;
 }
 
 app-footer {
@@ -257,28 +263,19 @@ app-footer {
 
 /* ------------------------------- Responsivo ------------------------------ */
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
   .auth-page {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 24px;
-    padding: 20px 16px 28px;
+    grid-template-columns: 1fr;
     min-height: auto;
   }
 
   .auth-visual {
     order: -1;
-    flex: none;
-    width: 100%;
-    min-height: 220px;
-    padding: 32px 22px;
+    min-height: 240px;
+    padding: 32px 20px;
   }
 
-  .auth-form-wrap {
-    justify-content: center;
-  }
-
-  .auth-card {
-    max-width: none;
+  .auth-form-side {
+    padding: 28px 16px 32px;
   }
 }
