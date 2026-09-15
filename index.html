@@ -126,78 +126,92 @@
       </section>
     </div>
     <section class="auth-inline" id="viewLogin" hidden>
-      <div class="auth-topbar">
-        <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-        <span class="auth-breadcrumb"><i class="fa-solid fa-lock"></i> Acesso à plataforma</span>
-      </div>
-      <div class="auth-page container">
-        <section class="auth-visual">
+      <div class="auth-page">
+        <div class="auth-form-side">
+          <div class="auth-topbar">
+            <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+            <span class="auth-breadcrumb"><i class="fa-solid fa-lock"></i> Acesso à plataforma</span>
+          </div>
+          <div class="auth-form-wrap">
+            <div class="auth-card">
+              <h2 class="auth-heading">Entrar</h2>
+              <form id="loginForm" class="form">
+                <div class="field">
+                  <label for="loginEmail">E-mail</label>
+                  <input id="loginEmail" type="email" required placeholder="seu@exemplo.com">
+                </div>
+                <div class="field">
+                  <label for="loginPass">Senha</label>
+                  <span class="pass-field">
+                    <input id="loginPass" type="password" minlength="6" required placeholder="••••••••">
+                    <button type="button" class="toggle-pass" data-toggle-pass="loginPass" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
+                  </span>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+                </div>
+                <div id="loginFeedback" class="feedback"></div>
+              </form>
+              <p class="auth-switch">Novo por aqui? <button type="button" id="switchToRegister">Criar conta</button></p>
+              <div class="small-info">
+                <p>Ao entrar, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="auth-visual">
           <div class="visual-inner">
             <h1 class="visual-title">Aprenda termos de TI em Libras de forma prática e Interativa</h1>
             <p class="visual-sub">Aprenda sinais com exemplos reais, pratique passo a passo e acompanhe seu progresso. Salve favoritos e avance no seu ritmo, com tudo sincronizado na sua conta.</p>
           </div>
-        </section>
-        <section class="auth-card">
-          <div class="auth-inner">
-            <h2 class="auth-heading">Entrar</h2>
-            <form id="loginForm" class="form">
-              <label>E-mail
-                <input id="loginEmail" type="email" required placeholder="seu@exemplo.com">
-              </label>
-              <label>Senha
-                <input id="loginPass" type="password" minlength="6" required placeholder="••••••••">
-              </label>
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary btn-full">Entrar</button>
-              </div>
-              <div id="loginFeedback" class="feedback"></div>
-            </form>
-            <p class="auth-switch">Novo por aqui? <button type="button" id="switchToRegister">Criar conta</button></p>
-            <div class="small-info">
-              <p>Ao entrar, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
-            </div>
-          </div>
-        </section>
+        </aside>
       </div>
     </section>
 
     <section class="auth-inline" id="viewRegister" hidden>
-      <div class="auth-topbar">
-        <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-        <span class="auth-breadcrumb"><i class="fa-solid fa-user-plus"></i> Criar sua conta</span>
-      </div>
-
-      <div class="auth-page container">
-        <section class="auth-visual">
+      <div class="auth-page">
+        <div class="auth-form-side">
+          <div class="auth-topbar">
+            <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+            <span class="auth-breadcrumb"><i class="fa-solid fa-user-plus"></i> Criar sua conta</span>
+          </div>
+          <div class="auth-form-wrap">
+            <div class="auth-card">
+              <h2 class="auth-heading">Criar conta</h2>
+              <form id="registerForm" class="form">
+                <div class="field">
+                  <label for="regName">Nome</label>
+                  <input id="regName" type="text" required placeholder="Seu nome">
+                </div>
+                <div class="field">
+                  <label for="regEmail">E-mail</label>
+                  <input id="regEmail" type="email" required placeholder="seu@exemplo.com">
+                </div>
+                <div class="field">
+                  <label for="regPass">Senha</label>
+                  <span class="pass-field">
+                    <input id="regPass" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
+                    <button type="button" class="toggle-pass" data-toggle-pass="regPass" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
+                  </span>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
+                </div>
+                <div id="registerFeedback" class="feedback"></div>
+              </form>
+              <p class="auth-switch">Já tem conta? <button type="button" id="switchToLogin">Entrar</button></p>
+              <div class="small-info">
+                <p>Ao criar uma conta, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="auth-visual">
           <div class="visual-inner">
             <h1 class="visual-title">Crie sua conta e comece a aprender</h1>
             <p class="visual-sub">Cadastre-se gratuitamente para acessar a plataforma e salvar favoritos, acompanhar o seu progresso, de forma sincronizada, prática e acessível.</p>
           </div>
-        </section>
-        <section class="auth-card">
-          <div class="auth-inner">
-            <h2 class="auth-heading">Criar conta</h2>
-            <form id="registerForm" class="form">
-              <label>Nome
-                <input id="regName" type="text" required placeholder="Seu nome">
-              </label>
-              <label>E-mail
-                <input id="regEmail" type="email" required placeholder="seu@exemplo.com">
-              </label>
-              <label>Senha
-                <input id="regPass" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
-              </label>
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
-              </div>
-              <div id="registerFeedback" class="feedback"></div>
-            </form>
-            <p class="auth-switch">Já tem conta? <button type="button" id="switchToLogin">Entrar</button></p>
-            <div class="small-info">
-              <p>Ao criar uma conta, você concorda com nossos <a href="#">Termos e Condições de Uso</a></p>
-            </div>
-          </div>
-        </section>
+        </aside>
       </div>
     </section>
   </main>

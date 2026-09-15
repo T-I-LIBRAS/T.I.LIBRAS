@@ -48,6 +48,25 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', voltarParaInicio);
   });
 
+  /* Mostrar/ocultar senha: alterna o campo entre password e text */
+  document.querySelectorAll('[data-toggle-pass]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const campo = document.getElementById(btn.getAttribute('data-toggle-pass'));
+      if (!campo) return;
+
+      const mostrarSenha = campo.type === 'password';
+      campo.type = mostrarSenha ? 'text' : 'password';
+
+      btn.setAttribute('aria-pressed', String(mostrarSenha));
+      btn.setAttribute('aria-label', mostrarSenha ? 'Ocultar senha' : 'Mostrar senha');
+      btn.innerHTML = mostrarSenha
+        ? '<i class="fa-solid fa-eye-slash"></i>'
+        : '<i class="fa-solid fa-eye"></i>';
+
+      campo.focus();
+    });
+  });
+
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', (e) => {
       const alvo = document.querySelector(a.getAttribute('href'));

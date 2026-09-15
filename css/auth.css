@@ -3,54 +3,100 @@
   color: var(--cor-texto);
 }
 
-.auth-page {
+/* ---------------------------------------------------------------------------
+   Área de autenticação
+   - O painel em gradiente (direita) ocupa toda a altura disponível
+     entre o header e o footer.
+   - O formulário (esquerda) tem altura menor, fica centralizado na
+     vertical e se sobrepõe de leve à borda do painel.
+   --------------------------------------------------------------------------- */
+.auth-inline {
+  width: 100%;
+  flex: 1;
   display: flex;
-  gap: 24px;
-  align-items: stretch;
-  justify-content: center;
-  padding: 24px clamp(16px, 3vw, 24px) 32px;
-  min-height: calc(100vh - 140px);
+  flex-direction: column;
 }
 
-.auth-visual {
-  flex: 1 1 55%;
+.auth-inline[hidden] {
+  display: none;
+}
+
+.auth-page {
+  --overlap: clamp(24px, 4vw, 56px);
+  flex: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  min-height: calc(100vh - 200px);
+}
+
+/* ------------------------- Coluna do formulário ------------------------- */
+
+.auth-form-side {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0 28px clamp(20px, 4vw, 56px);
+}
+
+.auth-topbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: var(--gradiente-marca);
-  border-radius: var(--raio);
-  color: #ffffff;
-  padding: clamp(24px, 3vw, 44px);
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-right: var(--overlap);
 }
 
-.visual-inner {
-  width: 100%;
-  max-width: 620px;
+.auth-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+
+/* Link "Voltar" limpo: sem caixa, fundo, borda ou sombra */
+.btn-back-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: var(--cor-primaria);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.visual-title {
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
-  font-weight: 800;
-  line-height: 1.15;
-  color: #ffffff;
-  margin: 10px 0;
+.btn-back-inline:hover {
+  color: var(--cor-primaria-2);
+  text-decoration: underline;
 }
 
-.visual-sub {
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 0;
+.auth-form-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: calc(-1 * var(--overlap));
 }
 
 .auth-card {
-  flex: 1 1 42%;
-  max-width: 560px;
+  width: 100%;
+  max-width: 440px;
+  margin-left: clamp(20px, 3vw, 40px);
   background: #ffffff;
   border: var(--borda);
   border-radius: var(--raio);
-  padding: 28px;
+  padding: clamp(22px, 3vw, 32px);
   display: flex;
   flex-direction: column;
 }
@@ -60,9 +106,15 @@
   margin-bottom: 12px;
 }
 
+/* ------------------------------- Formulário ------------------------------ */
+
+.form .field {
+  margin-bottom: 14px;
+}
+
 .form label {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   font-weight: 600;
   color: var(--cor-texto);
 }
@@ -73,16 +125,48 @@
   border: 1px solid #cfd9ee;
   border-radius: var(--raio);
   font-size: 0.95rem;
-  margin-top: 6px;
   background: #ffffff;
   color: var(--cor-texto);
-  transition: var(--transicao);
+  transition: border-color 0.2s ease;
 }
 
 .form input:focus {
-  outline: none;
+  outline: 2px solid rgba(60, 80, 180, 0.18);
+  outline-offset: 1px;
   border-color: var(--cor-primaria);
-  box-shadow: 0 0 0 3px rgba(60, 80, 180, 0.14);
+}
+
+/* Campo de senha com botão de mostrar/ocultar */
+.pass-field {
+  position: relative;
+  display: block;
+}
+
+.pass-field input {
+  padding-right: 44px;
+}
+
+.toggle-pass {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: none;
+  box-shadow: none;
+  border-radius: var(--raio-pequeno);
+  color: var(--cor-texto-suave);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.toggle-pass:hover {
+  color: var(--cor-primaria);
 }
 
 .form-actions {
@@ -101,121 +185,6 @@
   color: #ef4444;
   min-height: 18px;
   font-size: 0.9rem;
-}
-
-.auth-links {
-  margin-top: 12px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  color: var(--cor-texto-suave);
-}
-
-.link {
-  color: var(--cor-primaria);
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.small-info {
-  margin-top: 12px;
-  color: var(--cor-texto-suave);
-  font-size: 0.85rem;
-}
-
-.small-info a {
-  color: var(--cor-primaria);
-  text-decoration: none;
-}
-
-.btn-create {
-  border-color: #cfd9ee;
-}
-
-app-footer {
-  margin-top: auto;
-}
-
-@media (max-width: 1000px) {
-  .auth-page {
-    flex-direction: column;
-    padding: 20px 16px 28px;
-    min-height: auto;
-  }
-
-  .auth-visual {
-    order: -1;
-    flex: none;
-    width: 100%;
-  }
-
-  .auth-card {
-    width: 100%;
-    flex: none;
-    max-width: none;
-  }
-
-  .visual-inner {
-    text-align: left;
-    padding: 0;
-  }
-}
-
-.auth-inline {
-  width: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.auth-inline[hidden] {
-  display: none;
-}
-
-.auth-inline .auth-page {
-  min-height: auto;
-  padding: 8px clamp(16px, 3vw, 24px) 32px;
-}
-
-.auth-topbar {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 14px clamp(16px, 3vw, 24px) 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.auth-breadcrumb {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--cor-texto-suave);
-}
-
-.btn-back-inline {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border: 1px solid #cfd9ee;
-  border-radius: var(--raio);
-  background: #ffffff;
-  color: var(--cor-texto);
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  transition: var(--transicao);
-}
-
-.btn-back-inline:hover {
-  background: #eef3fd;
 }
 
 .auth-switch {
@@ -237,4 +206,94 @@ app-footer {
 
 .auth-switch button:hover {
   text-decoration: underline;
+}
+
+.small-info {
+  margin-top: 12px;
+  color: var(--cor-texto-suave);
+  font-size: 0.85rem;
+}
+
+.small-info a {
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.btn-create {
+  border-color: #cfd9ee;
+}
+
+/* --------------------- Painel em gradiente (direita) --------------------- */
+
+.auth-visual {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradiente-marca);
+  color: #ffffff;
+  padding: clamp(28px, 4vw, 64px);
+}
+
+.visual-inner {
+  width: 100%;
+  max-width: 560px;
+}
+
+.visual-title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  margin: 10px 0;
+}
+
+.visual-sub {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+app-footer {
+  margin-top: auto;
+}
+
+/* ------------------------------- Responsivo ------------------------------ */
+
+@media (max-width: 1000px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .auth-form-side {
+    padding: 18px 16px 28px;
+    justify-content: flex-start;
+    gap: 14px;
+  }
+
+  .auth-topbar {
+    padding-right: 0;
+  }
+
+  .auth-form-wrap {
+    justify-content: center;
+    margin-right: 0;
+  }
+
+  .auth-card {
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .auth-visual {
+    order: -1;
+    min-height: 240px;
+    padding: 32px 20px;
+  }
+
+  .visual-inner {
+    text-align: left;
+  }
 }
