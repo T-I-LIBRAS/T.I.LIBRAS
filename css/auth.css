@@ -29,14 +29,6 @@
   padding: 0;
 }
 
-.visual-logo-large {
-  width: 88px;
-  height: auto;
-  display: block;
-  border-radius: var(--raio);
-  margin-bottom: 16px;
-}
-
 .visual-title {
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   font-weight: 800;
@@ -78,7 +70,7 @@
 .form input {
   width: 100%;
   padding: 11px 12px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #cfd9ee;
   border-radius: var(--raio);
   font-size: 0.95rem;
   margin-top: 6px;
@@ -90,6 +82,7 @@
 .form input:focus {
   outline: none;
   border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(60, 80, 180, 0.14);
 }
 
 .form-actions {
@@ -101,30 +94,6 @@
 
 .btn-full {
   width: 100%;
-}
-
-.btn-google {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 16px;
-  background: #ffffff;
-  color: var(--cor-texto);
-  border: var(--borda);
-  border-radius: var(--raio);
-  font-weight: 700;
-}
-
-.btn-google-wide {
-  width: 100%;
-}
-
-.divider {
-  text-align: center;
-  color: var(--cor-texto-suave);
-  margin: 14px 0;
-  font-size: 0.9rem;
 }
 
 .feedback {
@@ -160,7 +129,7 @@
 }
 
 .btn-create {
-  border-color: #cbd5e1;
+  border-color: #cfd9ee;
 }
 
 app-footer {
@@ -234,7 +203,7 @@ app-footer {
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #cfd9ee;
   border-radius: var(--raio);
   background: #ffffff;
   color: var(--cor-texto);
@@ -246,7 +215,7 @@ app-footer {
 }
 
 .btn-back-inline:hover {
-  background: #f1f5f9;
+  background: #eef3fd;
 }
 
 .auth-switch {
@@ -259,7 +228,7 @@ app-footer {
 .auth-switch button {
   border: none;
   background: none;
-  color: var(--cor-primaria-2);
+  color: var(--cor-primaria);
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;

@@ -67,7 +67,12 @@ const bancoPerguntas = {
   ]
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  /* Carrega o progresso da conta do usuário no Supabase */
+  if (window.Progresso && window.Progresso.carregar) {
+    await window.Progresso.carregar();
+  }
+
   const gradeOpcoes = document.getElementById('optionsGrid');
   const botaoProxima = document.getElementById('btnNext');
   const caminhoQuiz = document.getElementById('quizBreadcrumb');
@@ -83,20 +88,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let pontuacao = 0;
 
   function registrarQuestaoFeita(categoria) {
-    const estatisticas = JSON.parse(localStorage.getItem('statsQuestoes') || '{}');
-    estatisticas[categoria] = (estatisticas[categoria] || 0) + 1;
-    localStorage.setItem('statsQuestoes', JSON.stringify(estatisticas));
-
-    const total = parseInt(localStorage.getItem('totalQuestoesFeitas') || '0', 10);
-    localStorage.setItem('totalQuestoesFeitas', (total + 1).toString());
+    if (!window.Progresso) return;
+    window.Progresso.incrementarPontuacao(categoria, { questoes_feitas: 1 });
   }
 
   function registrarQuizConcluido(categoria) {
-    const concluidos = JSON.parse(localStorage.getItem('quizzesConcluidos') || '[]');
-    if (!concluidos.includes(categoria)) {
-      concluidos.push(categoria);
-      localStorage.setItem('quizzesConcluidos', JSON.stringify(concluidos));
-    }
+    if (!window.Progresso) return;
+    window.Progresso.concluirQuiz(categoria);
+    window.Progresso.registrarPontuacao(categoria, {
+      ultima_pontuacao: pontuacao,
+      ultima_conclusao: new Date().toISOString()
+    });
   }
 
   function carregarPergunta() {
@@ -178,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cardQuiz.innerHTML = `
       <div style="text-align: center; padding: 2rem 1rem;">
         <span style="font-size: 3.5rem;">🎉</span>
-        <h2 style="margin: 10px 0; color: #7b46ce;">Parabéns! Quiz Concluído!</h2>
+        <h2 style="margin: 10px 0; color: var(--cor-primaria);">Parabéns! Quiz Concluído!</h2>
         <p style="color: #64748b; margin-bottom: 20px;">
           Você acertou todas as ${perguntasAtivas.length} questões da categoria ${categoriaDaUrl}!
         </p>

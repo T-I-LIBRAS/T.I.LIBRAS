@@ -1,15 +1,16 @@
-const CHAVE_SESSAO_LOCAL = 'isLoggedIn';
+const PAGINA_INICIAL_APP = 'sinalario.html';
+const LINK_GITHUB = 'https://github.com/ti-libras/T.I.-LIBRAS';
 
 function estaLogado() {
   return (
     !!(window.currentUser && window.currentUser.uid) ||
-    localStorage.getItem(CHAVE_SESSAO_LOCAL) === 'true'
+    !!(window.sessaoSupabase && window.sessaoSupabase.user)
   );
 }
 
 function encerrarSessao() {
   window.currentUser = null;
-  localStorage.removeItem(CHAVE_SESSAO_LOCAL);
+  window.sessaoSupabase = null;
   window.dispatchEvent(new CustomEvent('auth-changed'));
 }
 
@@ -32,7 +33,7 @@ class AppHeaderHome extends HTMLElement {
         <div class="header-actions">
           <a href="#login" class="auth-btn auth-login" id="headerLogin" data-abrir-auth="login">Entrar</a>
           <a href="#cadastro" class="auth-btn auth-register" id="headerRegister" data-abrir-auth="register">Criar conta</a>
-          <a href="sinalario.html" class="auth-btn auth-register" id="headerAcessar" hidden>Acessar plataforma</a>
+          <a href="${PAGINA_INICIAL_APP}" class="auth-btn auth-register" id="headerAcessar" hidden>Acessar plataforma</a>
           <button type="button" class="auth-btn auth-logout" id="headerSair" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
         </div>
       </header>
@@ -67,8 +68,8 @@ class AppHeader extends HTMLElement {
           <span class="logo-text">T.I Libras</span>
         </a>
         <nav class="nav-links">
-          <a href="praticar.html" id="nav-praticar">Praticar</a>
           <a href="sinalario.html" id="nav-sinalario">Sinalário</a>
+          <a href="praticar.html" id="nav-praticar">Praticar</a>
         </nav>
         <div class="header-actions">
           <a href="index.html?auth=login" class="auth-btn auth-login" id="headerLogin">Entrar</a>
@@ -80,10 +81,10 @@ class AppHeader extends HTMLElement {
     `;
 
     const caminho = window.location.pathname;
-    if (caminho.includes('praticar.html')) {
-      this.querySelector('#nav-praticar')?.classList.add('active');
-    } else if (caminho.includes('sinalario.html')) {
+    if (caminho.includes('sinalario.html')) {
       this.querySelector('#nav-sinalario')?.classList.add('active');
+    } else if (caminho.includes('praticar.html')) {
+      this.querySelector('#nav-praticar')?.classList.add('active');
     }
 
     const aplicarEstado = () => {
@@ -128,7 +129,7 @@ class AppFooter extends HTMLElement {
             </div>
           </div>
           <div class="footer-social">
-            <a href="https://github.com/edunascc/T.I.-LIBRAS" target="_blank" rel="noopener noreferrer" class="social-round github" aria-label="GitHub" title="GitHub">
+            <a href="${LINK_GITHUB}" target="_blank" rel="noopener noreferrer" class="social-round github" aria-label="GitHub" title="GitHub">
               <i class="fa-brands fa-github"></i>
             </a>
             <a href="https://www.youtube.com/@t.i.libras" target="_blank" rel="noopener noreferrer" class="social-round youtube" aria-label="YouTube" title="YouTube">

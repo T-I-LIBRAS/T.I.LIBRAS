@@ -33,11 +33,11 @@
 .filtros-select {
   width: 100%;
   padding: 8px 10px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #cfd9ee;
   border-radius: var(--raio);
   background: #ffffff;
   font-size: 0.85rem;
-  color: #1e293b;
+  color: var(--cor-texto);
   margin-bottom: 10px;
   cursor: pointer;
   box-sizing: border-box;
@@ -51,7 +51,7 @@
 .search-box i {
   position: absolute;
   left: 10px;
-  color: #94a3b8;
+  color: #8e9cbd;
   font-size: 0.8rem;
   pointer-events: none;
 }
@@ -59,7 +59,7 @@
 .search-box input {
   width: 100%;
   padding: 8px 10px 8px 30px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #cfd9ee;
   border-radius: var(--raio);
   font-size: 0.85rem;
   background: #ffffff;
@@ -100,11 +100,11 @@
 }
 
 .term-item:hover {
-  background: #f1f5f9;
+  background: #eef3fd;
 }
 
 .term-item.active {
-  background: #f5f3ff;
+  background: #e3ebfb;
 }
 
 .term-item-content {
@@ -139,7 +139,7 @@
   cursor: pointer;
   font-size: 0.9rem;
   padding: 2px;
-  color: #94a3b8;
+  color: #8e9cbd;
   flex-shrink: 0;
 }
 
@@ -152,7 +152,7 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-.dot.purple { background: var(--cor-primaria); }
+.dot.purple { background: var(--cor-lilas); }
 .dot.blue { background: var(--cor-azul); }
 .dot.yellow { background: #f59e0b; }
 .dot.red { background: #ef4444; }
@@ -238,7 +238,7 @@
 .section-title {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #334155;
+  color: #2c3a63;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -282,7 +282,7 @@
   align-items: center;
   justify-content: center;
   padding: 12px;
-  background: #f8fafc;
+  background: var(--cor-fundo);
   border: var(--borda);
   border-radius: var(--raio);
   box-sizing: border-box;
@@ -299,7 +299,7 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  color: #94a3b8;
+  color: #8e9cbd;
   font-size: 0.8rem;
 }
 
@@ -332,7 +332,7 @@
   font-weight: 700;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  color: #475569;
+  color: #4a5a7d;
   display: block;
   margin-bottom: 6px;
 }
@@ -340,7 +340,7 @@
 .def-box p {
   font-size: 0.9rem;
   line-height: 1.45;
-  color: #1e293b;
+  color: var(--cor-texto);
   margin: 0;
 }
 

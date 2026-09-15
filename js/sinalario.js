@@ -8,9 +8,10 @@ const mapaDePontos = {
   Redes: 'green'
 };
 
+/* Cores de cada área alinhadas com a paleta da nova logo */
 const coresDasAreas = {
-  Hardware: '#7b46ce',
-  Software: '#3f86dc',
+  Hardware: '#783cc8',
+  Software: '#3c8cdc',
   'Programação': '#f59e0b',
   Eletricidade: '#ef4444',
   Redes: '#10b981'
@@ -36,6 +37,16 @@ function extrairIdDoVideo(entrada) {
   return resultado ? resultado[1] : entrada.trim();
 }
 
+/* ------------------- Progresso do usuário (Supabase) ------------------- */
+
+function progressoDisponivel() {
+  return !!(window.Progresso && window.Progresso.carregar);
+}
+
+function obterFavoritos() {
+  return progressoDisponivel() ? window.Progresso.favoritos() : [];
+}
+
 function reiniciarVisto(termo) {
   if (timerDoVisto) {
     clearTimeout(timerDoVisto);
@@ -53,12 +64,8 @@ function reiniciarVisto(termo) {
 function marcarComoVisto() {
   if (!visto || !visto.termo) return;
   if (!(visto.tempoOk && visto.videoTerminou)) return;
-  const sinaisVistos = JSON.parse(localStorage.getItem('sinaisVistos') || '[]');
-  if (!sinaisVistos.includes(visto.termo)) {
-    sinaisVistos.push(visto.termo);
-    localStorage.setItem('sinaisVistos', JSON.stringify(sinaisVistos));
-    renderizarLista();
-  }
+  if (!progressoDisponivel()) return;
+  if (window.Progresso.adicionarSinalVisto(visto.termo)) renderizarLista();
 }
 
 function carregarVideo(videoId) {
@@ -91,18 +98,9 @@ function onYouTubeIframeAPIReady() {
   });
 }
 
-function obterFavoritos() {
-  return JSON.parse(localStorage.getItem('termosFavoritos') || '[]');
-}
-
 function alternarFavorito(nomeDoTermo) {
-  let favoritos = obterFavoritos();
-  if (favoritos.includes(nomeDoTermo)) {
-    favoritos = favoritos.filter((t) => t !== nomeDoTermo);
-  } else {
-    favoritos.push(nomeDoTermo);
-  }
-  localStorage.setItem('termosFavoritos', JSON.stringify(favoritos));
+  if (!progressoDisponivel()) return;
+  window.Progresso.alternarFavorito(nomeDoTermo);
   renderizarLista();
   exibirTermoAtual();
 }
@@ -133,7 +131,7 @@ function renderizarLista() {
   filtrados.forEach((item) => {
     const ativo = !!(termoAtual && termoAtual.term === item.term);
     const ehFavorito = favoritos.includes(item.term);
-    const cor = coresDasAreas[item.cat] || '#7b46ce';
+    const cor = coresDasAreas[item.cat] || '#783cc8';
 
     const linha = document.createElement('div');
     linha.className = `term-item${ativo ? ' active' : ''}`;
@@ -184,7 +182,7 @@ function exibirTermoAtual() {
 
   const favoritos = obterFavoritos();
   const ehFavorito = favoritos.includes(termoAtual.term);
-  const cor = coresDasAreas[termoAtual.cat] || '#7b46ce';
+  const cor = coresDasAreas[termoAtual.cat] || '#783cc8';
 
   const cabecalho = document.getElementById('termHeader');
   if (cabecalho) cabecalho.style.background = cor;
@@ -222,7 +220,11 @@ function exibirTermoAtual() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (progressoDisponivel()) {
+    await window.Progresso.carregar();
+  }
+
   document.getElementById('searchInput').addEventListener('input', (evento) => {
     busca = evento.target.value;
     renderizarLista();
@@ -235,6 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btnMainFav').addEventListener('click', () => {
     if (termoAtual) alternarFavorito(termoAtual.term);
+  });
+
+  /* Sempre que o progresso vier do Supabase (login/troca de conta),
+     a interface é reconstruída com os dados da conta do usuário. */
+  window.addEventListener('progresso-carregado', () => {
+    renderizarLista();
+    exibirTermoAtual();
   });
 
   const parametros = new URLSearchParams(window.location.search);

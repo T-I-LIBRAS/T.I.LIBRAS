@@ -29,7 +29,7 @@
 }
 
 .q-number {
-  background: #f3e8ff;
+  background: #e4ebfd;
   color: var(--cor-primaria);
   font-weight: 800;
   width: 34px;
@@ -41,7 +41,7 @@
 }
 
 .video-quiz-box {
-  background: #1e293b;
+  background: var(--cor-texto);
   border-radius: var(--raio);
   padding: 2.5rem 1rem;
   text-align: center;
@@ -90,7 +90,7 @@
 
 .option-btn {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: var(--borda);
   border-radius: var(--raio);
   padding: 14px 16px;
   display: flex;
@@ -148,7 +148,7 @@
 }
 
 .btn-next:hover {
-  background: #6a3dc4;
+  background: #2f4096;
 }
 
 @media (max-width: 640px) {

@@ -80,8 +80,23 @@ function atualizarEstadoDoCarrossel() {
   if (botoes) botoes.style.display = temTransbordo ? 'flex' : 'none';
   grade.style.justifyContent = temTransbordo ? 'flex-start' : 'center';
 }
+function progressoDisponivel() {
+  return !!(window.Progresso && window.Progresso.quizzesConcluidos);
+}
+function obterQuizzesConcluidos() {
+  return progressoDisponivel() ? window.Progresso.quizzesConcluidos() : [];
+}
+function registrarQuizConcluido(categoria, totalDeQuestoes) {
+  if (!progressoDisponivel()) return;
+  window.Progresso.concluirQuiz(categoria);
+  window.Progresso.registrarPontuacao(categoria, {
+    ultima_pontuacao: totalDeQuestoes,
+    total_questoes: totalDeQuestoes,
+    ultima_conclusao: new Date().toISOString()
+  });
+}
 function atualizarProgresso() {
-  const concluidos = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
+  const concluidos = obterQuizzesConcluidos();
   const categorias = ['Hardware', 'Software', 'Programação', 'Eletricidade', 'Redes', 'Todos'];
   categorias.forEach((cat) => {
     const card = document.getElementById(`card-${cat}`);
@@ -152,11 +167,7 @@ function obterImagemPadrao() {
 }
 function carregarPergunta(indice) {
   if (indice >= perguntasAtivas.length) {
-    const concluidos = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
-    if (!concluidos.includes(categoriaAtual)) {
-      concluidos.push(categoriaAtual);
-      localStorage.setItem('completedQuizzes', JSON.stringify(concluidos));
-    }
+    registrarQuizConcluido(categoriaAtual, perguntasAtivas.length);
     alert(`Parabéns! Você concluiu o Quiz de ${categoriaAtual} com ${perguntasAtivas.length} questões sem erros!`);
     voltarParaSelecao();
     return;
@@ -253,12 +264,16 @@ function lidarComErro() {
   }, 2000);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  localStorage.setItem('totalQuizzes', '6');
-  localStorage.setItem('totalQuestoes', String(todasAsPerguntas.length));
+document.addEventListener('DOMContentLoaded', async () => {
+  /* Carrega o progresso da conta do usuário no Supabase */
+  if (window.Progresso && window.Progresso.carregar) {
+    await window.Progresso.carregar();
+  }
 
   atualizarProgresso();
   atualizarEstadoDoCarrossel();
+
+  window.addEventListener('progresso-carregado', atualizarProgresso);
 
   const parametros = new URLSearchParams(window.location.search);
   const categoria = parametros.get('cat');

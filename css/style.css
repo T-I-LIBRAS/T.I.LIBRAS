@@ -1,18 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --cor-primaria: #7b46ce;
-  --cor-primaria-2: #3e4bc6;
-  --cor-azul: #3f86dc;
-  --cor-fundo: #f8fafc;
+  /* -----------------------------------------------------------------------
+     Paleta oficial da NOVA logo T.I. Libras (extraída da própria imagem):
+     azul índigo #3c50b4 · azul royal #3c64c8 · azul claro #3c8cdc
+     azul celeste #afd7f7 · lilás #783cc8 · lilás claro #dcb4f0
+     ----------------------------------------------------------------------- */
+  --cor-primaria: #3c50b4;
+  --cor-primaria-2: #3c64c8;
+  --cor-azul: #3c8cdc;
+  --cor-azul-claro: #afd7f7;
+  --cor-lilas: #783cc8;
+  --cor-lilas-2: #643cc8;
+  --cor-lilas-claro: #dcb4f0;
+  --cor-fundo: #f3f6ff;
+  --cor-fundo-alt: #e8eefc;
   --cor-card: #ffffff;
-  --cor-texto: #0f172a;
-  --cor-texto-suave: #64748b;
-  --borda: 1px solid #e2e8f0;
+  --cor-texto: #101a3d;
+  --cor-texto-suave: #5a6a8f;
+  --borda: 1px solid #dbe3f7;
   --raio: 6px;
   --raio-pequeno: 4px;
   --transicao: all 0.2s ease;
-  --gradiente-marca: linear-gradient(135deg, #3e4bc6 0%, #5b45c8 45%, #7b46ce 100%);
+  --gradiente-marca: linear-gradient(135deg, #3c50b4 0%, #3c64c8 45%, #783cc8 100%);
+  --gradiente-suave: linear-gradient(135deg, #3c8cdc 0%, #783cc8 100%);
 }
 
 * {
@@ -92,13 +103,13 @@ app-footer {
 }
 
 .nav-links a:hover {
-  background: #f1f5f9;
+  background: #eef3fd;
   color: var(--cor-texto);
 }
 
 .nav-links a.active {
-  background: #eef2ff;
-  color: var(--cor-primaria-2);
+  background: #e3ebfb;
+  color: var(--cor-primaria);
 }
 
 .header-actions {
@@ -120,13 +131,13 @@ app-footer {
 }
 
 .auth-btn.auth-login {
-  background: var(--cor-primaria-2);
+  background: var(--cor-primaria);
   color: #ffffff;
 }
 
 .auth-btn.auth-register {
   background: transparent;
-  color: var(--cor-primaria-2);
+  color: var(--cor-primaria);
   border: var(--borda);
 }
 
@@ -137,7 +148,7 @@ app-footer {
 .auth-btn.auth-logout {
   gap: 7px;
   background: transparent;
-  color: #475569;
+  color: #4a5a7d;
   border: var(--borda);
 }
 
@@ -153,8 +164,8 @@ app-footer {
   height: 38px;
   border: none;
   border-radius: var(--raio);
-  background: #f1f5f9;
-  color: #475569;
+  background: #eef3fd;
+  color: #4a5a7d;
   font-size: 1rem;
   cursor: pointer;
   display: grid;
@@ -163,7 +174,7 @@ app-footer {
 }
 
 .icon-btn:hover {
-  background: #e2e8f0;
+  background: #e2e9f8;
 }
 
 .footer {
@@ -255,7 +266,7 @@ app-footer {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #475569;
+  color: #4a5a7d;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
@@ -263,7 +274,7 @@ app-footer {
 }
 
 .footer-links a:hover {
-  color: var(--cor-primaria-2);
+  color: var(--cor-primaria);
 }
 
 .footer-contact {
@@ -282,12 +293,12 @@ app-footer {
 }
 
 .footer-contact a:hover {
-  color: var(--cor-primaria-2);
+  color: var(--cor-primaria);
   text-decoration: underline;
 }
 
 .footer-copy {
-  color: #94a3b8;
+  color: #8e9cbd;
   font-size: 0.82rem;
 }
 
@@ -312,19 +323,19 @@ app-footer {
 }
 
 .btn-primary:hover {
-  background: #6a3dc4;
+  background: #2f4096;
 }
 
 .btn-ghost,
 .btn-outline {
   background: #ffffff;
   color: var(--cor-texto);
-  border-color: #cbd5e1;
+  border-color: #cfd9ee;
 }
 
 .btn-ghost:hover,
 .btn-outline:hover {
-  background: #f1f5f9;
+  background: #eef3fd;
 }
 
 .card {
