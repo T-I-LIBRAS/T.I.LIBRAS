@@ -17,14 +17,31 @@ const coresDasAreas = {
   Redes: '#10b981'
 };
 
-/* Ícone do setor exibido ao lado do nome da categoria no header do termo */
+/* Ícones das áreas: exatamente os mesmos usados na página Praticar (Font Awesome 6) */
 const iconesDasAreas = {
-  Hardware: 'fa-microchip',
-  Software: 'fa-laptop-code',
-  'Programação': 'fa-code',
-  Eletricidade: 'fa-bolt',
-  Redes: 'fa-network-wired'
+  Hardware: 'fa-desktop',
+  Software: 'fa-compact-disc',
+  'Programação': 'fa-laptop-code',
+  Eletricidade: 'fa-plug',
+  Redes: 'fa-tower-broadcast'
 };
+
+/* Ícone do campo de filtro. "Todas as áreas" usa ícone genérico (sem troféu). */
+const iconesDoFiltro = {
+  todos: 'fa-shapes',
+  hardware: 'fa-desktop',
+  software: 'fa-compact-disc',
+  programacao: 'fa-laptop-code',
+  eletricidade: 'fa-plug',
+  redes: 'fa-tower-broadcast',
+  favoritos: 'fa-heart'
+};
+
+/* Atualiza o ícone exibido dentro do campo de filtro de áreas */
+function atualizarIconeDoFiltro(valor) {
+  const icone = document.getElementById('filterIcon');
+  if (icone) icone.className = `fa-solid ${iconesDoFiltro[valor] || 'fa-shapes'}`;
+}
 
 let categoriaSelecionada = 'todos';
 let busca = '';
@@ -164,8 +181,9 @@ function renderizarLista() {
       linha.style.backgroundColor = cor + '1a';
     }
 
+    /* Nome SEMPRE preto; apenas o item ativo mantém a cor da área como destaque */
     const nomeEl = linha.querySelector('.term-item-content strong');
-    if (nomeEl && coresDasAreas[item.cat]) {
+    if (ativo && nomeEl && coresDasAreas[item.cat]) {
       nomeEl.style.color = coresDasAreas[item.cat];
     }
 
@@ -208,12 +226,6 @@ function exibirTermoAtual() {
   document.getElementById('displayExPt').textContent = `"${termoAtual.exPt}"`;
   document.getElementById('displayExGlosa').textContent = termoAtual.exGlosa;
 
-  const fonteEl = document.getElementById('displaySource');
-  if (fonteEl) {
-    fonteEl.textContent = termoAtual.source;
-    fonteEl.href = termoAtual.link;
-  }
-
   const imagemEl = document.getElementById('termImage');
   const placeholder = document.getElementById('imgPlaceholder');
   if (imagemEl && placeholder) {
@@ -254,6 +266,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('categorySelect').addEventListener('change', (evento) => {
     categoriaSelecionada = evento.target.value;
+    atualizarIconeDoFiltro(categoriaSelecionada);
     renderizarLista();
   });
 
@@ -279,6 +292,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  atualizarIconeDoFiltro(categoriaSelecionada);
   renderizarLista();
 
   if (categoriaDaUrl) {

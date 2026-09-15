@@ -6,7 +6,7 @@
   <title>T.I Libras - Sinalário</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css">
+  <link rel="stylesheet" href="css/sinalario.css?v=2">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -23,15 +23,18 @@
       <div class="filtros-panel">
         <h2 class="filtros-title">Filtros</h2>
 
-        <select class="filtros-select" id="categorySelect" title="Filtrar por área">
-          <option value="todos">Todas as áreas</option>
-          <option value="hardware">Hardware</option>
-          <option value="software">Software</option>
-          <option value="programacao">Programação</option>
-          <option value="eletricidade">Eletricidade</option>
-          <option value="redes">Redes</option>
-          <option value="favoritos">Favoritos</option>
-        </select>
+        <div class="filtros-field">
+          <i class="fa-solid fa-shapes" id="filterIcon" aria-hidden="true"></i>
+          <select class="filtros-select" id="categorySelect" title="Filtrar por área">
+            <option value="todos">Todas as áreas</option>
+            <option value="hardware">Hardware</option>
+            <option value="software">Software</option>
+            <option value="programacao">Programação</option>
+            <option value="eletricidade">Eletricidade</option>
+            <option value="redes">Redes</option>
+            <option value="favoritos">Favoritos</option>
+          </select>
+        </div>
 
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -49,7 +52,7 @@
 
       <header class="term-header" id="termHeader">
         <span class="category-row">
-          <i class="fa-solid fa-microchip" id="displayCategoryIcon"></i>
+          <i class="fa-solid fa-desktop" id="displayCategoryIcon"></i>
           <span class="category-tag" id="displayCategory">HARDWARE</span>
         </span>
         <div class="term-title-row">
@@ -83,25 +86,10 @@
     <!-- ============ COLUNA 3 · DETALHAMENTO DO TERMO ============ -->
     <aside class="detalhes-column">
 
-      <section class="info-card">
+      <!-- 1º · TOPO: Imagem do termo -->
+      <section class="info-card info-card--imagem">
         <div class="info-card-head">
-          <span class="icon-circle lilas"><i class="fa-solid fa-comment-dots"></i></span>
-          <h3 class="info-card-title">Exemplo em português</h3>
-        </div>
-        <p id="displayExPt">"O monitor exibe a imagem em alta definição."</p>
-      </section>
-
-      <section class="info-card">
-        <div class="info-card-head">
-          <span class="icon-circle lilas"><i class="fa-solid fa-hands"></i></span>
-          <h3 class="info-card-title">Exemplo em Libras</h3>
-        </div>
-        <p class="libras-text" id="displayExGlosa">MONITOR MOSTRAR IMAGEM BONITO</p>
-      </section>
-
-      <section class="info-card">
-        <div class="info-card-head">
-          <span class="icon-circle lilas"><i class="fa-regular fa-image"></i></span>
+          <span class="icon-circle lilas"><i class="fa-solid fa-image"></i></span>
           <h3 class="info-card-title">Imagem do termo</h3>
         </div>
         <div class="imagem-content">
@@ -113,11 +101,22 @@
         </div>
       </section>
 
-      <section class="fonte-card">
-        <span class="fonte-label">Fonte do sinal</span>
-        <p class="fonte-value">
-          <a href="#" id="displaySource" target="_blank" rel="noopener noreferrer">Infolibras (IFBA)</a>
-        </p>
+      <!-- 2º · MEIO: Exemplo em português -->
+      <section class="info-card">
+        <div class="info-card-head">
+          <span class="icon-circle lilas"><i class="fa-solid fa-comment-dots"></i></span>
+          <h3 class="info-card-title">Exemplo em português</h3>
+        </div>
+        <p id="displayExPt">"O monitor exibe a imagem em alta definição."</p>
+      </section>
+
+      <!-- 3º · BASE: Exemplo em Libras -->
+      <section class="info-card">
+        <div class="info-card-head">
+          <span class="icon-circle lilas"><i class="fa-solid fa-hands"></i></span>
+          <h3 class="info-card-title">Exemplo em Libras</h3>
+        </div>
+        <p class="libras-text" id="displayExGlosa">MONITOR MOSTRAR IMAGEM BONITO</p>
       </section>
 
     </aside>
