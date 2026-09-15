@@ -6,12 +6,17 @@
 /* ---------------------------------------------------------------------------
    Split screen 50/50
    Duas colunas iguais (50% cada) ocupando 100% da largura e da altura
-   disponíveis entre o header e o footer, de ponta a ponta e sem margens
-   externas, sem border-radius nas bordas da tela e sem sombras.
+   disponíveis entre o header e o footer, com gradiente unificado de ponta
+   a ponta e sem sombras. O card branco do formulário encosta na borda
+   esquerda da tela (efeito drawer) com os cantos direitos arredondados.
    --------------------------------------------------------------------------- */
 .auth-inline {
   width: 100%;
   flex: 1;
+  /* min-height 0 quebra o mínimo automático do flex: a área ocupa
+     exatamente o espaço entre header e footer, sem crescer conforme
+     o formulário (Login tem menos campos que o Cadastro) */
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -29,9 +34,25 @@
   gap: 0;
   margin: 0;
   padding: 0;
-  min-height: calc(100vh - 200px);
+  /* Altura vinda do container pai (header + footer fixos): estável e
+     idêntica nas duas telas, então o footer nunca é empurrado */
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
   /* Gradiente oficial unificado, de ponta a ponta */
   background: var(--gradiente-marca);
+}
+
+/* Sem animações de entrada, deslizamento ou transições pesadas
+   ao alternar entre os formulários */
+.auth-inline,
+.auth-page,
+.auth-form-side,
+.auth-form-wrap,
+.auth-card,
+.auth-visual {
+  animation: none;
+  transition: none;
 }
 
 /* ----------------- Coluna esquerda (50%): formulário --------------------- */
@@ -39,10 +60,13 @@
 .auth-form-side {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 40px);
+  align-items: stretch;
+  justify-content: flex-start;
+  /* Sem padding lateral: o card encosta na borda esquerda da tela */
+  padding: clamp(24px, 4vw, 48px) 0;
   background: transparent;
+  /* Em telas baixas o formulário rola dentro da própria coluna */
+  overflow-y: auto;
 }
 
 /* Link "Voltar" limpo: sem caixa, fundo, borda ou sombra */
@@ -75,17 +99,26 @@
 
 .auth-form-wrap {
   width: 100%;
-  max-width: 420px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  /* Centraliza na vertical sem cortar o topo quando há overflow */
+  margin: auto 0;
 }
 
+/* Card branco fixado na borda esquerda (efeito drawer/sidebar) */
 .auth-card {
   width: 100%;
+  max-width: 460px;
+  margin-left: 0;
+  min-height: 520px;
   background: #ffffff;
   border: var(--borda);
-  border-radius: var(--raio);
-  padding: clamp(22px, 3vw, 32px);
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  padding: clamp(24px, 3vw, 36px);
   display: flex;
   flex-direction: column;
 }
@@ -265,7 +298,10 @@ app-footer {
 @media (max-width: 900px) {
   .auth-page {
     grid-template-columns: 1fr;
-    min-height: auto;
+    /* No mobile o conteúdo volta a crescer e a página rola normalmente */
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
   }
 
   .auth-visual {
@@ -276,5 +312,18 @@ app-footer {
 
   .auth-form-side {
     padding: 28px 16px 32px;
+    overflow: visible;
+  }
+
+  .auth-form-wrap {
+    justify-content: center;
+    margin: 0;
+  }
+
+  .auth-card {
+    max-width: none;
+    min-height: 0;
+    border-left: var(--borda);
+    border-radius: var(--raio);
   }
 }
