@@ -2,7 +2,7 @@ const todasAsPerguntas = [
   { term: "Monitor", cat: "Hardware", img: "imagens/sinais/monitor.png" },
   { term: "Mouse", cat: "Hardware", img: "imagens/sinais/mouse.png" },
   { term: "Teclado", cat: "Hardware", img: "imagens/sinais/teclado.png" },
-  { term: "Fone (de ouvido)", cat: "Hardware", img: "imagens/sinais/fone.png" },
+  { term: "Fone de ouvido", cat: "Hardware", img: "imagens/sinais/fone.png" },
   { term: "Microfone", cat: "Hardware", img: "imagens/sinais/microfone.png" },
   { term: "Webcam", cat: "Hardware", img: "imagens/sinais/webcam.png" },
   { term: "Impressora", cat: "Hardware", img: "imagens/sinais/impressora.png" },
@@ -63,18 +63,15 @@ const todasAsPerguntas = [
   { term: "Backup", cat: "Redes", img: "imagens/sinais/backup.png" },
   { term: "Link", cat: "Redes", img: "imagens/sinais/link.png" }
 ];
-
 let categoriaAtual = 'Hardware';
 let perguntasAtivas = [];
 let perguntaAtual = 0;
 let cronometroIntervalo;
 let tempoRestante = 60;
-
 function rolarCarrossel(distancia) {
   const grade = document.getElementById('selectionGrid');
   grade.scrollBy({ left: distancia, behavior: 'smooth' });
 }
-
 function atualizarEstadoDoCarrossel() {
   const grade = document.getElementById('selectionGrid');
   const botoes = document.querySelector('.carousel-nav-btns');
@@ -83,25 +80,20 @@ function atualizarEstadoDoCarrossel() {
   if (botoes) botoes.style.display = temTransbordo ? 'flex' : 'none';
   grade.style.justifyContent = temTransbordo ? 'flex-start' : 'center';
 }
-
 function atualizarProgresso() {
   const concluidos = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
   const categorias = ['Hardware', 'Software', 'Programação', 'Eletricidade', 'Redes', 'Todos'];
-
   categorias.forEach((cat) => {
     const card = document.getElementById(`card-${cat}`);
     if (!card) return;
     if (concluidos.includes(cat)) card.classList.add('completed');
     else card.classList.remove('completed');
   });
-
   const total = categorias.length;
   const porcentagem = Math.round((concluidos.length / total) * 100);
-
   document.getElementById('progressText').textContent =
     `${concluidos.length} / ${total} Concluídos (${porcentagem}%)`;
   document.getElementById('progressBar').style.width = `${porcentagem}%`;
-
   const mensagemEl = document.getElementById('progressMessage');
   if (mensagemEl) {
     const numero = concluidos.length;
@@ -120,26 +112,22 @@ function atualizarProgresso() {
     mensagemEl.textContent = texto;
   }
 }
-
 function iniciarQuiz(categoria) {
   categoriaAtual = categoria;
   perguntasAtivas = categoria === 'Todos'
     ? [...todasAsPerguntas].sort(() => 0.5 - Math.random())
     : todasAsPerguntas.filter((pergunta) => pergunta.cat === categoria);
-
   perguntaAtual = 0;
   document.getElementById('selectionScreen').style.display = 'none';
   document.getElementById('quizScreen').style.display = 'block';
   carregarPergunta(perguntaAtual);
 }
-
 function voltarParaSelecao() {
   clearInterval(cronometroIntervalo);
   document.getElementById('quizScreen').style.display = 'none';
   document.getElementById('selectionScreen').style.display = 'block';
   atualizarProgresso();
 }
-
 function iniciarCronometro() {
   clearInterval(cronometroIntervalo);
   tempoRestante = 60;
@@ -153,18 +141,15 @@ function iniciarCronometro() {
     }
   }, 1000);
 }
-
 function atualizarCronometro() {
   const minutos = Math.floor(tempoRestante / 60);
   const segundos = tempoRestante % 60;
   document.getElementById('timer').textContent =
     `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
 }
-
 function obterImagemPadrao() {
   return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23e2e8f0'/><text x='50%' y='55%' font-size='28' text-anchor='middle' dominant-baseline='middle'>?</text></svg>";
 }
-
 function carregarPergunta(indice) {
   if (indice >= perguntasAtivas.length) {
     const concluidos = JSON.parse(localStorage.getItem('completedQuizzes') || '[]');
@@ -172,12 +157,10 @@ function carregarPergunta(indice) {
       concluidos.push(categoriaAtual);
       localStorage.setItem('completedQuizzes', JSON.stringify(concluidos));
     }
-
     alert(`Parabéns! Você concluiu o Quiz de ${categoriaAtual} com ${perguntasAtivas.length} questões sem erros!`);
     voltarParaSelecao();
     return;
   }
-
   document.getElementById('feedbackBanner').style.display = 'none';
   const pergunta = perguntasAtivas[indice];
   document.getElementById('qCategory').textContent = pergunta.cat.toUpperCase();
