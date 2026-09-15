@@ -1,31 +1,31 @@
 /* =========================================================================
-   SINALÁRIO · Design System (Flat/Clean UI · Grid de 3 colunas)
-   Coluna 1: Filtros + lista de termos (rolagem interna, base alinhada)
-   Coluna 2: Header roxo + player 16:9 + definição do termo
-   Coluna 3: Imagem do termo · Exemplo em português · Exemplo em Libras
-   Sem sombras · largura expandida · bases das 3 colunas na mesma linha
+   SINALÁRIO · Layout full width · Grid rígido de 3 colunas
+   Coluna 1 (280px): Filtros + lista de palavras (scroll interno, altura travada)
+   Coluna 2 (1fr)  : Header roxo + player 16:9 + definição do termo (flex: 1)
+   Coluna 3 (340px): Imagem curta + Exemplos PT/Libras com mais área visual
+   Flat UI: zero sombras · cards brancos 100% opacos
    ========================================================================= */
 
 :root {
   --sl-lilas-suave: #ece4fd;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
-  --sl-gap: 22px;
+  --sl-gap: 20px;
 }
 
-/* --------------------- Grid principal (largura expandida) --------------------- */
+/* ------------------ Container principal (full width, 3 colunas) ------------------ */
 
 .container.main-layout {
   display: grid;
-  grid-template-columns: minmax(290px, 1fr) minmax(0, 1.85fr) minmax(345px, 1.1fr);
+  grid-template-columns: 280px 1fr 340px;
   grid-auto-rows: auto;
-  gap: var(--sl-gap);
-  align-items: stretch;   /* colunas 1, 2 e 3 com a MESMA altura total */
+  gap: 20px;
+  align-items: stretch;   /* as 3 colunas terminam na mesma linha horizontal */
   align-content: start;   /* a linha cresce pelo conteúdo, sem travar na viewport */
-  width: 96%;
-  max-width: 1700px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
-  padding: 16px clamp(12px, 2vw, 20px);
+  padding: 16px 24px;
   height: auto;
   min-height: 0;
   box-sizing: border-box;
@@ -42,13 +42,15 @@
 
 /* ------------------------------ Coluna 1 · Filtros ------------------------------ */
 
+/* Altura travada junto com a coluna central + rolagem interna na lista */
 .sidebar-filtros {
   display: flex;
   min-width: 0;
   min-height: 0;
+  height: 100%;
+  max-height: calc(100vh - 120px);
 }
 
-/* O card acompanha exatamente a altura da linha do grid */
 .filtros-panel {
   flex: 1 1 auto;
   display: flex;
@@ -136,12 +138,11 @@
   margin-bottom: 8px;
 }
 
-/* Lista de termos: ocupa o espaço restante e rola por dentro.
-   O teto evita que a lista estufe a coluna em telas baixas. */
+/* Lista de palavras: ocupa o resto do card e rola por dentro */
 .terms-list {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: calc(100vh - 220px);
+  max-height: calc(100vh - 300px);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -304,7 +305,7 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player de vídeo: widescreen puro 16:9, sem altura fixa */
+/* Player: 16:9 widescreen estrito, sem altura fixa e sem esticar a coluna */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
@@ -325,7 +326,7 @@
   display: block;
 }
 
-/* Card "Definição do termo" — cresce até a base da coluna, texto centralizado */
+/* Definição: preenche o restante da altura da coluna central */
 .definicao-card {
   flex: 1 1 auto;
   display: flex;
@@ -384,13 +385,11 @@
 .detalhes-column {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;  /* os 3 cards preenchem a altura total */
-  gap: 18px;
+  gap: 16px;
   min-width: 0;
   height: 100%;
 }
 
-/* Cards da coluna 3 — branco sólido, 100% opacos, altura natural */
 .info-card {
   display: flex;
   flex-direction: column;
@@ -401,9 +400,15 @@
   padding: 18px;
 }
 
-/* Card da imagem (topo): absorve o espaço extra da coluna */
+/* Card da imagem: compacto, só cabeçalho + imagem centralizada */
 .info-card--imagem {
+  flex: 0 0 auto;
+}
+
+/* Cards de exemplo: crescem para ganhar área visual */
+.info-card--exemplo {
   flex: 1 1 auto;
+  justify-content: center;
 }
 
 .info-card-head {
@@ -435,15 +440,15 @@
   color: #101a3d;
 }
 
-/* Área da imagem: maior, imponente e com moldura clara */
+/* Área da imagem: curta, limpa e centralizada (máx. 240px) */
 .imagem-content {
-  flex: 1 1 auto;
-  min-height: 320px;
-  max-height: 560px;
+  flex: 0 0 auto;
+  height: 240px;
+  max-height: 240px;
   background-color: #f7f9ff !important;
   border: 1px solid #e6ebff;
   border-radius: var(--sl-raio-sm);
-  padding: 20px;
+  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -451,7 +456,7 @@
 
 .imagem-content img {
   max-width: 100%;
-  max-height: 400px;
+  max-height: 200px;
   object-fit: contain;
   display: block;
 }
@@ -485,9 +490,13 @@
 
 @media (max-width: 1280px) {
   .container.main-layout {
-    grid-template-columns: 290px minmax(0, 1fr);
-    gap: 20px;
+    grid-template-columns: 280px minmax(0, 1fr);
     align-items: start;
+  }
+
+  .sidebar-filtros {
+    height: auto;
+    max-height: none;
   }
 
   .content-column {
@@ -499,34 +508,23 @@
     justify-content: flex-start;
   }
 
-  .sidebar-filtros,
-  .filtros-panel {
-    min-height: 0;
-  }
-
   .detalhes-column {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
-    gap: 20px;
     height: auto;
   }
 
   .info-card--imagem {
     grid-column: 1 / -1;
-    flex: 0 0 auto;
-  }
-
-  .imagem-content {
-    min-height: 260px;
-    max-height: none;
   }
 }
 
 @media (max-width: 820px) {
   .container.main-layout {
     grid-template-columns: minmax(0, 1fr);
+    padding: 12px 16px;
     gap: 16px;
   }
 
@@ -543,11 +541,12 @@
   }
 
   .imagem-content {
-    min-height: 200px;
+    height: 200px;
+    max-height: 200px;
     padding: 12px;
   }
 
   .imagem-content img {
-    max-height: 260px;
+    max-height: 160px;
   }
 }
