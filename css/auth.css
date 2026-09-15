@@ -7,8 +7,8 @@
    Split screen 50/50
    Duas colunas iguais (50% cada) ocupando 100% da largura e da altura
    disponíveis entre o header e o footer, com gradiente unificado de ponta
-   a ponta e sem sombras. O card branco do formulário encosta na borda
-   esquerda da tela (efeito drawer) com os cantos direitos arredondados.
+   a ponta e sem sombras. O card branco do formulário fica alinhado à
+   esquerda da coluna, com os quatro cantos arredondados e ~88% de largura.
    --------------------------------------------------------------------------- */
 .auth-inline {
   width: 100%;
@@ -62,8 +62,8 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  /* Sem padding lateral: o card encosta na borda esquerda da tela */
-  padding: clamp(24px, 4vw, 48px) 0;
+  /* Respiro lateral para o card alinhado à esquerda com os 4 cantos arredondados */
+  padding: clamp(24px, 4vw, 48px) clamp(16px, 2.5vw, 36px);
   background: transparent;
   /* Em telas baixas o formulário rola dentro da própria coluna */
   overflow-y: auto;
@@ -105,20 +105,16 @@
   margin: auto 0;
 }
 
-/* Card branco fixado na borda esquerda (efeito drawer/sidebar) */
+/* Card branco alinhado à esquerda, ~88% da coluna (máx. 520px) */
 .auth-card {
-  width: 100%;
-  max-width: 460px;
+  width: 88%;
+  max-width: 520px;
   margin-left: 0;
   min-height: 520px;
   background: #ffffff;
   border: var(--borda);
-  border-left: none;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  border-top-right-radius: 24px;
-  border-bottom-right-radius: 24px;
-  padding: clamp(24px, 3vw, 36px);
+  border-radius: 24px;
+  padding: clamp(28px, 3.2vw, 44px);
   display: flex;
   flex-direction: column;
 }
@@ -131,7 +127,7 @@
 /* ------------------------------- Formulário ------------------------------ */
 
 .form .field {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .form label {
@@ -152,7 +148,7 @@
 
 .form input {
   width: 100%;
-  padding: 11px 12px;
+  padding: 12px 14px;
   border: 1px solid #cfd9ee;
   border-radius: var(--raio);
   font-size: 0.95rem;
@@ -321,9 +317,8 @@ app-footer {
   }
 
   .auth-card {
+    width: 100%;
     max-width: none;
     min-height: 0;
-    border-left: var(--borda);
-    border-radius: var(--raio);
   }
 }
