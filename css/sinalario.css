@@ -38,15 +38,18 @@
   height: auto;
 }
 
+/* Card do menu lateral: altura máxima travada, sem empurrar o layout */
 .filtros-panel {
   display: flex;
   flex-direction: column;
   height: auto;
+  max-height: calc(100vh - 140px);
   background-color: #ffffff !important;
   border: var(--borda);
   border-radius: var(--sl-raio);
   padding: 16px;
   box-sizing: border-box;
+  box-shadow: 0 2px 10px rgba(16, 26, 61, 0.06);
 }
 
 .filtros-title {
@@ -124,9 +127,10 @@
   margin-bottom: 8px;
 }
 
-/* Lista de termos com rolagem vertical individual */
+/* Lista de termos com rolagem vertical individual dentro do card */
 .terms-list {
-  max-height: calc(100vh - 200px);
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -289,13 +293,13 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player de vídeo: largura total da coluna, 16:9 com teto de altura */
+/* Player de vídeo: widescreen puro 16:9, sem altura fixa */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
+  height: auto;
   aspect-ratio: 16 / 9;
-  max-height: 380px;
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
   background-color: #000000;
@@ -311,16 +315,17 @@
   display: block;
 }
 
-/* Card "Definição do termo" */
+/* Card "Definição do termo" — branco sólido sobre o fundo lavanda da página */
 .definicao-card {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: #f0f3ff !important;
-  border: 1px solid #e2e8ff;
+  background-color: #ffffff !important;
+  border: 1px solid #e6ebff;
   border-radius: var(--sl-raio);
   padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(16, 26, 61, 0.06);
 }
 
 .definicao-head {
@@ -376,14 +381,16 @@
   height: auto;
 }
 
+/* Cards da coluna 3 — branco sólido, 100% opacos */
 .info-card {
   display: flex;
   flex-direction: column;
   flex: 0 0 auto;
-  background-color: #f0f3ff !important;
-  border: 1px solid #e2e8ff;
+  background-color: #ffffff !important;
+  border: 1px solid #e6ebff;
   border-radius: var(--sl-raio);
   padding: 18px;
+  box-shadow: 0 2px 10px rgba(16, 26, 61, 0.06);
 }
 
 .info-card-head {
@@ -415,11 +422,13 @@
   color: #101a3d;
 }
 
+/* Área de exibição da imagem: mais alta e com moldura clara de destaque */
 .imagem-content {
-  min-height: 170px;
-  background-color: #ffffff !important;
+  min-height: 260px;
+  background-color: #f7f9ff !important;
+  border: 1px solid #e6ebff;
   border-radius: var(--sl-raio-sm);
-  padding: 12px;
+  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -427,7 +436,7 @@
 
 .imagem-content img {
   max-width: 100%;
-  max-height: 220px;
+  max-height: 300px;
   object-fit: contain;
   display: block;
 }
@@ -477,8 +486,8 @@
     grid-column: 1 / -1;
   }
 
-  .terms-list {
-    max-height: 46vh;
+  .filtros-panel {
+    max-height: calc(100vh - 120px);
   }
 }
 
@@ -496,20 +505,15 @@
     grid-column: auto;
   }
 
-  .terms-list {
-    max-height: 38vh;
+  .filtros-panel {
+    max-height: 70vh;
   }
 
   .term-title-row h2 {
     font-size: 1.55rem;
   }
 
-  .video-wrapper-yt {
-    aspect-ratio: 16 / 10;
-    max-height: none;
-  }
-
   .imagem-content {
-    min-height: 130px;
+    min-height: 200px;
   }
 }
