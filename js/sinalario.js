@@ -1,7 +1,5 @@
-// Lógica do sinalário: lista de termos, filtros, favoritos e vídeos.
 const dados = bancoSinalario;
 
-// Cor do ponto de cada área (indicado na lista)
 const mapaDePontos = {
   Hardware: 'purple',
   Software: 'blue',
@@ -10,10 +8,9 @@ const mapaDePontos = {
   Redes: 'green'
 };
 
-// Cor do cabeçalho de cada área (iguais às usadas na página Praticar)
 const coresDasAreas = {
-  Hardware: '#7b46ce', /* roxo da nova logo */
-  Software: '#3f86dc', /* azul da nova logo */
+  Hardware: '#7b46ce',
+  Software: '#3f86dc',
   'Programação': '#f59e0b',
   Eletricidade: '#ef4444',
   Redes: '#10b981'
@@ -23,7 +20,6 @@ let categoriaSelecionada = 'todos';
 let busca = '';
 let termoAtual = dados[0];
 
-// Controle de "sinal visto": 10s de exibição + vídeo tocado até o fim
 let playerYT = null;
 let ytPronto = false;
 let videoIdPendente = '';
@@ -73,7 +69,6 @@ function carregarVideo(videoId) {
   }
 }
 
-// Nome exigido pela API do YouTube para iniciar o player
 function onYouTubeIframeAPIReady() {
   playerYT = new YT.Player('ytPlayer', {
     videoId: videoIdPendente || '',
@@ -157,7 +152,6 @@ function renderizarLista() {
       </button>
     `;
 
-    // Termo selecionado: contorno e fundo na cor da área
     if (ativo) {
       linha.style.borderColor = cor;
       linha.style.backgroundColor = cor + '1a';
@@ -186,14 +180,12 @@ function renderizarLista() {
 function exibirTermoAtual() {
   if (!termoAtual) return;
 
-  // Reinicia a contagem de tempo para marcar o termo como visto
   reiniciarVisto(termoAtual.term);
 
   const favoritos = obterFavoritos();
   const ehFavorito = favoritos.includes(termoAtual.term);
   const cor = coresDasAreas[termoAtual.cat] || '#7b46ce';
 
-  // Cabeçalho na cor da área
   const cabecalho = document.getElementById('termHeader');
   if (cabecalho) cabecalho.style.background = cor;
 
@@ -209,7 +201,6 @@ function exibirTermoAtual() {
     fonteEl.href = termoAtual.link;
   }
 
-  // Imagem do termo (mostra placeholder se a imagem não existir)
   const imagemEl = document.getElementById('termImage');
   const placeholder = document.getElementById('imgPlaceholder');
   if (imagemEl && placeholder) {
@@ -223,7 +214,6 @@ function exibirTermoAtual() {
     carregarVideo(extrairIdDoVideo(termoAtual.youtubeId));
   }
 
-  // Coração de favoritar do cabeçalho
   const botaoFavorito = document.getElementById('btnMainFav');
   if (botaoFavorito) {
     botaoFavorito.innerHTML = ehFavorito
@@ -247,7 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (termoAtual) alternarFavorito(termoAtual.term);
   });
 
-  // Lê ?cat= da URL (usado no botão "Consultar" da página Praticar)
   const parametros = new URLSearchParams(window.location.search);
   const categoriaDaUrl = parametros.get('cat');
   if (categoriaDaUrl) {
@@ -261,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderizarLista();
 
-  // Abre o primeiro termo da categoria recebida pela URL
   if (categoriaDaUrl) {
     const filtrados = filtrarDados();
     if (filtrados.length > 0) {

@@ -1,19 +1,5 @@
-// ============================================================
-// Componentes reutilizáveis do T.I. Libras (Web Components)
-// - <app-header-home> : Header 1 — usado SOMENTE na página de Início
-//                       (área pública / pré-login): navegação de apresentação
-//                       + botões de Login e Cadastro.
-// - <app-header>      : Header 2 — usado nas páginas Sinalário e Praticar
-//                       (área logada do sistema): navegação interna.
-// - <app-footer>      : Rodapé padrão — o MESMO em todas as páginas e estados.
-// ============================================================
-
-/* Chave usada no localStorage para manter o estado de login durante o
-   teste local (Live Server) e para persistir entre as páginas. */
 const CHAVE_SESSAO_LOCAL = 'isLoggedIn';
 
-/* Considera logado se houver um usuário do Firebase em memória OU uma
-   sessão local de teste salva no localStorage. */
 function estaLogado() {
   return (
     !!(window.currentUser && window.currentUser.uid) ||
@@ -21,29 +7,20 @@ function estaLogado() {
   );
 }
 
-/* Cria uma sessão local simulada (modo de teste sem Firebase). */
-function iniciarSessaoLocal(usuarioMock) {
-  const usuario = usuarioMock || {
-    uid: 'usuario-local',
-    nome: 'Usuário de Teste',
-    email: 'teste@local.dev'
-  };
-  window.currentUser = usuario;
-  localStorage.setItem(CHAVE_SESSAO_LOCAL, 'true');
-  window.dispatchEvent(new CustomEvent('auth-changed'));
-  return usuario;
-}
-
-/* Encerra a sessão (limpa o Firebase em memória e o localStorage). */
 function encerrarSessao() {
   window.currentUser = null;
   localStorage.removeItem(CHAVE_SESSAO_LOCAL);
   window.dispatchEvent(new CustomEvent('auth-changed'));
 }
 
-/* ------------------------------------------------------------
-   Header 1 — Página de Início (público/pré-login)
-   ------------------------------------------------------------ */
+async function sairDoSistema() {
+  if (window.Auth && window.Auth.logout) {
+    await window.Auth.logout();
+  } else {
+    encerrarSessao();
+  }
+}
+
 class AppHeaderHome extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
@@ -67,7 +44,6 @@ class AppHeaderHome extends HTMLElement {
       const registro = this.querySelector('#headerRegister');
       const acessar = this.querySelector('#headerAcessar');
       const sair = this.querySelector('#headerSair');
-      // Pré-login: mostra Login/Cadastro. Logado: mostra acesso ao sistema + Sair.
       if (login) login.style.display = logado ? 'none' : '';
       if (registro) registro.style.display = logado ? 'none' : '';
       if (acessar) acessar.style.display = logado ? '' : 'none';
@@ -75,16 +51,13 @@ class AppHeaderHome extends HTMLElement {
     };
 
     const sairBtn = this.querySelector('#headerSair');
-    if (sairBtn) sairBtn.addEventListener('click', () => encerrarSessao());
+    if (sairBtn) sairBtn.addEventListener('click', sairDoSistema);
 
     aplicarEstado();
     window.addEventListener('auth-changed', aplicarEstado);
   }
 }
 
-/* ------------------------------------------------------------
-   Header 2 — Sinalário e Praticar (área do sistema)
-   ------------------------------------------------------------ */
 class AppHeader extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
@@ -126,14 +99,13 @@ class AppHeader extends HTMLElement {
       if (nav) nav.style.display = logado ? '' : 'none';
       if (login) login.style.display = logado ? 'none' : '';
       if (registro) registro.style.display = logado ? 'none' : '';
-      // Logado: mostra o botão Sair (some Entrar/Cadastrar).
       if (sair) sair.style.display = logado ? '' : 'none';
     };
 
     const sairBtn = this.querySelector('#headerSair');
     if (sairBtn) {
-      sairBtn.addEventListener('click', () => {
-        encerrarSessao();
+      sairBtn.addEventListener('click', async () => {
+        await sairDoSistema();
         window.location.href = 'index.html';
       });
     }
@@ -143,9 +115,6 @@ class AppHeader extends HTMLElement {
   }
 }
 
-/* ------------------------------------------------------------
-   Rodapé padrão (o mesmo em todas as páginas e estados)
-   ------------------------------------------------------------ */
 class AppFooter extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `

@@ -9,16 +9,13 @@
   <link rel="stylesheet" href="css/inicio.css">
   <link rel="stylesheet" href="css/auth.css">
   <script src="js/components.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
 </head>
 <body>
-  <!-- Header 1 (exclusivo da página de Início / área pré-login) -->
   <app-header-home></app-header-home>
 
   <main class="main-inicio">
-    <!-- ========================================================
-         ESTADO 1 — CONTEÚDO INICIAL (apresentação)
-         Trocado pelas telas de Login/Cadastro via js/inicio.js
-         ======================================================== -->
     <div id="viewInicio" class="landing">
       <section class="hero" id="inicio">
         <div class="hero-grid">
@@ -36,15 +33,6 @@
           </div>
 
           <div class="hero-media">
-            <!-- ========================================================
-                 >>> CARD DE VÍDEO DO YOUTUBE <<<
-                 Para colocar o seu vídeo, SUBSTITUA a parte "SEU_VIDEO_AQUI"
-                 no atributo src do <iframe> abaixo pelo ID do vídeo.
-                 Exemplo:
-                   https://www.youtube.com/embed/dQw4w9WgXcQ
-                 Basta trocar "SEU_VIDEO_AQUI" pelo ID exibido na URL do
-                 YouTube (a parte após youtube.com/watch?v=).
-                 ======================================================== -->
             <div class="video-card">
               <div class="video-card-top">
                 <span class="video-card-title">Conheça o T.I. Libras</span>
@@ -108,9 +96,6 @@
       </section>
     </div>
 
-    <!-- ========================================================
-         ESTADO 2 — LOGIN (exibido na própria página, sem pop-up)
-         ======================================================== -->
     <section class="auth-inline" id="viewLogin" hidden>
       <div class="auth-topbar">
         <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
@@ -171,9 +156,6 @@
       </div>
     </section>
 
-    <!-- ========================================================
-         ESTADO 3 — CADASTRO (exibido na própria página, sem pop-up)
-         ======================================================== -->
     <section class="auth-inline" id="viewRegister" hidden>
       <div class="auth-topbar">
         <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
@@ -238,12 +220,10 @@
     </section>
   </main>
 
-  <!-- Rodapé padrão (o mesmo em todas as páginas e estados) -->
   <app-footer></app-footer>
 
   <script src="js/inicio.js"></script>
-  <script type="module" src="js/firebase-config.js"></script>
-  <script type="module" src="js/auth.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/auth-guard.js"></script>
 </body>
 </html>

@@ -1,7 +1,3 @@
-/* ============================================================
-   T.I. Libras — telas de login/cadastro e formulários
-   ============================================================ */
-
 .auth-body {
   background: var(--cor-fundo);
   color: var(--cor-texto);
@@ -16,14 +12,12 @@
   min-height: calc(100vh - 140px);
 }
 
-/* Painel visual de apresentação — fundo em gradiente coeso com a
-   identidade do site (sem "card aninhado um dentro do outro") */
 .auth-visual {
   flex: 1 1 55%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gradiente-marca); /* azul-índigo → roxo (cores da logo) */
+  background: var(--gradiente-marca);
   border-radius: var(--raio);
   color: #ffffff;
   padding: clamp(24px, 3vw, 44px);
@@ -39,7 +33,7 @@
   width: 88px;
   height: auto;
   display: block;
-  border-radius: var(--raio); /* leve curva nas bordas */
+  border-radius: var(--raio);
   margin-bottom: 16px;
 }
 
@@ -58,7 +52,6 @@
   margin-bottom: 0;
 }
 
-/* Cartão do formulário */
 .auth-card {
   flex: 1 1 42%;
   max-width: 560px;
@@ -75,7 +68,6 @@
   margin-bottom: 12px;
 }
 
-/* Formulários */
 .form label {
   display: block;
   margin-bottom: 12px;
@@ -200,10 +192,6 @@ app-footer {
   }
 }
 
-/* ============================================================
-   Login/Cadastro INLINE (exibidos na própria página de Início,
-   sem pop-up/modal)
-   ============================================================ */
 .auth-inline {
   width: 100%;
   flex: 1;
@@ -215,7 +203,6 @@ app-footer {
   display: none;
 }
 
-/* Área compacta quando o formulário está dentro da página de Início */
 .auth-inline .auth-page {
   min-height: auto;
   padding: 8px clamp(16px, 3vw, 24px) 32px;
@@ -262,7 +249,6 @@ app-footer {
   background: #f1f5f9;
 }
 
-/* Troca entre Login e Cadastro dentro das seções inline */
 .auth-switch {
   margin-top: 14px;
   font-size: 0.9rem;

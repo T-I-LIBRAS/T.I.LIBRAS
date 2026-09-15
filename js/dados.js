@@ -1,4 +1,3 @@
-// Dados do sinalário: fonte única dos sinais usados na página sinalario.html.
 const bancoSinalario = [
   { term: "Monitor", cat: "Hardware", youtubeId: "x2uwlO43nas", def: "Dispositivo de saída que exibe a interface visual do computador.", exPt: "O monitor exibe a imagem em alta definição.", exGlosa: "MONITOR MOSTRAR IMAGEM BONITO", source: "Infolibras (IFBA)", link: "https://infolibras.ifbaseabra.edu.br/sinais?categoria_id=1&page=3" },
   { term: "Mouse", cat: "Hardware", youtubeId: "SEU_ID_AQUI", def: "Periférico de entrada usado para mover o ponteiro na tela.", exPt: "Clique com o botão direito do mouse.", exGlosa: "MOUSE APONTAR CLICAR TELA", source: "Infolibras (IFBA)", link: "https://infolibras.ifbaseabra.edu.br/sinais?categoria_id=1&page=3" },

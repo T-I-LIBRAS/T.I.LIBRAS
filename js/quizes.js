@@ -1,5 +1,3 @@
-// Quiz interativo: mostra as perguntas da categoria escolhida e registra o progresso.
-
 const bancoPerguntas = {
   hardware: [
     {
@@ -77,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const numeroPergunta = document.getElementById('qNum');
   const cardQuiz = document.querySelector('.quiz-card');
 
-  // Categoria recebida pela URL (?categoria=...)
   const parametros = new URLSearchParams(window.location.search);
   const categoriaDaUrl = parametros.get('categoria') || 'hardware';
 
@@ -85,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let indicePerguntaAtual = 0;
   let pontuacao = 0;
 
-  // Salva uma questão respondida no LocalStorage
   function registrarQuestaoFeita(categoria) {
     const estatisticas = JSON.parse(localStorage.getItem('statsQuestoes') || '{}');
     estatisticas[categoria] = (estatisticas[categoria] || 0) + 1;
@@ -95,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('totalQuestoesFeitas', (total + 1).toString());
   }
 
-  // Marca o quiz da categoria como concluído
   function registrarQuizConcluido(categoria) {
     const concluidos = JSON.parse(localStorage.getItem('quizzesConcluidos') || '[]');
     if (!concluidos.includes(categoria)) {

@@ -1,15 +1,9 @@
-/* ============================================================
-   T.I. Libras — estilos base (cabeçalho, rodapé, botões, layout)
-   ============================================================ */
-
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* ===== Paleta extraída da nova logo (img/logo.png) =====
-     Gradiente índigo/azul → roxo/violeta, com azul como acento. */
-  --cor-primaria: #7b46ce;   /* roxo/violeta da logo (destaques) */
-  --cor-primaria-2: #3e4bc6; /* azul-índigo da logo (botões/links) */
-  --cor-azul: #3f86dc;       /* azul da logo (acentos/categorias) */
+  --cor-primaria: #7b46ce;
+  --cor-primaria-2: #3e4bc6;
+  --cor-azul: #3f86dc;
   --cor-fundo: #f8fafc;
   --cor-card: #ffffff;
   --cor-texto: #0f172a;
@@ -18,7 +12,6 @@
   --raio: 6px;
   --raio-pequeno: 4px;
   --transicao: all 0.2s ease;
-  /* Gradiente padrão do site, baseado na logo */
   --gradiente-marca: linear-gradient(135deg, #3e4bc6 0%, #5b45c8 45%, #7b46ce 100%);
 }
 
@@ -41,15 +34,13 @@ body {
 }
 
 app-header,
+app-header-home,
 app-footer {
   display: block;
   width: 100%;
   flex-shrink: 0;
 }
 
-/* ============================================================
-   Cabeçalho (gerado por js/components.js)
-   ============================================================ */
 .header {
   display: flex;
   align-items: center;
@@ -84,7 +75,6 @@ app-footer {
   color: var(--cor-primaria);
 }
 
-/* Menu central */
 .nav-links {
   display: flex;
   align-items: center;
@@ -111,7 +101,6 @@ app-footer {
   color: var(--cor-primaria-2);
 }
 
-/* Ações à direita */
 .header-actions {
   display: flex;
   align-items: center;
@@ -145,7 +134,6 @@ app-footer {
   filter: brightness(1.05);
 }
 
-/* Botão Sair (logado) — discreto, alinhado aos demais botões do header */
 .auth-btn.auth-logout {
   gap: 7px;
   background: transparent;
@@ -178,9 +166,6 @@ app-footer {
   background: #e2e8f0;
 }
 
-/* ============================================================
-   Rodapé (gerado por js/components.js)
-   ============================================================ */
 .footer {
   margin-top: auto;
   background: #ffffff;
@@ -188,7 +173,6 @@ app-footer {
 }
 
 .footer-top {
-  /* Mesmo respiro lateral do Header para alinhar as bordas verticais. */
   width: 100%;
   padding: 24px clamp(16px, 3vw, 24px);
   display: flex;
@@ -282,8 +266,6 @@ app-footer {
   color: var(--cor-primaria-2);
 }
 
-/* Contato formal no rodapé — sutil e integrado (sem ícone de envelope,
-   sem fundo/borda/destaque exagerado; mailto segue clicável) */
 .footer-contact {
   display: inline-flex;
   align-items: center;
@@ -309,9 +291,6 @@ app-footer {
   font-size: 0.82rem;
 }
 
-/* ============================================================
-   Botões e cards compartilhados
-   ============================================================ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -353,6 +332,7 @@ app-footer {
   border: var(--borda);
   border-radius: var(--raio);
 }
+
 .container {
   flex: 1;
   width: 100%;
@@ -361,6 +341,7 @@ app-footer {
   padding: 16px clamp(16px, 3vw, 24px);
   box-sizing: border-box;
 }
+
 @media (max-width: 820px) {
   .header {
     flex-wrap: wrap;

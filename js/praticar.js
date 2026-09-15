@@ -1,4 +1,3 @@
-// Página de praticar: seleção de categoria e quiz com cronômetro.
 const todasAsPerguntas = [
   { term: "Monitor", cat: "Hardware", img: "imagens/sinais/monitor.png" },
   { term: "Mouse", cat: "Hardware", img: "imagens/sinais/mouse.png" },

@@ -1,13 +1,3 @@
-/* ============================================================
-   T.I. Libras — página de Início (apresentação + card de vídeo)
-
-   O conteúdo aproveita as laterais da tela (banda do hero em
-   largura total e seções com um respiro lateral enxuto), sem o
-   visual "espremido e centralizado".
-   ============================================================ */
-
-/* <main> da Início: ocupa o espaço entre header e footer para que o
-   rodapé fique sempre no fim da página em todos os estados. */
 .main-inicio {
   flex: 1;
   width: 100%;
@@ -15,19 +5,14 @@
   flex-direction: column;
 }
 
-/* Página de Início como um todo: ocupa 100% da largura. */
 .landing {
   flex: 1;
   width: 100%;
 }
 
-/* ============================================================
-   Card principal de apresentação (hero) — full-width com o
-   gradiente azul → roxo da identidade visual do site.
-   ============================================================ */
 .hero {
   width: 100%;
-  background: var(--gradiente-marca); /* azul-índigo → roxo (cores da logo) */
+  background: var(--gradiente-marca);
   color: #ffffff;
   padding: clamp(40px, 6vw, 80px) clamp(16px, 3vw, 24px);
   scroll-margin-top: 12px;
@@ -46,8 +31,6 @@
   min-width: 0;
 }
 
-/* Selo "Plataforma Educacional" + logo: empilhados no fluxo normal,
-   sem sobreposição nem deslocamento — o selo fica acima da logo. */
 .hero-brand {
   display: flex;
   flex-direction: column;
@@ -81,8 +64,6 @@
 }
 
 .hero-highlight {
-  /* Palavra "Libras" no título: branco sólido, sem opacidade,
-     gradiente interno de texto ou sombras. */
   color: #ffffff;
 }
 
@@ -120,9 +101,6 @@
   background: rgba(255, 255, 255, 0.24);
 }
 
-/* ============================================================
-   Card de vídeo (YouTube) na coluna direita do hero
-   ============================================================ */
 .hero-media {
   min-width: 0;
 }
@@ -178,11 +156,7 @@
   margin: 10px 4px 2px;
 }
 
-/* ============================================================
-   Conteúdo de apresentação (sobre + vantagens)
-   ============================================================ */
 .presentation {
-  /* Mesmo respiro lateral do Header para alinhar bordas verticais. */
   width: 100%;
   margin-top: 36px;
   padding: 0 clamp(16px, 3vw, 24px);
@@ -261,7 +235,6 @@
   color: #10b981;
 }
 
-/* Vantagens: exatamente 3 cards lado a lado ocupando a largura útil */
 .perks {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -270,20 +243,16 @@
   margin-bottom: 48px;
 }
 
-/* Cards divididos em 2 partes horizontais:
-   1ª (menos larga): ícone sobre fundo em gradiente
-   2ª (mais larga): textos (título + descrição) */
 .perk-card {
   display: grid;
-  grid-template-columns: 104px 1fr; /* coluna estreita (ícone) + coluna de texto */
+  grid-template-columns: 104px 1fr;
   background: #ffffff;
   border: var(--borda);
   border-radius: var(--raio);
-  overflow: hidden; /* gradiente respeita o raio do card */
+  overflow: hidden;
   min-height: 132px;
 }
 
-/* 1ª parte: ícone com fundo em gradiente (preenche toda a altura) */
 .perk-icon {
   display: flex;
   align-items: center;
@@ -293,7 +262,6 @@
   font-size: 1.7rem;
 }
 
-/* 2ª parte: área de texto, ocupa a maior largura do card */
 .perk-card > div:not(.perk-icon) {
   display: flex;
   flex-direction: column;
@@ -316,7 +284,6 @@
   margin: 0;
 }
 
-/* Estados da página trocados por js/inicio.js (Início/Login/Cadastro) */
 .landing[hidden],
 .auth-inline[hidden] {
   display: none;

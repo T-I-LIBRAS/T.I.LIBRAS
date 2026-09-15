@@ -8,12 +8,13 @@
   <link rel="stylesheet" href="css/praticar.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="js/components.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
 </head>
 <body>
   <app-header></app-header>
 
   <div class="quiz-container-box">
-    <!-- Tela de seleção de categorias -->
     <div id="selectionScreen">
       <div class="progress-section">
         <div class="progress-info">
@@ -138,7 +139,6 @@
       </div>
     </div>
 
-    <!-- Tela do quiz -->
     <div id="quizScreen" class="quiz-card quiz-screen">
       <div class="quiz-header">
         <div>
@@ -175,5 +175,6 @@
   <app-footer></app-footer>
 
   <script src="js/praticar.js"></script>
+  <script src="js/auth.js"></script>
 </body>
 </html>
