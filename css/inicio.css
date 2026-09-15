@@ -286,6 +286,10 @@
 
 /* ---------------------- Categorias disponíveis ---------------------- */
 
+#categorias {
+  margin-bottom: clamp(40px, 6vw, 72px);
+}
+
 .cat-showcase {
   background: #ffffff;
   border: var(--borda);
@@ -300,15 +304,7 @@
 .cat-showcase-head h2 {
   font-size: 1.5rem;
   color: var(--cor-texto);
-  margin: 0 0 6px;
-}
-
-.cat-showcase-head p {
-  color: #4a5a7d;
-  font-size: 0.98rem;
-  line-height: 1.6;
   margin: 0;
-  max-width: 760px;
 }
 
 .cat-showcase-grid {
@@ -328,20 +324,7 @@
   background: #ffffff;
   border: var(--borda);
   border-radius: var(--raio);
-  text-decoration: none;
-  transition: var(--transicao);
-}
-
-.cat-tile:hover {
-  border-color: var(--tile-cor);
-  background: var(--tile-tint);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 26px -18px var(--tile-cor);
-}
-
-.cat-tile:focus-visible {
-  outline: 3px solid var(--tile-cor);
-  outline-offset: 2px;
+  cursor: default;
 }
 
 .cat-tile-icon {
@@ -354,12 +337,6 @@
   color: var(--tile-cor);
   font-size: 1.3rem;
   margin-bottom: 8px;
-  transition: var(--transicao);
-}
-
-.cat-tile:hover .cat-tile-icon {
-  background: var(--tile-cor);
-  color: #ffffff;
 }
 
 .cat-tile strong {
