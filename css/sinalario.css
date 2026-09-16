@@ -276,9 +276,16 @@
 }
 
 /* Header do termo: cor base roxa; o JavaScript aplica a cor da área.
-   O margin-bottom de 16px é o respiro até o player, que usa margin: 0 auto */
+   Flex column (categoria acima do título) com o conteúdo centralizado na
+   altura; o margin-bottom de 16px é o respiro até o player. O coração fica
+   travado à direita na altura do card */
 .term-header {
   flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  align-content: center;
   background-color: var(--cor-lilas);
   color: #ffffff;
   border-radius: var(--sl-raio-sm);
@@ -286,8 +293,6 @@
   height: auto;
   min-height: unset;
   margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
   gap: 4px;
 }
 
@@ -315,6 +320,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  /* ocupa a altura disponível do card: se ele crescer, o coração continua
+     centralizado na vertical por causa do align-items */
+  flex: 1 1 auto;
 }
 
 .term-title-row h2 {
@@ -332,6 +340,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: auto;    /* posição fixa alinhada à direita */
+  align-self: center;   /* centralizado na altura do card */
   background-color: rgba(255, 255, 255, 0.18);
   border: none;
   border-radius: 50%;
@@ -374,9 +384,10 @@
   object-fit: contain;
 }
 
-/* Definição: bem compacta e sem NENHUM esticamento — flex: 0 0 auto (sem
-   flex-grow) e height: auto, então a caixa branca fica exatamente do tamanho
-   do texto. A separação do player é o margin-top de 10px. */
+/* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
+   padding-top de 16px e padding-bottom de 22px empurram a base deste card
+   exatamente até a linha de base da Coluna 3 e da lista da Coluna 1.
+   A separação do player segue nos 10px do margin-top. */
 .definicao-card {
   flex: 0 0 auto;
   display: flex;
@@ -388,7 +399,7 @@
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
-  padding: 12px 16px;
+  padding: 16px 16px 22px;
 }
 
 .definicao-head {
@@ -503,11 +514,12 @@
 }
 
 /* Imagem: moldura clara ampliada para preencher o topo da Coluna 3
-   (sem teto de max-height, só o piso de min-height) */
+   (sem teto de max-height, só o piso de min-height). Os 4px a menos em
+   relação ao valor original afinam a coluna de forma imperceptível */
 .imagem-content {
   flex: 0 0 auto;
-  height: 280px;
-  min-height: 260px;
+  height: 276px;
+  min-height: 256px;
   background-color: var(--sl-superficie-alt);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio-sm);
