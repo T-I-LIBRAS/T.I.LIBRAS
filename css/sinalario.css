@@ -6,15 +6,15 @@
      Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
      Coluna 3 (360px) · Imagem do termo (280px) + Exemplos PT/Libras
    Modelo de altura (as 3 bases fecham na mesma linha, logo acima do rodapé):
-     · Bloco centrado com teto de largura (max-width: 1400px + margin auto) e
-       colunas 280px / minmax(350px, 720px) / 290px — é essa combinação que
-       impede a coluna do meio de esticar infinitamente em tela larga ou com
-       zoom out (o vídeo não vira "bloco gigante")
+     · Bloco full width (max-width: 100%) com colunas 320px / 1fr / 340px: as
+       laterais mais generosas empurram os cards para os cantos e a do meio
+       absorve a sobra. Quem trava a expansão do vídeo no zoom out são os
+       tetos do próprio player (720x380), não mais o Grid
      · min-height: calc(100vh - 140px) dá o piso até o rodapé e, com
        align-content: stretch, a linha do Grid cresce junto com ele
      · align-items: stretch estica as 3 colunas até essa mesma linha
-     · Coluna 1: height: 100% no card; o teto (--sl-teto-lista) fica na lista
-       para muitas palavras não inflarem a linha — ela rola por dentro
+     · Coluna 1: height: 100% no card; o teto (--sl-teto-painel) trava o card
+       e a lista rola por dentro com max-height relativo a ele mesmo
      · Coluna 2: header e player com teto (720x380) e a definição (flex-grow 1)
        absorvendo a sobra até a linha de base
      · Coluna 3: 290px de largura, height: 100% e cards agrupados por gap
@@ -33,30 +33,29 @@
   --sl-borda: #e6ebff;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
-  /* Teto da lista de termos: mantém a Coluna 1 na mesma altura das outras
-     duas sem deixar que a quantidade de palavras infle a linha do Grid */
-  --sl-teto-lista: 520px;
+  /* Trava do card de filtros: valor absoluto (e não porcentagem) para que a
+     altura da lista não infle a linha do Grid durante o cálculo intrínseco —
+     a rolagem em si fica por conta da própria lista */
+  --sl-teto-painel: calc(100vh - 200px);
 }
 
 /* --------------------- Container · grid full width --------------------- */
 
-/* Bloco centrado com teto de largura: max-width 1400px + margin auto impede
-   que o Grid estique a coluna do meio indefinidamente em telas muito largas
-   (ou com zoom out). A trilha do meio fica entre 350px e 720px, então o
-   player nunca passa de 720px de largura. align-items: stretch iguala as 3
-   colunas na mesma linha e align-content: stretch faz essa linha crescer até
-   o piso de viewport (min-height) — as bases encostam logo acima do rodapé. */
+/* Expansão para os cantos: nenhum teto de largura no container, só os 24px de
+   respiro lateral, e as colunas laterais mais largas (320px / 340px) levando
+   os cards até as pontas. align-items: stretch iguala as 3 colunas na mesma
+   linha e align-content: stretch faz essa linha crescer até o piso de
+   viewport (min-height) — as bases encostam logo acima do rodapé. */
 .container.main-layout {
   display: grid;
-  grid-template-columns: 280px minmax(350px, 720px) 290px;
-  justify-content: center;
+  grid-template-columns: 320px 1fr 340px;
   gap: 20px;
   align-items: stretch;
   align-content: stretch;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px 24px;
+  max-width: 100%;
+  margin: 0;
+  padding: 16px 24px;
   min-height: calc(100vh - 140px);
   box-sizing: border-box;
   /* Altura pelo conteúdo do bloco (o flex não estica nem esmaga) */
@@ -80,6 +79,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-height: var(--sl-teto-painel);
   min-height: 0;
   background-color: var(--sl-superficie);
   border: var(--borda);
@@ -167,13 +167,14 @@
   margin-bottom: 8px;
 }
 
-/* Lista: preenche a sobra do card e rola por dentro. O teto fica nela
-   (--sl-teto-lista) para que muitas palavras não estiquem a linha do Grid
-   nem, por consequência, o card da Coluna 2. Poucas palavras = área branca. */
+/* Lista: preenche a sobra do card e rola por dentro. O teto é relativo ao
+   próprio card (100% dele menos o bloco de controles acima), então poucas
+   palavras = área branca dentro do card e muitas = barra de rolagem, sem
+   nunca esticar a altura da linha do Grid. */
 .terms-list {
   flex: 1;
   min-height: 0;
-  max-height: var(--sl-teto-lista);
+  max-height: calc(100% - 100px);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -368,11 +369,11 @@
   object-fit: contain;
 }
 
-/* Definição: um tico mais compacta — padding 14px 18px e margin-top: 12px
-   sobem o card sem criar vão. O flex-grow 1 faz o card consumir a sobra da
-   coluna e fechar na linha de base das Colunas 1 e 3, com o conteúdo
-   centralizado. Usa flex-basis auto (e não flex: 1 puro) para a altura
-   natural do card continuar contando no cálculo da linha do Grid. */
+/* Definição: encurtada — padding 12px 18px e margin-top: 12px deixam o card
+   mais compacto e alinhado à base da Coluna 3. O flex-grow 1 faz o card
+   consumir a sobra da coluna e fechar na linha de base das Colunas 1 e 3,
+   com o conteúdo centralizado. Usa flex-basis auto (e não flex: 1 puro) para
+   a altura natural do card continuar contando no cálculo da linha do Grid. */
 .definicao-card {
   flex: 1 1 auto;
   display: flex;
@@ -384,7 +385,7 @@
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
-  padding: 14px 18px;
+  padding: 12px 18px;
 }
 
 .definicao-head {
@@ -562,6 +563,10 @@
   .sidebar-filtros,
   .detalhes-column {
     height: auto;
+  }
+
+  .filtros-panel {
+    max-height: none;
   }
 
   .terms-list {
