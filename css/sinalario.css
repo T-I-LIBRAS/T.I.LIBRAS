@@ -580,12 +580,14 @@
   height: 200% !important;
 }
 
-/* Aqui não existe nenhuma regra para o botão central, de propósito. O
-   .plyr__control--overlaid só é criado pelo Plyr quando "play-large" está na
-   lista de controls — o que não é o caso — e o ícone que aparece com o vídeo
-   pausado é desenhado pelo próprio YouTube dentro do iframe, fora do alcance
-   de qualquer CSS deste projeto. Quem o mantém fora de cena é o clickToPlay
-   desligado no sinalario.js: sem pause disparado, o overlay não é desenhado. */
+/* Botão central do Plyr: o clickToPlay: false do sinalario.js foi mantido, mas
+   ele não impede a biblioteca de injetar o .plyr__control--overlaid no HTML
+   quando o provider é o YouTube. A regra que esconde esse botão fica no
+   style.css global, dentro da seção "Plyr · esconde o botão central": ela usa
+   :where(.plyr) .plyr__control--overlaid e vence pela ordem dos arquivos
+   (style.css entra depois do plyr.css no <head>), sem !important. Nada mais
+   neste arquivo mexe nesse botão — a barra roxa, as velocidades e a troca de
+   termos seguem intactas. */
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px

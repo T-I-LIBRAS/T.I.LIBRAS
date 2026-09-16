@@ -374,3 +374,21 @@ app-footer {
     font-size: 0.9rem;
   }
 }
+
+/* --------------------- Plyr · esconde o botão central ---------------------
+   O Plyr injeta o .plyr__control--overlaid no HTML quando o provider é o
+   YouTube, mesmo com clickToPlay: false (o embed do YouTube devolve o estado
+   pausado e a biblioteca desenha o play grande por cima da imagem).
+
+   O seletor abaixo usa :where(.plyr), que tem peso ZERO na especificidade.
+   Assim a única classe que conta é a própria .plyr__control--overlaid — a
+   mesma que o plyr.css usa — e o empate é resolvido pela ordem dos arquivos:
+   este style.css é carregado depois do plyr.css no <head> da página. Ou seja,
+   o botão some sem nenhum !important e sem inflar a especificidade.
+
+   Nada abaixo desta regra interfere na barra inferior roxa, nos botões de
+   velocidade (incluindo 0.25x) nem na troca de termos do sinalário: o seletor
+   atinge apenas o botão sobreposto central. */
+:where(.plyr) .plyr__control--overlaid {
+  display: none;
+}
