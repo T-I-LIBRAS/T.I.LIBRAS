@@ -17,8 +17,9 @@
        player e encosta na linha de base
      · Coluna 3: height: 100% com os cards agrupados por gap uniforme e a
        moldura da imagem ampliada (280px) para fechar o topo da coluna
-     · Player com teto de 420px: acima disso a caixa fica mais larga que 16:9
-       e o iframe usa object-fit: contain (vídeo inteiro, sem distorção)
+     · Player em 16:9 estrito (aspect-ratio + height: auto), sem nenhum teto
+       ou piso de altura: a altura é sempre derivada da largura, então nada
+       de caixa achatada em ultrawide e nenhuma deformação em zoom out
    Princípios: sem sombras, sem !important, tokens de cor de style.css.
    ========================================================================= */
 
@@ -332,16 +333,16 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player: 16:9 sempre que a largura permitir; o teto de 420px impede que ele
-   cresça sem limite em telas largas ou com zoom out. Quando esse teto entra
-   em ação a caixa fica mais larga que 16:9, e é o object-fit: contain do
-   iframe que mantém o vídeo inteiro, centralizado e sem distorção. */
+/* Player: proporção 16:9 estrita, com altura SEMPRE derivada da largura.
+   Nenhum height/min-height/max-height fixo no wrapper: era o teto de altura
+   que achatava a caixa em ultrawide ao dar zoom out (a largura crescia e a
+   altura ficava travada). Sem ele, o player responde 1:1 a qualquer zoom. */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
-  max-height: 420px;
   aspect-ratio: 16 / 9;
+  height: auto;
   margin: 16px auto 0;
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
@@ -359,8 +360,8 @@
   object-fit: contain;
 }
 
-/* Definição: compacta e ajustada ao texto (padding 16px 20px) e colada no
-   player pelo margin-top: 16px. O flex-grow 1 faz o card consumir a sobra da
+/* Definição: um tico mais compacta — padding 14px 18px e margin-top: 12px
+   sobem o card sem criar vão. O flex-grow 1 faz o card consumir a sobra da
    coluna e fechar na linha de base das Colunas 1 e 3, com o conteúdo
    centralizado. Usa flex-basis auto (e não flex: 1 puro) para a altura
    natural do card continuar contando no cálculo da linha do Grid. */
@@ -371,11 +372,11 @@
   justify-content: center;
   height: auto;
   min-height: unset;
-  margin-top: 16px;
+  margin-top: 12px;
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
-  padding: 16px 20px;
+  padding: 14px 18px;
 }
 
 .definicao-head {
@@ -446,9 +447,11 @@
   padding: 18px;
 }
 
-/* Exemplos (PT e Libras): logo abaixo da imagem, só a altura do texto */
+/* Exemplos (PT e Libras): agrupados abaixo da imagem com um respiro interno
+   um pouco maior; o min-height garante presença mesmo em texto curto */
 .info-card--exemplo {
-  padding: 16px 20px;
+  padding: 18px 20px;
+  min-height: 90px;
 }
 
 /* O exemplo em Libras fecha a pilha naturalmente: sem margin automática,
@@ -547,10 +550,6 @@
   .sidebar-filtros,
   .detalhes-column {
     height: auto;
-  }
-
-  .video-wrapper-yt {
-    max-height: none;
   }
 
   .terms-list {
