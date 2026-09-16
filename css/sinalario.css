@@ -5,17 +5,8 @@
      Coluna 1 (320px) · Filtros + lista de termos (scroll interno)
      Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
      Coluna 3 (360px) · Imagem do termo + Exemplos PT/Libras
-   Modelo de altura (é o que deixa as 3 bases na mesma linha):
-     body (flex column, style.css)
-       └─ .container.main-layout  · flex: 1 → recebe a sobra entre header
-          e rodapé e tem, portanto, altura definida
-          └─ Grid com UMA linha de altura definida
-             (grid-template-rows: minmax(0, 1fr)) + align-items: stretch
-             → as 3 colunas filhas têm sempre exatamente a mesma altura
-             → o scroll vive dentro da lista de termos, nunca na altura
-               do bloco
-   Princípios: sem sombras, sem !important, sem altura derivada do conteúdo
-   da Coluna 1, tokens de cor herdados de style.css.
+   Princípios: sem sombras, sem !important, sem larguras/alturas travadas
+   em pixels, tokens de cor herdados de style.css.
    ========================================================================= */
 
 /* ------------------------------- Tokens ------------------------------- */
@@ -27,58 +18,31 @@
   --sl-borda: #e6ebff;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
-  /* Piso do bloco das 3 colunas: válvula de segurança para telas muito
-     baixas. Enquanto houver espaço livre na tela, a altura vem do flex. */
-  --sl-altura-minima: 620px;
-  /* Reserva vertical da Coluna 2 fora do player: header da página (64px)
-     + rodapé (~160px) + header do termo + 2 gaps internos + definição
-     mínima. Serve só para limitar a largura do player 16:9 pela altura
-     da tela, garantindo que o bloco inteiro caiba na dobra. */
-  --sl-reserva-coluna-2: 484px;
 }
 
 /* --------------------- Container · grid full width --------------------- */
 
-/* Full width limpo: nenhum max-width nem margin auto centralizando o
-   layout — só o respiro lateral. A altura do bloco é a sobra de espaço
-   entre o header e o rodapé (body é flex column em style.css). */
 .container.main-layout {
   display: grid;
-  /* minmax(0, 1fr) no meio: o player 16:9 nunca estoura a coluna */
-  grid-template-columns: 320px minmax(0, 1fr) 360px;
-  /* UMA linha de altura definida: é isso que iguala as 3 bases */
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: 320px 1fr 360px;
   gap: 24px;
-  align-items: stretch;   /* as colunas filhas esticam até a base da linha */
-  align-content: stretch;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0 24px;
-  box-sizing: border-box;
-  /* flex-basis 0 → a altura vem do espaço livre, nunca do conteúdo */
-  flex: 1 1 0;
-  min-height: var(--sl-altura-minima);
+  align-items: stretch;   /* as 3 colunas fecham na mesma linha de base */
+  align-content: start;
 }
 
 /* ------------------- Coluna 1 · Filtros e termos ------------------- */
 
-/* A coluna estica com a linha do Grid e o card ocupa 100% dela */
 .sidebar-filtros {
   display: flex;
-  flex-direction: column;
   min-width: 0;
-  min-height: 0;
   height: 100%;
 }
 
-/* Card da Coluna 1 travado na altura total da coluna: nada aqui depende do
-   número de termos (sem height: auto nem max-height vindo do conteúdo) */
+/* O card acompanha a altura da coluna; só a lista cede espaço */
 .filtros-panel {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  height: 100%;
   min-height: 0;
   background-color: var(--sl-superficie);
   border: var(--borda);
@@ -166,11 +130,9 @@
   margin-bottom: 8px;
 }
 
-/* Lista: preenche a área branca restante do card e rola por dentro.
-   flex-basis 0 → a quantidade de termos nunca define a altura da coluna:
-   poucas palavras = área branca maior; muitas = barra de rolagem. */
+/* Lista: preenche o espaço restante do card e rola por dentro */
 .terms-list {
-  flex: 1 1 0;
+  flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -257,14 +219,11 @@
 
 /* ------------------- Coluna 2 · Apresentação do sinal ------------------- */
 
-/* Header e player fixos no topo; a definição consome a sobra, então o fim
-   desta coluna coincide com o das Colunas 1 e 3 */
 .content-column {
   display: flex;
   flex-direction: column;
   gap: 18px;
   min-width: 0;
-  min-height: 0;
   height: 100%;
 }
 
@@ -334,16 +293,12 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player: 16:9 estrito (nunca distorce). A largura é limitada pela altura
-   disponível na tela, então o bloco inteiro cabe na dobra e a definição
-   abaixo sempre tem espaço — o player apenas encolhe e centraliza. */
+/* Player: 16:9 estrito, largura total da coluna, sem altura fixa */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
-  max-width: calc((100vh - var(--sl-reserva-coluna-2)) * 16 / 9);
   height: auto;
-  margin-inline: auto;
   aspect-ratio: 16 / 9;
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
@@ -359,17 +314,12 @@
   display: block;
 }
 
-/* Definição: flex: 1 empurra o fim desta coluna até a base comum às três.
-   min-height: 0 deixa o card ceder espaço ao player quando preciso e
-   safe center evita que o texto seja cortado se o card ficar baixo. */
+/* Definição: cresce até a base, alinhando com a Coluna 1 */
 .definicao-card {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  justify-content: safe center;
-  min-height: 0;
-  overflow: auto;
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
@@ -420,16 +370,13 @@
 
 /* ------------------- Coluna 3 · Detalhamento do termo ------------------- */
 
-/* Cards compactos empilhados de ponta a ponta: com space-between o último
-   card de exemplo encosta exatamente na mesma linha de base das Colunas
-   1 e 2 */
+/* Cards compactos; o último fecha na base da coluna */
 .detalhes-column {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 16px;
   min-width: 0;
-  min-height: 0;
   height: 100%;
 }
 
@@ -522,18 +469,12 @@
 
 /* ------------------------------ Responsivo ------------------------------ */
 
-/* Em telas menores as colunas deixam de dividir a linha: o bloco volta a
-   crescer com o conteúdo (altura natural, com a página rolando) e o scroll
-   interno da lista passa a ser limitado pela viewport, nunca por pixels. */
+/* Em telas menores as colunas deixam de dividir a linha e o scroll
+   interno da lista passa a ser limitado pela viewport (nunca por pixels). */
 @media (max-width: 1240px) {
   .container.main-layout {
     grid-template-columns: 300px minmax(0, 1fr);
-    grid-template-rows: auto;
-    align-items: stretch;
-    align-content: start;
-    /* desliga o travamento por viewport: quem manda é o conteúdo */
-    flex: 0 0 auto;
-    min-height: 0;
+    align-items: start;
   }
 
   .sidebar-filtros,
@@ -547,7 +488,6 @@
   }
 
   .terms-list {
-    flex: 0 1 auto;
     max-height: 60vh;
   }
 
@@ -556,15 +496,11 @@
     justify-content: flex-start;
   }
 
-  .video-wrapper-yt {
-    max-width: 100%;
-  }
-
   .detalhes-column {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: stretch;
+    align-items: start;
   }
 }
 
