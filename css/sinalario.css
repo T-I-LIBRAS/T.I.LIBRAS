@@ -580,6 +580,15 @@
   height: 200% !important;
 }
 
+/* Botão central sobreposto do Plyr (.plyr__control--overlaid): ele só é criado
+   quando a lista de controls traz "play-large", que não é o nosso caso — ou
+   seja, hoje não existe no DOM e esta regra é rede de segurança, para que o
+   botão não reapareça se "play-large" voltar à lista. A barra roxa inferior,
+   o menu de velocidade e o loop não são afetados: são outros controles */
+.plyr__control--overlaid {
+  display: none !important;
+}
+
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px
    que separam a imagem dos exemplos na Coluna 3. O padding-bottom maior
