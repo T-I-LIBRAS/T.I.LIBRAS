@@ -479,7 +479,8 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 16px;
+  /* gap levemente maior: 2px aqui descem 4px a base da coluna (2 vãos) */
+  gap: 18px;
   min-width: 0;
   min-height: 0;
 }
@@ -497,13 +498,13 @@
 }
 
 /* Exemplos (PT e Libras): agrupados abaixo da imagem, com respiro interno
-   maior e conteúdo centralizado verticalmente. O padding vertical é a alavanca
-   fina de altura da Coluna 3: cada 1px aqui desce 2px a base do card, e os
-   dois cards somam 4px — é o que nivela a Coluna 3 com a Coluna 2 e a 1.
-   O min-height serve de piso quando o texto tem só uma linha. */
+   maior e conteúdo centralizado verticalmente. Calibragem fina da base da
+   Coluna 3 — cada 1px de padding vertical aqui desce 4px a base (2px por
+   card) e cada 1px no gap da coluna desce 2px; as duas alavancas juntas
+   produzem os ~12px que faltavam. O min-height é piso para texto de 1 linha */
 .info-card--exemplo {
-  padding: 20px 20px;
-  min-height: 92px;
+  padding: 22px 20px;
+  min-height: 102px;
   display: flex;
   flex-direction: column;
   justify-content: center;
