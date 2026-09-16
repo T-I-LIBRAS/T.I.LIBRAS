@@ -69,11 +69,13 @@
 
 /* ------------------- Coluna 1 · Filtros e termos ------------------- */
 
-/* A coluna acompanha a linha do Grid (stretch + height: 100%) */
+/* A coluna acompanha a linha do Grid (stretch + height: 100%) e nunca passa
+   disso: max-height: 100% trava a Coluna 1 no tamanho da própria linha */
 .sidebar-filtros {
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-height: 100%;
   min-width: 0;
   min-height: 0;
 }
@@ -172,14 +174,14 @@
   margin-bottom: 8px;
 }
 
-/* Lista: preenche a sobra do card e rola por dentro. O teto é relativo ao
-   próprio card (100% dele menos o bloco de controles acima), então poucas
-   palavras = área branca dentro do card e muitas = barra de rolagem, sem
-   nunca esticar a altura da linha do Grid. */
+/* Lista: preenche a sobra do card e rola por dentro. O teto em viewport é
+   absoluto (100vh - 220px) de propósito: além de limitar a altura visível,
+   ele limita o próprio cálculo intrínseco, então nem com zoom out a lista
+   consegue esticar a linha do Grid ou a altura da Coluna 1. */
 .terms-list {
   flex: 1;
   min-height: 0;
-  max-height: calc(100% - 100px);
+  max-height: calc(100vh - 220px);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -355,17 +357,9 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Cabeçalho do card de vídeo: mesmo padrão de identidade roxa dos headers
-   dos outros cards (ícone + rótulo), com o respiro de 8px até o player */
-.card-header-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  color: #6C5CE7;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-}
+/* O cabeçalho "Vídeo do sinal" reaproveita as MESMAS classes dos cabeçalhos da
+   Coluna 3 (.info-card-head + .icon-circle.lilas + .info-card-title), então a
+   bolinha roxa clara, a fonte e a cor vêm prontas — sem CSS novo aqui */
 
 /* Player 16:9 com teto rígido de tamanho. A largura para em 680px (largura do
    player = largura dos cards acima/abaixo) e o max-height em 383px é o
@@ -397,9 +391,9 @@
 }
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
-   padding-top de 16px e padding-bottom de 22px empurram a base deste card
-   exatamente até a linha de base da Coluna 3 e da lista da Coluna 1.
-   A separação do player segue nos 10px do margin-top. */
+   O margin-top de 16px pareia a distância player -> definição com os 16px
+   que separam a imagem dos exemplos na Coluna 3. O padding-bottom maior
+   empurra a base deste card até a linha de base das Colunas 1 e 3. */
 .definicao-card {
   flex: 0 0 auto;
   display: flex;
@@ -407,7 +401,7 @@
   justify-content: flex-start;
   height: auto;
   min-height: fit-content;
-  margin-top: 10px;
+  margin-top: 16px;
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
