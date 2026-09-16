@@ -6,7 +6,7 @@
   <title>T.I Libras - Sinalário</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css?v=27">
+  <link rel="stylesheet" href="css/sinalario.css?v=28">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -24,16 +24,48 @@
         <h2 class="filtros-title">Filtros</h2>
 
         <div class="filtros-field">
-          <i class="fa-solid fa-shapes" id="filterIcon" aria-hidden="true"></i>
-          <select class="filtros-select" id="categorySelect" title="Filtrar por área">
-            <option value="todos">Todas as áreas</option>
-            <option value="hardware">Hardware</option>
-            <option value="software">Software</option>
-            <option value="programacao">Programação</option>
-            <option value="eletricidade">Eletricidade</option>
-            <option value="redes">Redes</option>
-            <option value="favoritos">Favoritos</option>
-          </select>
+          <!-- Custom select: substitui o <select> nativo (que abria o menu azul
+               genérico do SO) por um dropdown do design system, com as cores de
+               cada área nos ícones e lilás suave no hover/ativo -->
+          <div class="custom-select-container" id="categoryCustomSelect">
+            <button
+              class="custom-select-trigger"
+              id="categoryTrigger"
+              type="button"
+              data-value="todos"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              title="Filtrar por área">
+              <span class="selected-option">
+                <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
+              </span>
+              <i class="fa-solid fa-chevron-down arrow-icon"></i>
+            </button>
+
+            <div class="custom-options-menu" role="listbox">
+              <div class="custom-option active" data-value="todos" role="option">
+                <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
+              </div>
+              <div class="custom-option" data-value="hardware" role="option">
+                <i class="fa-solid fa-desktop icon-hardware"></i> Hardware
+              </div>
+              <div class="custom-option" data-value="software" role="option">
+                <i class="fa-solid fa-compact-disc icon-software"></i> Software
+              </div>
+              <div class="custom-option" data-value="programacao" role="option">
+                <i class="fa-solid fa-laptop-code icon-programacao"></i> Programação
+              </div>
+              <div class="custom-option" data-value="eletricidade" role="option">
+                <i class="fa-solid fa-plug icon-eletricidade"></i> Eletricidade
+              </div>
+              <div class="custom-option" data-value="redes" role="option">
+                <i class="fa-solid fa-tower-broadcast icon-redes"></i> Redes
+              </div>
+              <div class="custom-option" data-value="favoritos" role="option">
+                <i class="fa-solid fa-heart icon-favoritos"></i> Favoritos
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="search-box">
@@ -134,6 +166,6 @@
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js"></script>
+  <script src="js/sinalario.js?v=28"></script>
 </body>
 </html>

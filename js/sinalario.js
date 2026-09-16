@@ -37,10 +37,34 @@ const iconesDoFiltro = {
   favoritos: 'fa-heart'
 };
 
-/* Atualiza o ícone exibido dentro do campo de filtro de áreas */
+/* Sincroniza o custom select com o valor escolhido: marca o item ativo no menu
+   e replica no gatilho o rótulo + o ícone (com a classe de cor da área, que o
+   CSS colore com a paleta oficial). Substitui o antigo #filterIcon solto. */
 function atualizarIconeDoFiltro(valor) {
-  const icone = document.getElementById('filterIcon');
-  if (icone) icone.className = `fa-solid ${iconesDoFiltro[valor] || 'fa-shapes'}`;
+  const gatilho = document.getElementById('categoryTrigger');
+  if (!gatilho) return;
+
+  gatilho.dataset.value = valor;
+
+  document.querySelectorAll('.custom-option').forEach((opcao) => {
+    opcao.classList.toggle('active', opcao.dataset.value === valor);
+  });
+
+  const modelo = document.querySelector(`.custom-option[data-value="${valor}"]`);
+  const selecionado = gatilho.querySelector('.selected-option');
+  if (modelo && selecionado) selecionado.innerHTML = modelo.innerHTML;
+
+  /* Rede de segurança: garante o glifo oficial da área (iconesDoFiltro) e a
+     classe de cor icon-<valor>, espelhando o data-value do item escolhido */
+  const icone = gatilho.querySelector('.selected-option i');
+  if (icone) {
+    icone.className = `fa-solid ${iconesDoFiltro[valor] || 'fa-shapes'} icon-${valor}`;
+  }
+}
+
+/* Valores disponíveis no filtro (lidos do próprio menu customizado) */
+function valoresDoFiltroDisponiveis() {
+  return [...document.querySelectorAll('.custom-option')].map((opcao) => opcao.dataset.value);
 }
 
 let categoriaSelecionada = 'todos';
@@ -264,11 +288,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderizarLista();
   });
 
-  document.getElementById('categorySelect').addEventListener('change', (evento) => {
-    categoriaSelecionada = evento.target.value;
-    atualizarIconeDoFiltro(categoriaSelecionada);
-    renderizarLista();
-  });
+  /* Custom select de áreas: toggle do menu, aplicação do filtro e fechamento
+     por clique fora ou tecla Esc */
+  const containerDoFiltro = document.getElementById('categoryCustomSelect');
+  const gatilhoDoFiltro = document.getElementById('categoryTrigger');
+
+  if (containerDoFiltro && gatilhoDoFiltro) {
+    const fecharMenuDoFiltro = () => {
+      containerDoFiltro.classList.remove('open');
+      gatilhoDoFiltro.setAttribute('aria-expanded', 'false');
+    };
+
+    gatilhoDoFiltro.addEventListener('click', () => {
+      const aberto = containerDoFiltro.classList.toggle('open');
+      gatilhoDoFiltro.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+    });
+
+    containerDoFiltro.querySelectorAll('.custom-option').forEach((opcao) => {
+      opcao.addEventListener('click', () => {
+        categoriaSelecionada = opcao.dataset.value;
+        atualizarIconeDoFiltro(categoriaSelecionada);
+        fecharMenuDoFiltro();
+        renderizarLista();
+      });
+    });
+
+    document.addEventListener('click', (evento) => {
+      if (!containerDoFiltro.contains(evento.target)) fecharMenuDoFiltro();
+    });
+
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape') fecharMenuDoFiltro();
+    });
+  }
 
   document.getElementById('btnMainFav').addEventListener('click', () => {
     if (termoAtual) alternarFavorito(termoAtual.term);
@@ -285,9 +337,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const categoriaDaUrl = parametros.get('cat');
   if (categoriaDaUrl) {
     const catNormalizada = normalizar(categoriaDaUrl);
-    const select = document.getElementById('categorySelect');
-    if ([...select.options].some((opcao) => opcao.value === catNormalizada)) {
-      select.value = catNormalizada;
+    if (valoresDoFiltroDisponiveis().includes(catNormalizada)) {
       categoriaSelecionada = catNormalizada;
     }
   }

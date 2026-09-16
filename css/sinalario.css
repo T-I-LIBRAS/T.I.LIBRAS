@@ -119,36 +119,121 @@
   margin-bottom: 10px;
 }
 
-.filtros-field > i {
-  position: absolute;
-  left: 12px;
-  font-size: 0.85rem;
-  color: var(--cor-primaria);
-  pointer-events: none;
+/* ------------------- Custom select de áreas (Coluna 1) ------------------- */
+/* Substitui o <select> nativo: o menu suspenso do sistema era azul genérico,
+   não aceitava ícones nas <option> e destoava do design system. Aqui cada
+   opção carrega a cor oficial da sua área, o estado ativo/hover usa o lilás
+   suave da página e o menu flutua sobre a lista de termos (z-index 100).
+   As alturas são as mesmas do campo anterior (padding 10px + 1px de borda),
+   então o ritmo vertical da Coluna 1 e a altura do card não mudam. */
+
+.custom-select-container {
+  position: relative;
+  width: 100%;
 }
 
-.filtros-select {
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   width: 100%;
-  /* Respiro interno maior à direita: desgruda o indicador da borda da caixa */
-  padding: 10px 36px 10px 36px;
-  border: 1px solid #cfd9ee;
-  border-radius: var(--sl-raio-sm);
+  padding: 10px 16px;
   background-color: var(--sl-superficie);
-  /* A seta nativa do navegador ficava colada no canto direito interno e não
-     aceita deslocamento por padding; com appearance: none ela passa a ser
-     desenhada por este chevron SVG, posicionado a 14px da borda direita */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235a6a8f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 14px 14px;
-  appearance: none;
-  -webkit-appearance: none;
+  border: 1px solid var(--sl-borda);
+  border-radius: var(--sl-raio-sm);
+  font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;
   color: #1a1d20;
+  text-align: left;
   cursor: pointer;
   box-sizing: border-box;
+  transition: var(--transicao);
 }
+
+.custom-select-trigger:hover,
+.custom-select-container.open .custom-select-trigger {
+  border-color: var(--cor-primaria);
+}
+
+.selected-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.custom-select-trigger .arrow-icon {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--cor-texto-suave);
+  transition: transform 0.2s ease;
+}
+
+/* Seta gira ao abrir, reforçando o estado do menu */
+.custom-select-container.open .custom-select-trigger .arrow-icon {
+  transform: rotate(180deg);
+}
+
+.custom-options-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  display: none;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid var(--sl-borda);
+  border-radius: var(--sl-raio);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.custom-select-container.open .custom-options-menu {
+  display: block;
+}
+
+.custom-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2d3748;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.custom-option:hover,
+.custom-option.active {
+  background: var(--sl-lilas-suave);
+  color: var(--cor-lilas);
+}
+
+.custom-option i,
+.selected-option i {
+  width: 16px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Ícone de cada área na mesma cor oficial de coresDasAreas (sinalario.js).
+   A classe acompanha o data-value da opção, no formato icon-<valor> */
+.icon-todos { color: var(--cor-texto-suave); }
+.icon-hardware { color: #783cc8; }
+.icon-software { color: #3c8cdc; }
+.icon-programacao { color: #f59e0b; }
+.icon-eletricidade { color: #ef4444; }
+.icon-redes { color: #10b981; }
+.icon-favoritos { color: #D63031; }
 
 .search-box {
   flex: 0 0 auto;
