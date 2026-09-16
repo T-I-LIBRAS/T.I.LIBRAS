@@ -34,7 +34,9 @@
   --sl-lilas-suave: #ece4fd;
   --sl-superficie: #ffffff;
   --sl-superficie-alt: #f7f9ff;
-  --sl-borda: #e6ebff;
+  /* Borda única dos cards brancos da página: mesmo tom exato da borda do card
+     da Coluna 1 (--borda em style.css) para consistência total do Flat UI */
+  --sl-borda: #dbe3f7;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
   /* Não existe mais teto de altura na Coluna 1: a altura dela vem do Grid
@@ -95,7 +97,7 @@
   height: 100%;
   min-height: 0;
   background-color: var(--sl-superficie);
-  border: var(--borda);
+  border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
   padding: 16px;
   box-sizing: border-box;
@@ -257,7 +259,12 @@
 }
 
 .btn-fav:hover {
-  color: #ef4444;
+  color: #D63031;
+}
+
+/* Coração preenchido (favorito ativo): vermelho vívido e escuro */
+.btn-fav .fa-solid.fa-heart {
+  color: #D63031;
 }
 
 .dot {
@@ -351,7 +358,11 @@
   align-items: center;
   justify-content: center;
   margin-left: auto;    /* posição fixa alinhada à direita */
-  align-self: center;   /* centralizado na altura do card */
+  /* Centralização vertical rigorosa na altura do card roxo: o align-self
+     ancora no meio e os margins automáticos absorvem a folga restante */
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: auto;
   background-color: rgba(255, 255, 255, 0.18);
   border: none;
   border-radius: 50%;
@@ -363,6 +374,12 @@
 
 .btn-fav-large:hover {
   background-color: rgba(255, 255, 255, 0.32);
+}
+
+/* Coração preenchido (favorito ativo): vermelho vívido e escuro, com contraste
+   perfeito sobre o fundo roxo do card e o círculo de destaque */
+.btn-fav-large .fa-solid.fa-heart {
+  color: #D63031;
 }
 
 /* Card branco oficial do vídeo: mesma superfície, borda e leitura dos cards da

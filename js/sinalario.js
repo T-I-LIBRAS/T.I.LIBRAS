@@ -171,7 +171,7 @@ function renderizarLista() {
       </div>
       <button class="btn-fav" title="Favoritar">
         ${ehFavorito
-          ? '<i class="fa-solid fa-heart" style="color: #ef4444;"></i>'
+          ? '<i class="fa-solid fa-heart" style="color: #D63031;"></i>'
           : '<i class="fa-regular fa-heart"></i>'}
       </button>
     `;
@@ -249,7 +249,7 @@ function exibirTermoAtual() {
   const botaoFavorito = document.getElementById('btnMainFav');
   if (botaoFavorito) {
     botaoFavorito.innerHTML = ehFavorito
-      ? '<i class="fa-solid fa-heart" style="color: #ef4444;"></i>'
+      ? '<i class="fa-solid fa-heart" style="color: #D63031;"></i>'
       : '<i class="fa-regular fa-heart"></i>';
   }
 }
