@@ -24,10 +24,10 @@
        (só padding, sem flex-grow)
      · Coluna 3: 350px de largura com cards agrupados por gap uniforme e a
        moldura da imagem em 272px fechando o topo
-     · Player: 16:9 (aspect-ratio) controlado pela YouTube Iframe Player API
-       com playerVars.controls = 0 — a barra nativa do YouTube fica desligada
-       e os comandos vêm da barra do design system. Nenhum deslocamento de CSS
-       (margin-top negativo / translateY / corte de posição) é usado
+     · Player: Plyr.js (CDN no sinalario.html) envelopando o embed do YouTube
+       e assumindo a interface: barra nativa, título e foto do canal do YouTube
+       nunca aparecem. Nenhum deslocamento de CSS (margin-top negativo /
+       translateY / corte de posição) é usado
    Princípios: sem sombras, sem !important, tokens de cor de style.css.
    ========================================================================= */
 
@@ -525,253 +525,33 @@
   box-sizing: border-box;
 }
 
-/* Player 16:9 no estado limpo. Zero gambiarra: nenhum margin-top negativo,
-   nenhum translateY, nenhum corte de posição e nenhum overflow forçado para
-   esconder o topo — era isso que gerava a barra preta inferior e os cortes na
-   imagem. Os dois tetos (680px de largura, largura dos cards acima/abaixo, e
-   383px de altura, o equivalente exato dessa largura em 16:9) continuam
-   coincidindo, então a proporção nunca quebra e o zoom out não infla o vídeo. */
+/* Player Plyr: o wrapper só limita a régua de largura (os mesmos 680px de
+   antes) e centraliza o player. Nenhuma proporção, corte ou deslocamento é
+   imposto aqui — quem define a moldura 16:9 é o .plyr no tema logo abaixo,
+   então a imagem do YouTube aparece inteira, sem zoom e sem faixa preta. */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   max-width: 680px;
-  max-height: 383px;
-  aspect-ratio: 16 / 9;
-  height: auto;
   margin: 0 auto;
-  padding: 0;
-  border: 0;
+}
+
+/* ------------------------ Plyr · tema do projeto ------------------------ */
+
+/* Paleta oficial aplicada aos controles nativos do Plyr: roxo principal da
+   aplicação nas trilhas/botões e branco nos ícones sobre o vídeo */
+:root {
+  --plyr-color-main: #6C5CE7; /* Roxo principal da aplicação */
+  --plyr-video-control-color: #ffffff;
+}
+
+/* Raio de 12px para alinhar o player aos demais cards e a moldura 16:9 exata
+   do vídeo: como a proporção é respeitada, nada é esticado nem cortado */
+.plyr {
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
-  background-color: #000000;
-  transform: none;
-}
-
-/* O <div> alvo do YT.Player — e o iframe que a API cria no lugar dele — ocupa
-   100% do container: mesma proporção 16:9, mesmo raio de 12px e nenhum
-   deslocamento. Como controls: 0 desliga a barra nativa do YouTube, não existe
-   mais faixa alguma para esconder.
-   O pointer-events: none torna a tela do vídeo "de vidro": nenhum clique
-   alcança o iframe, então é impossível abrir o menu nativo do YouTube, cair no
-   site deles ou acionar controles/pausa sobrepostos. Toda a interação acontece
-   na barra customizada (que vive fora deste subtree, então segue 100% clicável). */
-.video-wrapper-yt iframe,
-.video-wrapper-yt > div {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: var(--sl-raio-sm);
-  display: block;
-  transform: none;
-  pointer-events: none;
-}
-
-/* Máscara de vidro sobre a tela do vídeo. O iframe fica na camada de base e a
-   máscara declara z-index: 10, cobrindo 100% da área — nenhum clique, hover ou
-   toque chega à interface do YouTube (menu nativo, link para o youtube.com e
-   botões de play/pausa sobrepostos). É transparente de propósito: bloqueia a
-   interação sem tingir as cores nem escurecer o sinal.
-   O seletor é ancorado no wrapper de propósito: a regra acima usa
-   .video-wrapper-yt > div (especificidade maior) para deixar o iframe inerte,
-   e sem esta ancoragem ela também zeraria o pointer-events da máscara,
-   desligando justamente o bloqueio de cliques que queremos. */
-.video-wrapper-yt > .video-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  background-color: transparent;
-  pointer-events: auto;
-  cursor: default;
-}
-
-/* ------------------ Barra de controles customizada ------------------ */
-
-/* Fica logo abaixo da tela do vídeo, dentro do mesmo card branco, com a mesma
-   largura/teto do player (680px) para manter o alinhamento das Colunas 2 e 3.
-   Superfície levemente azulada + borda clara = mesma linguagem flat dos cards. */
-.player-controls {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  max-width: 680px;
-  margin: 12px auto 0;
-  padding: 10px 14px;
-  box-sizing: border-box;
-  background-color: var(--sl-superficie-alt);
-  border: 1px solid var(--sl-borda);
-  border-radius: var(--sl-raio-sm);
-}
-
-/* Linha de progresso fina (4px): mostra o andamento e aceita clique/arraste
-   para avançar ou voltar. A área de toque cresce com o padding vertical
-   implícito do ::before, sem engrossar a linha visível. */
-.player-progress {
-  position: relative;
-  width: 100%;
-  height: 4px;
-  margin: 4px 0;
-  border-radius: 999px;
-  background-color: #e2e8f7;
-  cursor: pointer;
-  touch-action: none;
-}
-
-.player-progress::before {
-  content: '';
-  position: absolute;
-  inset: -8px 0;
-}
-
-.player-progress:focus-visible {
-  outline: 2px solid var(--cor-lilas);
-  outline-offset: 4px;
-}
-
-/* Trecho já carregado (buffer): tom neutro, sem competir com o preenchimento */
-.player-progress-buffer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background-color: #cdd7ef;
-}
-
-/* Andamento da reprodução: lilás oficial sobre a trilha clara */
-.player-progress-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background-color: var(--cor-lilas);
-}
-
-/* Bolinha de arraste: invisível em repouso e revelada no hover/foco */
-.player-progress-fill::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--cor-lilas);
-  transform: translate(50%, -50%) scale(0);
-  transition: var(--transicao);
-}
-
-.player-progress:hover .player-progress-fill::after,
-.player-progress:focus-visible .player-progress-fill::after {
-  transform: translate(50%, -50%) scale(1);
-}
-
-.player-controls-row {
-  display: flex;
-  /* Com as 4 pílulas de velocidade a linha fica larga: em telas estreitas ela
-     quebra em duas linhas em vez de estourar a largura da barra */
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.player-controls-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-/* Botões redondos dos controles: mesma linguagem visual do .btn-fav-large,
-   agora em branco sobre a superfície clara da barra */
-.player-btn {
-  flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ffffff;
-  border: 1px solid var(--sl-borda);
-  border-radius: 50%;
-  color: var(--cor-lilas);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: var(--transicao);
-}
-
-.player-btn:hover {
-  background-color: var(--sl-lilas-suave);
-  border-color: var(--cor-lilas);
-}
-
-.player-btn:focus-visible {
-  outline: 2px solid var(--cor-lilas);
-  outline-offset: 2px;
-}
-
-/* Contador de tempo discreto; números tabulares evitam o "pulo" a cada
-   segundo enquanto o vídeo corre */
-.player-time {
-  margin-left: 2px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--cor-texto-suave);
-  white-space: nowrap;
-}
-
-/* Seletor de velocidade em pílulas — sem <select> nativo, no design system */
-.player-speeds {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px;
-  background-color: #ffffff;
-  border: 1px solid var(--sl-borda);
-  border-radius: 999px;
-}
-
-.player-speed-btn {
-  padding: 4px 10px;
-  border: none;
-  border-radius: 999px;
-  background-color: transparent;
-  color: var(--cor-texto-suave);
-  font-family: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  cursor: pointer;
-  transition: var(--transicao);
-}
-
-.player-speed-btn:hover {
-  background-color: var(--sl-lilas-suave);
-  color: var(--cor-lilas);
-}
-
-.player-speed-btn.active {
-  background-color: var(--cor-lilas);
-  color: #ffffff;
-}
-
-.player-speed-btn:focus-visible {
-  outline: 2px solid var(--cor-lilas);
-  outline-offset: 2px;
 }
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
@@ -1014,14 +794,4 @@
     max-height: 170px;
   }
 
-  /* Barra do player: as 4 velocidades deixam o rodapé apertado no celular,
-     então os botões e as pílulas encolhem juntos para nada vazar da borda */
-  .player-controls {
-    padding: 8px 10px;
-  }
-
-  .player-speed-btn {
-    padding: 4px 7px;
-    font-size: 0.72rem;
-  }
 }

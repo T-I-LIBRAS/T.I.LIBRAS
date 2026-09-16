@@ -4,14 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T.I Libras - Sinalário</title>
+  <!-- Plyr (CSS) entra primeiro: o CSS do projeto carrega depois e assume o
+       tema do player (roxo da aplicação, raio de 12px e proporção 16:9) -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css?v=36">
+  <link rel="stylesheet" href="css/sinalario.css?v=37">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/dados.js"></script>
-  <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
   <app-header></app-header>
@@ -102,74 +104,22 @@
           <h3 class="info-card-title">Vídeo do sinal</h3>
         </div>
 
-        <!-- Player 100% controlado pela YouTube Iframe Player API. O alvo é um
-             <div> vazio porque o próprio YT.Player cria e substitui o iframe —
-             não existe mais troca manual de src. A barra nativa e os atalhos
-             do YouTube ficam desligados pelos playerVars (controls: 0) e os
-             comandos vêm da barra customizada logo abaixo do vídeo. -->
+        <!-- Player Plyr: o container oficial envelopa o embed do YouTube e a
+             biblioteca monta a interface própria (play, voltar 5s, progresso,
+             tempo e menu de velocidade). Com isso o layout nativo do YouTube —
+             título, foto do canal, botões de compartilhar — nem chega à tela,
+             sem nenhum corte, zoom ou deslocamento na imagem.
+             O src abaixo já aponta para o primeiro sinal da lista (Monitor, o
+             termo exibido ao abrir a página) e o sinalario.js passa a trocá-lo
+             pela API do Plyr a cada termo escolhido. -->
         <div class="video-wrapper-yt">
-          <div id="ytPlayer"></div>
-
-          <!-- Máscara transparente sobre a tela do vídeo, com z-index acima do
-               iframe: nenhum clique nem hover alcança a interface do YouTube,
-               então o menu nativo, o link para o youtube.com e os botões
-               sobrepostos ficam inalcançáveis. É IRMÃ do #ytPlayer de propósito
-               — a API substitui esse <div> pelo iframe, e uma máscara filha
-               seria destruída junto. Nada aqui captura o ponteiro da barra
-               customizada, que vive fora deste wrapper. -->
-          <div class="video-overlay" aria-hidden="true"></div>
-        </div>
-
-        <!-- Barra de controles customizada (design system da aplicação) -->
-        <div class="player-controls" id="playerControls">
-
-          <!-- Barra de progresso fina: clique ou arraste para avançar/voltar -->
-          <div
-            class="player-progress"
-            id="playerProgress"
-            role="slider"
-            tabindex="0"
-            aria-label="Progresso do vídeo"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="0">
-            <span class="player-progress-buffer" id="playerProgressBuffer"></span>
-            <span class="player-progress-fill" id="playerProgressFill"></span>
-          </div>
-
-          <div class="player-controls-row">
-            <div class="player-controls-left">
-              <button
-                class="player-btn"
-                id="btnPlayPause"
-                type="button"
-                title="Play / Pause"
-                aria-label="Reproduzir vídeo">
-                <i class="fa-solid fa-play"></i>
-              </button>
-
-              <button
-                class="player-btn"
-                id="btnReplay"
-                type="button"
-                title="Voltar 5 segundos"
-                aria-label="Voltar 5 segundos">
-                <i class="fa-solid fa-rotate-left"></i>
-              </button>
-
-              <span class="player-time" id="playerTime">0:00 / 0:00</span>
-            </div>
-
-            <div
-              class="player-speeds"
-              id="playerSpeeds"
-              role="group"
-              aria-label="Velocidade de reprodução">
-              <button class="player-speed-btn" type="button" data-speed="0.25" aria-label="Velocidade 0.25x">0.25x</button>
-              <button class="player-speed-btn" type="button" data-speed="0.5" aria-label="Velocidade 0.5x">0.5x</button>
-              <button class="player-speed-btn" type="button" data-speed="0.75" aria-label="Velocidade 0.75x">0.75x</button>
-              <button class="player-speed-btn active" type="button" data-speed="1" aria-label="Velocidade 1x">1x</button>
-            </div>
+          <div class="plyr__video-embed" id="player">
+            <iframe
+              src="https://www.youtube.com/embed/x2uwlO43nas?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1"
+              allowfullscreen
+              allowtransparency
+              allow="autoplay"
+            ></iframe>
           </div>
         </div>
       </div>
@@ -225,8 +175,10 @@
 
   <app-footer></app-footer>
 
+  <!-- Plyr (JS) antes do sinalario.js: a página monta o player usando a API -->
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=32"></script>
+  <script src="js/sinalario.js?v=33"></script>
 </body>
 </html>

@@ -71,16 +71,8 @@ let categoriaSelecionada = 'todos';
 let busca = '';
 let termoAtual = dados[0];
 
-let playerYT = null;
-let ytPronto = false;
-let videoIdPendente = '';
 let timerDoVisto = null;
-let vigiaDoVideo = null;
 let visto = { termo: null, tempoOk: false, videoTerminou: false };
-
-/* Estado da barra de controles customizada */
-let velocidadeAtual = 1;      /* 0.5x / 0.75x / 1x — câmera lenta da Libras */
-let arrastandoBarra = false;  /* trava o relógio enquanto o usuário arrasta */
 
 function normalizar(texto) {
   return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -123,340 +115,124 @@ function marcarComoVisto() {
   if (window.Progresso.adicionarSinalVisto(visto.termo)) renderizarLista();
 }
 
-/* ------------------------- Player do YouTube ------------------------- */
+/* ------------------------------ Player Plyr ------------------------------ */
 
-/* A partir daqui o vídeo é 100% controlado pela YouTube Iframe Player API
-   (script https://www.youtube.com/iframe_api carregado no <head>): não existe
-   mais troca manual de src no iframe e nenhuma regra de CSS desloca o player
-   para esconder a barra nativa — quem esconde é o playerVars abaixo. */
+/* O vídeo é envelopado pelo Plyr (CSS + JS carregados no sinalario.html): a
+   biblioteca monta a interface própria sobre o embed do YouTube, então o
+   layout nativo (título, foto do canal, botões de compartilhar) nem chega à
+   tela — sem nenhum corte, zoom ou deslocamento de CSS na imagem.
 
-/* Parâmetros do player. TODOS os controles nativos do YouTube são desligados
-   aqui — a interação fica 100% na barra customizada abaixo do vídeo (ver
-   .player-controls no CSS e configurarControlesDoPlayer no JS).
-   · controls: 0        → esconde a barra nativa de reprodução;
-   · disablekb: 1       → desativa os atalhos de teclado nativos (o teclado
-     continua funcionando, mas pela nossa barra de progresso);
-   · modestbranding: 1  → remove a marca d'água grande;
-   · rel: 0             → impede a grade de vídeos recomendados no final;
-   · showinfo: 0        → esconde título/canal no topo (parâmetro legado que
-     o player ainda lê em algumas versões);
-   · fs: 0              → desativa o botão nativo de tela cheia;
-   · iv_load_policy: 3  → oculta as anotações sobrepostas ao vídeo;
-   · autoplay: 1        → o sinal começa sozinho ao escolher o termo;
-   · loop: 1            → reinicia no fim (reforçado no handler de ENDED).
-   O 'playlist' — obrigatório para o loop: 1 funcionar — não entra nesta
-   constante porque precisa apontar para o vídeo do termo atual: ele é
-   injetado no construtor, em onYouTubeIframeAPIReady. */
-const PARAMETROS_DO_PLAYER = {
-  'controls': 0,
-  'disablekb': 1,
-  'modestbranding': 1,
-  'rel': 0,
-  'showinfo': 0,
-  'fs': 0,
-  'iv_load_policy': 3,
-  'autoplay': 1,
-  'loop': 1
-};
-
-/* ID do vídeo do termo que está no card central (vazio se ainda não houver) */
-function videoIdDoTermoAtual() {
-  return termoAtual ? extrairIdDoVideo(termoAtual.youtubeId) : '';
-}
-
-/* O objeto só responde aos getters depois que a API termina o onReady */
-function playerDisponivel() {
-  return typeof YT !== 'undefined'
-    && !!playerYT
-    && ytPronto
-    && typeof playerYT.getDuration === 'function';
-}
-
-function formatarTempo(segundos) {
-  const total = Number.isFinite(segundos) && segundos > 0 ? Math.floor(segundos) : 0;
-  const minutos = Math.floor(total / 60);
-  const resto = total % 60;
-  return `${minutos}:${String(resto).padStart(2, '0')}`;
-}
-
-/* ------------------ Espelho visual dos controles ------------------ */
-
-function atualizarBotaoPlayPause() {
-  const botao = document.getElementById('btnPlayPause');
-  if (!botao) return;
-
-  const tocando = playerDisponivel()
-    && typeof playerYT.getPlayerState === 'function'
-    && playerYT.getPlayerState() === YT.PlayerState.PLAYING;
-
-  botao.innerHTML = tocando
-    ? '<i class="fa-solid fa-pause"></i>'
-    : '<i class="fa-solid fa-play"></i>';
-  botao.setAttribute('aria-label', tocando ? 'Pausar vídeo' : 'Reproduzir vídeo');
-  botao.title = tocando ? 'Pausar' : 'Reproduzir';
-}
-
-/* Pinta a trilha, a bolinha e o relógio de uma vez (usado pelo tique
-   automático, pelo arraste e pelo teclado) */
-function pintarProgresso(porcentagem, atual, duracao) {
-  const preenchimento = document.getElementById('playerProgressFill');
-  const barra = document.getElementById('playerProgress');
-  const relogio = document.getElementById('playerTime');
-
-  if (preenchimento) preenchimento.style.width = `${porcentagem}%`;
-  if (barra) barra.setAttribute('aria-valuenow', String(Math.round(porcentagem)));
-  if (relogio) relogio.textContent = `${formatarTempo(atual)} / ${formatarTempo(duracao)}`;
-}
-
-function atualizarBarraDeProgresso() {
-  if (arrastandoBarra || !playerDisponivel()) return;
-
-  const duracao = playerYT.getDuration();
-  const atual = playerYT.getCurrentTime();
-  const porcentagem = duracao > 0
-    ? Math.min(100, Math.max(0, (atual / duracao) * 100))
-    : 0;
-
-  pintarProgresso(porcentagem, atual, duracao);
-
-  /* Trecho já carregado: some com a estimativa quando o player ainda não a tem */
-  if (typeof playerYT.getVideoLoadedFraction === 'function') {
-    const buffer = document.getElementById('playerProgressBuffer');
-    if (buffer) buffer.style.width = `${playerYT.getVideoLoadedFraction() * 100}%`;
+   Ajustes pensados para o estudo da Libras:
+   · 0.25x a 1x no menu de velocidade (configurações);
+   · seekTime: 5 → botão e setas do teclado voltam 5 segundos;
+   · loop ativo → o sinal repete sozinho, sem parar no fim;
+   · autoplay + muted → o sinal começa sozinho (o navegador só libera o
+     autoplay com o som desligado, e o conteúdo é 100% visual);
+   · storage desligado → o player sobe sempre no estado definido aqui, sem
+     restaurar volume/mudo de visitas antigas e quebrar o autoplay. */
+const player = new Plyr('#player', {
+  controls: ['play', 'rewind', 'progress', 'current-time', 'settings'],
+  settings: ['speed'],
+  speed: { selected: 1, options: [0.25, 0.5, 0.75, 1] }, // 0.25x para estudo
+  seekTime: 5,              // botão de retornar 5 segundos
+  loop: { active: true },   // loop automático infinito
+  autoplay: true,
+  muted: true,              // mudo por padrão (indispensável para o autoplay)
+  storage: { enabled: false },
+  /* Rótulos em português: o Plyr só traz o inglês embutido */
+  i18n: {
+    restart: 'Reiniciar',
+    rewind: 'Voltar {seektime}s',
+    play: 'Reproduzir',
+    pause: 'Pausar',
+    seek: 'Buscar',
+    seekLabel: '{currentTime} de {duration}',
+    played: 'Reproduzido',
+    buffered: 'Carregado',
+    currentTime: 'Tempo atual',
+    duration: 'Duração',
+    volume: 'Volume',
+    mute: 'Mudo',
+    unmute: 'Com som',
+    enableCaptions: 'Ativar legendas',
+    disableCaptions: 'Desativar legendas',
+    settings: 'Configurações',
+    speed: 'Velocidade',
+    normal: 'Normal',
+    loop: 'Repetir',
+    start: 'Início',
+    end: 'Fim',
+    all: 'Tudo',
+    reset: 'Redefinir',
+    disabled: 'Desativado',
+    enabled: 'Ativado',
+    menuBack: 'Voltar ao menu anterior',
+    frameTitle: 'Player de {title}'
   }
+});
+
+/* Estado da troca de vídeo. O provider do YouTube sobe de forma assíncrona:
+   até o Plyr disparar 'ready' ainda não existe player para receber o vídeo,
+   então o termo escolhido fica guardado e entra assim que ele fica pronto. */
+let playerPronto = false;
+let videoIdPendente = '';
+
+function aplicarVideoPendente() {
+  if (!playerPronto || !videoIdPendente) return;
+
+  const id = videoIdPendente;
+  videoIdPendente = '';
+
+  /* O Plyr só aceita a troca depois de ficar pronto e entrega o vídeo atual em
+     player.source: quando ele já é o pedido (o src do HTML aponta para o
+     primeiro sinal da lista), não há o que recarregar */
+  if (String(player.source || '').includes(id)) return;
+
+  /* Fonte única da troca de vídeo: o Plyr troca o embed do YouTube inteiro
+     por baixo, então nunca existe manipulação manual de src */
+  player.source = {
+    type: 'video',
+    sources: [{ src: id, provider: 'youtube' }]
+  };
 }
 
-/* Com loop infinito o evento ENDED pode nunca disparar, porque o YouTube
-   reinicia o vídeo sozinho. Este tique periódico mantém a barra viva e
-   contabiliza o termo como visto quando a reprodução chega ao fim. */
-function iniciarVigiaDoVideo() {
-  if (vigiaDoVideo) return;
-  vigiaDoVideo = setInterval(() => {
-    if (!playerDisponivel()) return;
+/* Ao trocar de termo na lista: aponta o Plyr para o vídeo do sinal */
+function atualizarVideo(idYouTube) {
+  const id = extrairIdDoVideo(idYouTube);
+  if (!id) return;
 
-    atualizarBarraDeProgresso();
-
-    if (!visto || !visto.termo || visto.videoTerminou) return;
-
-    const duracao = playerYT.getDuration();
-    const atual = playerYT.getCurrentTime();
-    if (duracao > 0 && atual > 0 && atual >= duracao - 1) {
-      visto.videoTerminou = true;
-      marcarComoVisto();
-    }
-  }, 250);
+  videoIdPendente = id;
+  aplicarVideoPendente();
 }
 
-function carregarVideo(videoId) {
-  if (!videoId) return;
+player.on('ready', () => {
+  playerPronto = true;
+  aplicarVideoPendente();
+});
 
-  if (playerYT && ytPronto) {
-    /* Zera barra e relógio na hora: sem isso o termo novo ficaria exibindo a
-       posição do anterior enquanto o vídeo carrega */
-    pintarProgresso(0, 0, 0);
+/* O sinal é 100% visual: reforça o mudo sempre que um vídeo começa (a troca de
+   termo remonta o embed e o YouTube volta ao próprio estado padrão) */
+player.on('playing', () => {
+  player.muted = true;
+});
 
-    /* A API cuida do autoplay; o loop é garantido no handler de ENDED */
-    playerYT.loadVideoById(videoId);
-    return;
+/* Com o loop ativo quem reinicia o vídeo é o próprio Plyr, então o evento
+   'ended' pode nunca chegar: este tique fecha a contagem de "termo visto"
+   quando a reprodução alcança o final */
+player.on('timeupdate', () => {
+  if (!visto || !visto.termo || visto.videoTerminou) return;
+  if (player.duration > 0 && player.currentTime >= player.duration - 1) {
+    visto.videoTerminou = true;
+    marcarComoVisto();
   }
+});
 
-  /* API ainda não pronta (primeira carga): o ID fica guardado e o
-     onYouTubeIframeAPIReady já monta o player no vídeo certo */
-  videoIdPendente = videoId;
-}
-
-function onYouTubeIframeAPIReady() {
-  const idInicial = videoIdPendente || videoIdDoTermoAtual();
-
-  playerYT = new YT.Player('ytPlayer', {
-    videoId: idInicial,
-    /* O card do vídeo é quem define o tamanho real (680px de teto + 16:9 do
-       .video-wrapper-yt). Passar as porcentagens aqui evita que o iframe
-       nasça com os 640x390 padrão da API antes do CSS entrar em ação. */
-    width: '100%',
-    height: '100%',
-    /* Os playerVars desligam toda a interface nativa (ver PARAMETROS_DO_PLAYER).
-       O 'playlist' entra por fora porque precisa apontar para o vídeo do termo
-       atual — é ele que faz o loop: 1 valer no próprio player. */
-    playerVars: {
-      ...PARAMETROS_DO_PLAYER,
-      'playlist': idInicial
-    },
-    events: {
-      onReady: () => {
-        ytPronto = true;
-
-        /* A API volta para 1x ao carregar um vídeo novo: reaplica a
-           velocidade escolhida no seletor e sincroniza os controles */
-        if (typeof playerYT.setPlaybackRate === 'function') {
-          playerYT.setPlaybackRate(velocidadeAtual);
-        }
-        /* Libras é 100% visual: o sinal toca MUDO por padrão (e o navegador
-           só libera o autoplay assim mesmo). A instância é remontada a cada
-           troca de vídeo, então o mute é reaplicado aqui para não escapar
-           nenhum pico de áudio na troca de termo. */
-        playerYT.mute();
-
-        atualizarBotaoPlayPause();
-        atualizarBarraDeProgresso();
-        iniciarVigiaDoVideo();
-
-        /* Termo trocado antes de o player ficar pronto: aplica agora */
-        if (videoIdPendente && videoIdPendente !== idInicial) {
-          playerYT.loadVideoById(videoIdPendente);
-        }
-        videoIdPendente = '';
-      },
-      onStateChange: (evento) => {
-        /* Cada troca de estado revalida o ícone (o YouTube também pausa
-           sozinho quando a aba perde o foco, por exemplo) */
-        atualizarBotaoPlayPause();
-
-        if (evento.data === YT.PlayerState.PLAYING) {
-          /* Rede de segurança: todo vídeo novo (loadVideoById) volta ao mudo
-             antes de aparecer na tela */
-          playerYT.mute();
-
-          if (typeof playerYT.setPlaybackRate === 'function') {
-            playerYT.setPlaybackRate(velocidadeAtual);
-          }
-          atualizarBarraDeProgresso();
-          return;
-        }
-
-        if (evento.data !== YT.PlayerState.ENDED) return;
-
-        if (visto && visto.termo) {
-          visto.videoTerminou = true;
-          marcarComoVisto();
-        }
-
-        /* Loop infinito garantido: reinicia do zero mesmo quando o parâmetro
-           playlist ainda aponta para o vídeo anterior */
-        try {
-          playerYT.seekTo(0, true);
-          playerYT.playVideo();
-        } catch (erro) {
-          /* player indisponível (troca rápida de termo): ignora */
-        }
-      }
-    }
-  });
-}
-
-/* ------------------- Barra de controles customizada ------------------- */
-
-function aplicarVelocidade(velocidade) {
-  velocidadeAtual = velocidade;
-
-  document.querySelectorAll('.player-speed-btn').forEach((botao) => {
-    const ativo = parseFloat(botao.dataset.speed) === velocidade;
-    botao.classList.toggle('active', ativo);
-    botao.setAttribute('aria-pressed', ativo ? 'true' : 'false');
-  });
-
-  if (playerDisponivel() && typeof playerYT.setPlaybackRate === 'function') {
-    playerYT.setPlaybackRate(velocidade);
+player.on('ended', () => {
+  if (visto && visto.termo) {
+    visto.videoTerminou = true;
+    marcarComoVisto();
   }
-}
-
-function alternarPlayPause() {
-  if (!playerDisponivel()) return;
-
-  if (playerYT.getPlayerState() === YT.PlayerState.PLAYING) {
-    playerYT.pauseVideo();
-  } else {
-    playerYT.playVideo();
-  }
-  atualizarBotaoPlayPause();
-}
-
-/* Replay: volta 5 segundos para rever o sinal sem reiniciar o vídeo */
-function voltarCincoSegundos() {
-  if (!playerDisponivel()) return;
-
-  playerYT.seekTo(Math.max(0, playerYT.getCurrentTime() - 5), true);
-  atualizarBarraDeProgresso();
-}
-
-function buscarPosicaoNaBarra(evento) {
-  const barra = document.getElementById('playerProgress');
-  if (!barra) return 0;
-
-  const caixa = barra.getBoundingClientRect();
-  const proporcao = caixa.width > 0 ? (evento.clientX - caixa.left) / caixa.width : 0;
-  return Math.min(1, Math.max(0, proporcao));
-}
-
-function aplicarPosicaoNaBarra(proporcao) {
-  if (!playerDisponivel()) return;
-
-  const duracao = playerYT.getDuration();
-  if (!duracao) return;
-
-  const alvo = proporcao * duracao;
-  playerYT.seekTo(alvo, true);
-  pintarProgresso(proporcao * 100, alvo, duracao);
-}
-
-function configurarBarraDeProgresso() {
-  const barra = document.getElementById('playerProgress');
-  if (!barra) return;
-
-  /* Clique simples: salta direto para o ponto clicado */
-  barra.addEventListener('click', (evento) => {
-    aplicarPosicaoNaBarra(buscarPosicaoNaBarra(evento));
-  });
-
-  /* Arraste: segue o ponteiro enquanto o botão estiver pressionado */
-  barra.addEventListener('pointerdown', (evento) => {
-    arrastandoBarra = true;
-    if (barra.setPointerCapture) barra.setPointerCapture(evento.pointerId);
-    aplicarPosicaoNaBarra(buscarPosicaoNaBarra(evento));
-
-    const aoMover = (movimento) => aplicarPosicaoNaBarra(buscarPosicaoNaBarra(movimento));
-    const aoSoltar = () => {
-      arrastandoBarra = false;
-      barra.removeEventListener('pointermove', aoMover);
-      barra.removeEventListener('pointerup', aoSoltar);
-      barra.removeEventListener('pointercancel', aoSoltar);
-    };
-
-    barra.addEventListener('pointermove', aoMover);
-    barra.addEventListener('pointerup', aoSoltar);
-    barra.addEventListener('pointercancel', aoSoltar);
-  });
-
-  /* Teclado (a barra é focável): setas avançam/voltam 5 segundos */
-  barra.addEventListener('keydown', (evento) => {
-    if (evento.key !== 'ArrowRight' && evento.key !== 'ArrowLeft') return;
-    if (!playerDisponivel()) return;
-
-    const duracao = playerYT.getDuration();
-    if (!duracao) return;
-
-    const passo = evento.key === 'ArrowRight' ? 5 : -5;
-    const alvo = Math.min(duracao, Math.max(0, playerYT.getCurrentTime() + passo));
-    evento.preventDefault();
-    playerYT.seekTo(alvo, true);
-    pintarProgresso((alvo / duracao) * 100, alvo, duracao);
-  });
-}
-
-function configurarControlesDoPlayer() {
-  const botaoPlay = document.getElementById('btnPlayPause');
-  if (botaoPlay) botaoPlay.addEventListener('click', alternarPlayPause);
-
-  const botaoReplay = document.getElementById('btnReplay');
-  if (botaoReplay) botaoReplay.addEventListener('click', voltarCincoSegundos);
-
-  document.querySelectorAll('.player-speed-btn').forEach((botao) => {
-    botao.addEventListener('click', () => aplicarVelocidade(parseFloat(botao.dataset.speed)));
-  });
-
-  configurarBarraDeProgresso();
-  aplicarVelocidade(velocidadeAtual);
-}
+});
 
 function alternarFavorito(nomeDoTermo) {
   if (!progressoDisponivel()) return;
@@ -577,7 +353,7 @@ function exibirTermoAtual() {
   }
 
   if (termoAtual.youtubeId) {
-    carregarVideo(extrairIdDoVideo(termoAtual.youtubeId));
+    atualizarVideo(termoAtual.youtubeId);
   }
 
   const botaoFavorito = document.getElementById('btnMainFav');
@@ -636,10 +412,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (termoAtual) alternarFavorito(termoAtual.term);
   });
 
-  /* Barra de controles customizada: play/pause, voltar 5s, velocidade e
-     progresso. Fica ligada uma única vez, independente do termo exibido. */
-  configurarControlesDoPlayer();
-
   /* Sempre que o progresso vier do Supabase (login/troca de conta),
      a interface é reconstruída com os dados da conta do usuário. */
   window.addEventListener('progresso-carregado', () => {
@@ -668,11 +440,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   exibirTermoAtual();
-
-  /* Rede de segurança: se a API do YouTube já estava carregada quando este
-     script rodou, o callback global teria disparado antes desta declaração.
-     Como o alvo é o <div id="ytPlayer">, inicializa o player de qualquer forma. */
-  if (!playerYT && typeof YT !== 'undefined' && YT.Player) {
-    onYouTubeIframeAPIReady();
-  }
 });
