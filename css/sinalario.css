@@ -538,16 +538,27 @@
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
   background-color: #000000;
+  /* Altura da faixa que escondemos no topo do player (título, canal e
+     compartilhar). Fica em variável para facilitar o ajuste fino caso o
+     YouTube mude a altura da barra. As regras de tamanho da Coluna 2
+     (680px de largura / 383px de teto / 16:9) continuam intocadas. */
+  --yt-faixa-superior: 60px;
 }
 
+/* O título do vídeo, a foto do canal e o botão de compartilhar vivem nos
+   primeiros ~60px do iframe e não podem ser removidos via CSS/DOM (conteúdo
+   de outra origem). A solução é esticar o iframe para cima e devolver a
+   mesma altura na base: o overflow: hidden do wrapper clipe exatamente essa
+   faixa, então sobra só o vídeo — sem moldura, sem logo e sem distorção. */
 .video-wrapper-yt iframe {
   position: absolute;
-  inset: 0;
+  top: calc(-1 * var(--yt-faixa-superior));
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% + var(--yt-faixa-superior));
   border: 0;
   display: block;
-  /* o player nunca é cortado nem distorcido */
+  /* o player nunca é deformado */
   object-fit: contain;
 }
 

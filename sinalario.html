@@ -6,7 +6,7 @@
   <title>T.I Libras - Sinalário</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css?v=31">
+  <link rel="stylesheet" href="css/sinalario.css?v=32">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -102,10 +102,13 @@
           <h3 class="info-card-title">Vídeo do sinal</h3>
         </div>
 
+        <!-- Player com a interface limpa (sem título, foto do canal nem botão de
+             compartilhar) e em loop infinito. A mesma string de parâmetros é
+             remontada pelo JS a cada troca de termo (ver js/sinalario.js) -->
         <div class="video-wrapper-yt">
           <iframe
             id="ytPlayer"
-            src="https://www.youtube.com/embed/?enablejsapi=1&rel=0"
+            src="https://www.youtube.com/embed/x2uwlO43nas?modestbranding=1&rel=0&controls=1&loop=1&playlist=x2uwlO43nas&autoplay=1&enablejsapi=1"
             title="Vídeo do Sinal em Libras"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen>
@@ -166,6 +169,6 @@
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=28"></script>
+  <script src="js/sinalario.js?v=29"></script>
 </body>
 </html>

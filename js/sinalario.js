@@ -75,6 +75,7 @@ let playerYT = null;
 let ytPronto = false;
 let videoIdPendente = '';
 let timerDoVisto = null;
+let vigiaDoVideo = null;
 let visto = { termo: null, tempoOk: false, videoTerminou: false };
 
 function normalizar(texto) {
@@ -118,30 +119,104 @@ function marcarComoVisto() {
   if (window.Progresso.adicionarSinalVisto(visto.termo)) renderizarLista();
 }
 
+/* ------------------------- Player do YouTube ------------------------- */
+
+/* Parâmetros oficiais do player: interface limpa + loop infinito.
+   · modestbranding=1 + rel=0  → sem logos invasivas e sem recomendação de
+     vídeos de outros canais no final;
+   · controls=1                → mantém os controles nativos de play/pause;
+   · loop=1 & playlist={ID}    → reinicia o vídeo automaticamente no fim;
+   · autoplay=1                → inicia o sinal assim que o termo é escolhido.
+   enablejsapi=1 continua no fim da string porque a API do YouTube é quem
+   controla a troca de vídeo do card central. */
+function montarUrlDoVideo(videoId) {
+  const id = videoId || '';
+  return `https://www.youtube.com/embed/${id}?modestbranding=1&rel=0&controls=1&loop=1&playlist=${id}&autoplay=1&enablejsapi=1`;
+}
+
+/* ID do vídeo do termo que está no card central (vazio se ainda não houver) */
+function videoIdDoTermoAtual() {
+  return termoAtual ? extrairIdDoVideo(termoAtual.youtubeId) : '';
+}
+
+/* Com loop infinito o evento ENDED pode nunca disparar, porque o YouTube
+   reinicia o vídeo sozinho. Esta verificação periódica mantém o termo sendo
+   contabilizado como visto quando a reprodução chega ao fim. */
+function iniciarVigiaDoVideo() {
+  if (vigiaDoVideo) return;
+  vigiaDoVideo = setInterval(() => {
+    if (!playerYT || !ytPronto || !visto || !visto.termo || visto.videoTerminou) return;
+    if (typeof playerYT.getDuration !== 'function') return;
+
+    const duracao = playerYT.getDuration();
+    const atual = playerYT.getCurrentTime();
+    if (duracao > 0 && atual > 0 && atual >= duracao - 1) {
+      visto.videoTerminou = true;
+      marcarComoVisto();
+    }
+  }, 1000);
+}
+
 function carregarVideo(videoId) {
-  if (playerYT && ytPronto && videoId) {
+  if (!videoId) return;
+
+  if (playerYT && ytPronto) {
+    /* A API cuida do autoplay; o loop é garantido no handler de ENDED */
     playerYT.loadVideoById(videoId);
-  } else if (videoId) {
-    videoIdPendente = videoId;
+    return;
+  }
+
+  videoIdPendente = videoId;
+
+  /* Enquanto a API ainda não assumiu o iframe, a própria URL já aponta para o
+     vídeo com a mesma string de parâmetros (idêntica à do HTML inicial) */
+  if (typeof YT === 'undefined') {
+    const iframe = document.getElementById('ytPlayer');
+    if (iframe) iframe.src = montarUrlDoVideo(videoId);
   }
 }
 
 function onYouTubeIframeAPIReady() {
+  const idInicial = videoIdPendente || videoIdDoTermoAtual();
+
   playerYT = new YT.Player('ytPlayer', {
-    videoId: videoIdPendente || '',
-    playerVars: { rel: 0, modestbranding: 1 },
+    videoId: idInicial,
+    /* Mesmos parâmetros da URL: interface limpa, controles nativos,
+       loop infinito (playlist = próprio vídeo) e autoplay */
+    playerVars: {
+      modestbranding: 1,
+      rel: 0,
+      controls: 1,
+      loop: 1,
+      playlist: idInicial,
+      autoplay: 1
+    },
     events: {
       onReady: () => {
         ytPronto = true;
-        if (videoIdPendente) {
+        iniciarVigiaDoVideo();
+
+        /* Termo trocado antes do player ficar pronto: aplica agora */
+        if (videoIdPendente && videoIdPendente !== idInicial) {
           playerYT.loadVideoById(videoIdPendente);
-          videoIdPendente = '';
         }
+        videoIdPendente = '';
       },
       onStateChange: (evento) => {
-        if (evento.data === YT.PlayerState.ENDED && visto && visto.termo) {
+        if (evento.data !== YT.PlayerState.ENDED) return;
+
+        if (visto && visto.termo) {
           visto.videoTerminou = true;
           marcarComoVisto();
+        }
+
+        /* Loop infinito garantido: reinicia do zero mesmo quando o parâmetro
+           playlist ainda aponta para o vídeo anterior */
+        try {
+          playerYT.seekTo(0, true);
+          playerYT.playVideo();
+        } catch (erro) {
+          /* player indisponível (troca rápida de termo): ignora */
         }
       }
     }
