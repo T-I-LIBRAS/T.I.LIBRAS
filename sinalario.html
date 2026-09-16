@@ -6,7 +6,7 @@
   <title>T.I Libras - Sinalário</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css?v=32">
+  <link rel="stylesheet" href="css/sinalario.css?v=33">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -102,17 +102,79 @@
           <h3 class="info-card-title">Vídeo do sinal</h3>
         </div>
 
-        <!-- Player com a interface limpa (sem título, foto do canal nem botão de
-             compartilhar) e em loop infinito. A mesma string de parâmetros é
-             remontada pelo JS a cada troca de termo (ver js/sinalario.js) -->
+        <!-- Player 100% controlado pela YouTube Iframe Player API. O alvo é um
+             <div> vazio porque o próprio YT.Player cria e substitui o iframe —
+             não existe mais troca manual de src. Nada de CSS "empurrando" o
+             vídeo para esconder o topo: a barra nativa pesada do YouTube fica
+             desligada pelos playerVars (controls: 0) e os comandos passam a ser
+             a barra customizada do design system logo abaixo do vídeo. -->
         <div class="video-wrapper-yt">
-          <iframe
-            id="ytPlayer"
-            src="https://www.youtube.com/embed/x2uwlO43nas?modestbranding=1&rel=0&controls=1&loop=1&playlist=x2uwlO43nas&autoplay=1&enablejsapi=1"
-            title="Vídeo do Sinal em Libras"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
+          <div id="ytPlayer"></div>
+        </div>
+
+        <!-- Barra de controles customizada (design system da aplicação) -->
+        <div class="player-controls" id="playerControls">
+
+          <!-- Barra de progresso fina: clique ou arraste para avançar/voltar -->
+          <div
+            class="player-progress"
+            id="playerProgress"
+            role="slider"
+            tabindex="0"
+            aria-label="Progresso do vídeo"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0">
+            <span class="player-progress-buffer" id="playerProgressBuffer"></span>
+            <span class="player-progress-fill" id="playerProgressFill"></span>
+          </div>
+
+          <div class="player-controls-row">
+            <div class="player-controls-left">
+              <button
+                class="player-btn"
+                id="btnPlayPause"
+                type="button"
+                title="Play / Pause"
+                aria-label="Reproduzir vídeo">
+                <i class="fa-solid fa-play"></i>
+              </button>
+
+              <button
+                class="player-btn"
+                id="btnReplay"
+                type="button"
+                title="Voltar 5 segundos"
+                aria-label="Voltar 5 segundos">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+
+              <!-- Com controls: 0 a barra nativa do YouTube some junto com o
+                   botão de som, e o autoplay só é liberado pelo navegador em
+                   vídeo mudo. Sem este botão o sinal ficaria silencioso para
+                   sempre, por isso ele é o único controle extra da barra. -->
+              <button
+                class="player-btn"
+                id="btnMute"
+                type="button"
+                title="Ativar som"
+                aria-label="Ativar som">
+                <i class="fa-solid fa-volume-xmark"></i>
+              </button>
+
+              <span class="player-time" id="playerTime">0:00 / 0:00</span>
+            </div>
+
+            <div
+              class="player-speeds"
+              id="playerSpeeds"
+              role="group"
+              aria-label="Velocidade de reprodução">
+              <button class="player-speed-btn" type="button" data-speed="0.5" aria-label="Velocidade 0.5x">0.5x</button>
+              <button class="player-speed-btn" type="button" data-speed="0.75" aria-label="Velocidade 0.75x">0.75x</button>
+              <button class="player-speed-btn active" type="button" data-speed="1" aria-label="Velocidade 1x">1x</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -169,6 +231,6 @@
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=29"></script>
+  <script src="js/sinalario.js?v=30"></script>
 </body>
 </html>

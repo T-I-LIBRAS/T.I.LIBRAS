@@ -78,6 +78,10 @@ let timerDoVisto = null;
 let vigiaDoVideo = null;
 let visto = { termo: null, tempoOk: false, videoTerminou: false };
 
+/* Estado da barra de controles customizada */
+let velocidadeAtual = 1;      /* 0.5x / 0.75x / 1x — câmera lenta da Libras */
+let arrastandoBarra = false;  /* trava o relógio enquanto o usuário arrasta */
+
 function normalizar(texto) {
   return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -121,32 +125,133 @@ function marcarComoVisto() {
 
 /* ------------------------- Player do YouTube ------------------------- */
 
-/* Parâmetros oficiais do player: interface limpa + loop infinito.
-   · modestbranding=1 + rel=0  → sem logos invasivas e sem recomendação de
-     vídeos de outros canais no final;
-   · controls=1                → mantém os controles nativos de play/pause;
-   · loop=1 & playlist={ID}    → reinicia o vídeo automaticamente no fim;
-   · autoplay=1                → inicia o sinal assim que o termo é escolhido.
-   enablejsapi=1 continua no fim da string porque a API do YouTube é quem
-   controla a troca de vídeo do card central. */
-function montarUrlDoVideo(videoId) {
-  const id = videoId || '';
-  return `https://www.youtube.com/embed/${id}?modestbranding=1&rel=0&controls=1&loop=1&playlist=${id}&autoplay=1&enablejsapi=1`;
-}
+/* A partir daqui o vídeo é 100% controlado pela YouTube Iframe Player API
+   (script https://www.youtube.com/iframe_api carregado no <head>): não existe
+   mais troca manual de src no iframe e nenhuma regra de CSS desloca o player
+   para esconder a barra nativa — quem esconde é o playerVars abaixo. */
+
+/* Parâmetros oficiais do player.
+   · controls: 0      → desliga a barra nativa pesada do YouTube; todos os
+     comandos vêm da barra customizada do design system (logo abaixo do vídeo);
+   · modestbranding: 1 + rel: 0 → sem logos invasivas e sem recomendação de
+     vídeos de outros canais no fim;
+   · loop: 1          → o sinal reinicia sozinho (reforçado no handler de
+     ENDED, que também cobre o loop após um loadVideoById);
+   · autoplay: 1      → inicia o sinal assim que o termo é escolhido. */
+const PARAMETROS_DO_PLAYER = {
+  controls: 0,
+  modestbranding: 1,
+  rel: 0,
+  loop: 1,
+  autoplay: 1
+};
 
 /* ID do vídeo do termo que está no card central (vazio se ainda não houver) */
 function videoIdDoTermoAtual() {
   return termoAtual ? extrairIdDoVideo(termoAtual.youtubeId) : '';
 }
 
+/* O objeto só responde aos getters depois que a API termina o onReady */
+function playerDisponivel() {
+  return typeof YT !== 'undefined'
+    && !!playerYT
+    && ytPronto
+    && typeof playerYT.getDuration === 'function';
+}
+
+function formatarTempo(segundos) {
+  const total = Number.isFinite(segundos) && segundos > 0 ? Math.floor(segundos) : 0;
+  const minutos = Math.floor(total / 60);
+  const resto = total % 60;
+  return `${minutos}:${String(resto).padStart(2, '0')}`;
+}
+
+/* ------------------ Espelho visual dos controles ------------------ */
+
+function atualizarBotaoPlayPause() {
+  const botao = document.getElementById('btnPlayPause');
+  if (!botao) return;
+
+  const tocando = playerDisponivel()
+    && typeof playerYT.getPlayerState === 'function'
+    && playerYT.getPlayerState() === YT.PlayerState.PLAYING;
+
+  botao.innerHTML = tocando
+    ? '<i class="fa-solid fa-pause"></i>'
+    : '<i class="fa-solid fa-play"></i>';
+  botao.setAttribute('aria-label', tocando ? 'Pausar vídeo' : 'Reproduzir vídeo');
+  botao.title = tocando ? 'Pausar' : 'Reproduzir';
+}
+
+/* O navegador só libera o autoplay de vídeo MUDO e, com controls: 0, a barra
+   nativa do YouTube leva embora o botão de som. Este é o espelho desse botão,
+   sem o qual o sinal ficaria silencioso e sem saída para o usuário. */
+function atualizarBotaoSom() {
+  const botao = document.getElementById('btnMute');
+  if (!botao) return;
+
+  const mudo = !playerDisponivel() || playerYT.isMuted();
+
+  botao.innerHTML = mudo
+    ? '<i class="fa-solid fa-volume-xmark"></i>'
+    : '<i class="fa-solid fa-volume-high"></i>';
+  botao.setAttribute('aria-label', mudo ? 'Ativar som' : 'Desativar som');
+  botao.title = mudo ? 'Ativar som' : 'Desativar som';
+}
+
+function alternarSom() {
+  if (!playerDisponivel()) return;
+
+  if (playerYT.isMuted()) {
+    playerYT.unMute();
+    playerYT.setVolume(100);
+  } else {
+    playerYT.mute();
+  }
+  atualizarBotaoSom();
+}
+
+/* Pinta a trilha, a bolinha e o relógio de uma vez (usado pelo tique
+   automático, pelo arraste e pelo teclado) */
+function pintarProgresso(porcentagem, atual, duracao) {
+  const preenchimento = document.getElementById('playerProgressFill');
+  const barra = document.getElementById('playerProgress');
+  const relogio = document.getElementById('playerTime');
+
+  if (preenchimento) preenchimento.style.width = `${porcentagem}%`;
+  if (barra) barra.setAttribute('aria-valuenow', String(Math.round(porcentagem)));
+  if (relogio) relogio.textContent = `${formatarTempo(atual)} / ${formatarTempo(duracao)}`;
+}
+
+function atualizarBarraDeProgresso() {
+  if (arrastandoBarra || !playerDisponivel()) return;
+
+  const duracao = playerYT.getDuration();
+  const atual = playerYT.getCurrentTime();
+  const porcentagem = duracao > 0
+    ? Math.min(100, Math.max(0, (atual / duracao) * 100))
+    : 0;
+
+  pintarProgresso(porcentagem, atual, duracao);
+
+  /* Trecho já carregado: some com a estimativa quando o player ainda não a tem */
+  if (typeof playerYT.getVideoLoadedFraction === 'function') {
+    const buffer = document.getElementById('playerProgressBuffer');
+    if (buffer) buffer.style.width = `${playerYT.getVideoLoadedFraction() * 100}%`;
+  }
+}
+
 /* Com loop infinito o evento ENDED pode nunca disparar, porque o YouTube
-   reinicia o vídeo sozinho. Esta verificação periódica mantém o termo sendo
-   contabilizado como visto quando a reprodução chega ao fim. */
+   reinicia o vídeo sozinho. Este tique periódico mantém a barra viva e
+   contabiliza o termo como visto quando a reprodução chega ao fim. */
 function iniciarVigiaDoVideo() {
   if (vigiaDoVideo) return;
   vigiaDoVideo = setInterval(() => {
-    if (!playerYT || !ytPronto || !visto || !visto.termo || visto.videoTerminou) return;
-    if (typeof playerYT.getDuration !== 'function') return;
+    if (!playerDisponivel()) return;
+
+    atualizarBarraDeProgresso();
+
+    if (!visto || !visto.termo || visto.videoTerminou) return;
 
     const duracao = playerYT.getDuration();
     const atual = playerYT.getCurrentTime();
@@ -154,26 +259,25 @@ function iniciarVigiaDoVideo() {
       visto.videoTerminou = true;
       marcarComoVisto();
     }
-  }, 1000);
+  }, 250);
 }
 
 function carregarVideo(videoId) {
   if (!videoId) return;
 
   if (playerYT && ytPronto) {
+    /* Zera barra e relógio na hora: sem isso o termo novo ficaria exibindo a
+       posição do anterior enquanto o vídeo carrega */
+    pintarProgresso(0, 0, 0);
+
     /* A API cuida do autoplay; o loop é garantido no handler de ENDED */
     playerYT.loadVideoById(videoId);
     return;
   }
 
+  /* API ainda não pronta (primeira carga): o ID fica guardado e o
+     onYouTubeIframeAPIReady já monta o player no vídeo certo */
   videoIdPendente = videoId;
-
-  /* Enquanto a API ainda não assumiu o iframe, a própria URL já aponta para o
-     vídeo com a mesma string de parâmetros (idêntica à do HTML inicial) */
-  if (typeof YT === 'undefined') {
-    const iframe = document.getElementById('ytPlayer');
-    if (iframe) iframe.src = montarUrlDoVideo(videoId);
-  }
 }
 
 function onYouTubeIframeAPIReady() {
@@ -181,28 +285,48 @@ function onYouTubeIframeAPIReady() {
 
   playerYT = new YT.Player('ytPlayer', {
     videoId: idInicial,
-    /* Mesmos parâmetros da URL: interface limpa, controles nativos,
-       loop infinito (playlist = próprio vídeo) e autoplay */
-    playerVars: {
-      modestbranding: 1,
-      rel: 0,
-      controls: 1,
-      loop: 1,
-      playlist: idInicial,
-      autoplay: 1
-    },
+    /* O card do vídeo é quem define o tamanho real (680px de teto + 16:9 do
+       .video-wrapper-yt). Passar as porcentagens aqui evita que o iframe
+       nasça com os 640x390 padrão da API antes do CSS entrar em ação. */
+    width: '100%',
+    height: '100%',
+    /* controls: 0 → a interface nativa pesada Some; o resto (modestbranding,
+       rel, loop e autoplay) mantém o sinal limpo e em repetição contínua */
+    playerVars: PARAMETROS_DO_PLAYER,
     events: {
       onReady: () => {
         ytPronto = true;
+
+        /* A API volta para 1x ao carregar um vídeo novo: reaplica a
+           velocidade escolhida no seletor e sincroniza os controles */
+        if (typeof playerYT.setPlaybackRate === 'function') {
+          playerYT.setPlaybackRate(velocidadeAtual);
+        }
+        atualizarBotaoPlayPause();
+        atualizarBotaoSom();
+        atualizarBarraDeProgresso();
         iniciarVigiaDoVideo();
 
-        /* Termo trocado antes do player ficar pronto: aplica agora */
+        /* Termo trocado antes de o player ficar pronto: aplica agora */
         if (videoIdPendente && videoIdPendente !== idInicial) {
           playerYT.loadVideoById(videoIdPendente);
         }
         videoIdPendente = '';
       },
       onStateChange: (evento) => {
+        /* Cada troca de estado revalida o ícone (o YouTube também pausa
+           sozinho quando a aba perde o foco, por exemplo) */
+        atualizarBotaoPlayPause();
+        atualizarBotaoSom();
+
+        if (evento.data === YT.PlayerState.PLAYING) {
+          if (typeof playerYT.setPlaybackRate === 'function') {
+            playerYT.setPlaybackRate(velocidadeAtual);
+          }
+          atualizarBarraDeProgresso();
+          return;
+        }
+
         if (evento.data !== YT.PlayerState.ENDED) return;
 
         if (visto && visto.termo) {
@@ -221,6 +345,123 @@ function onYouTubeIframeAPIReady() {
       }
     }
   });
+}
+
+/* ------------------- Barra de controles customizada ------------------- */
+
+function aplicarVelocidade(velocidade) {
+  velocidadeAtual = velocidade;
+
+  document.querySelectorAll('.player-speed-btn').forEach((botao) => {
+    const ativo = parseFloat(botao.dataset.speed) === velocidade;
+    botao.classList.toggle('active', ativo);
+    botao.setAttribute('aria-pressed', ativo ? 'true' : 'false');
+  });
+
+  if (playerDisponivel() && typeof playerYT.setPlaybackRate === 'function') {
+    playerYT.setPlaybackRate(velocidade);
+  }
+}
+
+function alternarPlayPause() {
+  if (!playerDisponivel()) return;
+
+  if (playerYT.getPlayerState() === YT.PlayerState.PLAYING) {
+    playerYT.pauseVideo();
+  } else {
+    playerYT.playVideo();
+  }
+  atualizarBotaoPlayPause();
+}
+
+/* Replay: volta 5 segundos para rever o sinal sem reiniciar o vídeo */
+function voltarCincoSegundos() {
+  if (!playerDisponivel()) return;
+
+  playerYT.seekTo(Math.max(0, playerYT.getCurrentTime() - 5), true);
+  atualizarBarraDeProgresso();
+}
+
+function buscarPosicaoNaBarra(evento) {
+  const barra = document.getElementById('playerProgress');
+  if (!barra) return 0;
+
+  const caixa = barra.getBoundingClientRect();
+  const proporcao = caixa.width > 0 ? (evento.clientX - caixa.left) / caixa.width : 0;
+  return Math.min(1, Math.max(0, proporcao));
+}
+
+function aplicarPosicaoNaBarra(proporcao) {
+  if (!playerDisponivel()) return;
+
+  const duracao = playerYT.getDuration();
+  if (!duracao) return;
+
+  const alvo = proporcao * duracao;
+  playerYT.seekTo(alvo, true);
+  pintarProgresso(proporcao * 100, alvo, duracao);
+}
+
+function configurarBarraDeProgresso() {
+  const barra = document.getElementById('playerProgress');
+  if (!barra) return;
+
+  /* Clique simples: salta direto para o ponto clicado */
+  barra.addEventListener('click', (evento) => {
+    aplicarPosicaoNaBarra(buscarPosicaoNaBarra(evento));
+  });
+
+  /* Arraste: segue o ponteiro enquanto o botão estiver pressionado */
+  barra.addEventListener('pointerdown', (evento) => {
+    arrastandoBarra = true;
+    if (barra.setPointerCapture) barra.setPointerCapture(evento.pointerId);
+    aplicarPosicaoNaBarra(buscarPosicaoNaBarra(evento));
+
+    const aoMover = (movimento) => aplicarPosicaoNaBarra(buscarPosicaoNaBarra(movimento));
+    const aoSoltar = () => {
+      arrastandoBarra = false;
+      barra.removeEventListener('pointermove', aoMover);
+      barra.removeEventListener('pointerup', aoSoltar);
+      barra.removeEventListener('pointercancel', aoSoltar);
+    };
+
+    barra.addEventListener('pointermove', aoMover);
+    barra.addEventListener('pointerup', aoSoltar);
+    barra.addEventListener('pointercancel', aoSoltar);
+  });
+
+  /* Teclado (a barra é focável): setas avançam/voltam 5 segundos */
+  barra.addEventListener('keydown', (evento) => {
+    if (evento.key !== 'ArrowRight' && evento.key !== 'ArrowLeft') return;
+    if (!playerDisponivel()) return;
+
+    const duracao = playerYT.getDuration();
+    if (!duracao) return;
+
+    const passo = evento.key === 'ArrowRight' ? 5 : -5;
+    const alvo = Math.min(duracao, Math.max(0, playerYT.getCurrentTime() + passo));
+    evento.preventDefault();
+    playerYT.seekTo(alvo, true);
+    pintarProgresso((alvo / duracao) * 100, alvo, duracao);
+  });
+}
+
+function configurarControlesDoPlayer() {
+  const botaoPlay = document.getElementById('btnPlayPause');
+  if (botaoPlay) botaoPlay.addEventListener('click', alternarPlayPause);
+
+  const botaoReplay = document.getElementById('btnReplay');
+  if (botaoReplay) botaoReplay.addEventListener('click', voltarCincoSegundos);
+
+  const botaoSom = document.getElementById('btnMute');
+  if (botaoSom) botaoSom.addEventListener('click', alternarSom);
+
+  document.querySelectorAll('.player-speed-btn').forEach((botao) => {
+    botao.addEventListener('click', () => aplicarVelocidade(parseFloat(botao.dataset.speed)));
+  });
+
+  configurarBarraDeProgresso();
+  aplicarVelocidade(velocidadeAtual);
 }
 
 function alternarFavorito(nomeDoTermo) {
@@ -401,6 +642,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (termoAtual) alternarFavorito(termoAtual.term);
   });
 
+  /* Barra de controles customizada: play/pause, voltar 5s, velocidade e
+     progresso. Fica ligada uma única vez, independente do termo exibido. */
+  configurarControlesDoPlayer();
+
   /* Sempre que o progresso vier do Supabase (login/troca de conta),
      a interface é reconstruída com os dados da conta do usuário. */
   window.addEventListener('progresso-carregado', () => {
@@ -429,4 +674,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   exibirTermoAtual();
+
+  /* Rede de segurança: se a API do YouTube já estava carregada quando este
+     script rodou, o callback global teria disparado antes desta declaração.
+     Como o alvo é o <div id="ytPlayer">, inicializa o player de qualquer forma. */
+  if (!playerYT && typeof YT !== 'undefined' && YT.Player) {
+    onYouTubeIframeAPIReady();
+  }
 });
