@@ -148,7 +148,12 @@ const player = new Plyr('#player', {
     rel: 0,                 // sem sugestões de outros vídeos no fim
     showinfo: 0,            // sem título/canal no topo do embed
     iv_load_policy: 3,      // sem cards e anotações sobre a imagem
-    modestbranding: 1       // marca d'água discreta
+    modestbranding: 1,      // marca d'água discreta
+    /* Estas duas chaves entram no playerVars do embed e são aplicadas por
+       último, então valem como palavra final: sem a barra cinza nativa do
+       YouTube e sem o teclado dele (quem responde às teclas é o Plyr) */
+    controls: 0,            // oculta a barra cinza nativa do YouTube
+    disablekb: 1            // desliga os atalhos de teclado do próprio YouTube
   },
   /* Rótulos em português: o Plyr só traz o inglês embutido */
   i18n: {

@@ -566,6 +566,20 @@
   aspect-ratio: 16 / 9;
 }
 
+/* Bloqueio da camada nativa do YouTube. O Plyr já manda controls: 0 no
+   playerVars, mas o YouTube continua sobrepondo título, "Assistir no YouTube"
+   e botões de compartilhar sobre a imagem ao passar o mouse (showinfo e
+   modestbranding foram descontinuados e hoje são ignorados). A saída é empurrar
+   essa faixa para fora da janela visível: o iframe vira 200% de altura e sobe
+   50%, e o YouTube — que centraliza o vídeo 16:9 dentro do iframe — desenha a
+   imagem exatamente na metade que aparece, de forma inteira e sem corte,
+   enquanto a faixa nativa nasce acima do que se vê.
+   O !important vence o posicionamento que o próprio plyr.css aplica ao iframe */
+.plyr__video-embed iframe {
+  top: -50% !important;
+  height: 200% !important;
+}
+
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px
    que separam a imagem dos exemplos na Coluna 3. O padding-bottom maior
