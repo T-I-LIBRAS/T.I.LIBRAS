@@ -142,11 +142,10 @@ const player = new Plyr('#player', {
   loop: { active: true },   // loop automático infinito
   autoplay: true,
   muted: true,              // mudo por padrão (indispensável para o autoplay)
-  /* Clique na imagem não dá play/pause. Além de evitar pausa por engano durante
-     o estudo, é o que impede o botão gigante que o YouTube desenha no centro da
-     própria imagem: ele só aparece com o vídeo pausado, e sem o clique que
-     pausa ele não chega a surgir. Play/pause seguem na barra roxa e no espaço */
-  clickToPlay: false,
+  /* Clique na imagem pausa/despausa normalmente (é o padrão do Plyr, mantido
+     aqui de forma explícita). É este flag que liga o clique na área do vídeo;
+     nenhum CSS bloqueia ponteiro no player */
+  clickToPlay: true,
   storage: { enabled: false },
   youtube: {
     noCookie: true,         // domínio youtube-nocookie: sem cookies de rastreio
