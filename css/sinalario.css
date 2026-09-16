@@ -472,15 +472,17 @@
 /* ------------------- Coluna 3 · Detalhamento do termo ------------------- */
 
 /* Coluna 3 · a largura fixa da trilha (350px) mais o align-items: stretch do
-   Grid dão a altura; de propósito não há height: 100% aqui, para não existir
-   card esticando sem um teto de max-height. Os cards ficam agrupados pelo gap
-   uniforme, sem espaçamento forçado */
+   Grid dão a altura. O height: 100% + justify-content: space-between abaixo
+   são o alinhamento automático: o último card é empurrado até a base exata da
+   linha, então o rodapé da coluna crava na régua das Colunas 1 e 2 sozinho,
+   sem depender de valores em pixel chutados. A folga que sobrar é distribuída
+   nos vãos, de forma imperceptível */
 .detalhes-column {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  /* gap levemente maior: 2px aqui descem 4px a base da coluna (2 vãos) */
+  justify-content: space-between;
   gap: 18px;
+  height: 100%;
   min-width: 0;
   min-height: 0;
 }
@@ -498,13 +500,12 @@
 }
 
 /* Exemplos (PT e Libras): agrupados abaixo da imagem, com respiro interno
-   maior e conteúdo centralizado verticalmente. Calibragem fina da base da
-   Coluna 3 — cada 1px de padding vertical aqui desce 4px a base (2px por
-   card) e cada 1px no gap da coluna desce 2px; as duas alavancas juntas
-   produzem os ~12px que faltavam. O min-height é piso para texto de 1 linha */
+   maior e conteúdo centralizado verticalmente. Como o alinhamento de base
+   agora é automático (space-between no container), este padding só define a
+   presença visual dos cards. O min-height é piso para texto de uma linha */
 .info-card--exemplo {
-  padding: 22px 20px;
-  min-height: 102px;
+  padding: 24px 20px;
+  min-height: 110px;
   display: flex;
   flex-direction: column;
   justify-content: center;
