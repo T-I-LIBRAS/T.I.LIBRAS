@@ -344,12 +344,15 @@ app-footer {
   border-radius: var(--raio);
 }
 
+/* Container base: ocupa 100% da largura útil da tela, sem teto de largura.
+   Páginas que precisam de coluna estreita definem o próprio max-width
+   (ex.: .quiz-container em quiz.css). */
 .container {
   flex: 1;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 16px clamp(16px, 3vw, 24px);
+  max-width: none;
+  margin: 0;
+  padding: 16px 24px;
   box-sizing: border-box;
 }
 

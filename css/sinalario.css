@@ -1,61 +1,50 @@
 /* =========================================================================
-   SINALÁRIO · Full width · Grid de 3 colunas com bases niveladas
-   Coluna 1 (320px): Filtros + lista de palavras (height 100%, scroll interno)
-   Coluna 2 (1fr)  : Header roxo + player 16:9 + definição (flex: 1 até a base)
-   Coluna 3 (360px): Imagem curta + Exemplos PT/Libras (space-between até a base)
-   Flat UI: zero sombras · cards brancos 100% opacos
+   SINALÁRIO · Layout flat de 3 colunas (full width)
+   -------------------------------------------------------------------------
+   Estrutura:
+     Coluna 1 (320px) · Filtros + lista de termos (scroll interno)
+     Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
+     Coluna 3 (360px) · Imagem do termo + Exemplos PT/Libras
+   Princípios: sem sombras, sem !important, sem larguras/alturas travadas
+   em pixels, tokens de cor herdados de style.css.
    ========================================================================= */
+
+/* ------------------------------- Tokens ------------------------------- */
 
 :root {
   --sl-lilas-suave: #ece4fd;
+  --sl-superficie: #ffffff;
+  --sl-superficie-alt: #f7f9ff;
+  --sl-borda: #e6ebff;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
 }
 
-/* ------------------ Container full width (sem teto de largura) ------------------ */
+/* --------------------- Container · grid full width --------------------- */
 
 .container.main-layout {
   display: grid;
   grid-template-columns: 320px 1fr 360px;
-  grid-auto-rows: auto;
   gap: 24px;
-  align-items: stretch;   /* as 3 colunas terminam na MESMA linha horizontal */
+  align-items: stretch;   /* as 3 colunas fecham na mesma linha de base */
   align-content: start;
-  width: 100%;
-  max-width: none;
-  margin: 0 auto;
-  padding: 16px 32px;
-  height: auto;
-  min-height: 0;
-  box-sizing: border-box;
 }
 
-/* Flat UI: nenhuma sombra em cards, botões, inputs ou containers */
-.container.main-layout,
-.container.main-layout *,
-.container.main-layout *::before,
-.container.main-layout *::after {
-  box-shadow: none !important;
-  text-shadow: none !important;
-}
-
-/* ------------------------------ Coluna 1 · Filtros ------------------------------ */
+/* ------------------- Coluna 1 · Filtros e termos ------------------- */
 
 .sidebar-filtros {
   display: flex;
   min-width: 0;
-  min-height: 0;
   height: 100%;
 }
 
-/* Card da coluna 1: ocupa a altura total da linha e rola por dentro */
+/* O card acompanha a altura da coluna; só a lista cede espaço */
 .filtros-panel {
-  width: 100%;
-  height: 100%;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background-color: #ffffff !important;
+  background-color: var(--sl-superficie);
   border: var(--borda);
   border-radius: var(--sl-raio);
   padding: 16px;
@@ -66,11 +55,10 @@
   flex: 0 0 auto;
   font-size: 1rem;
   font-weight: 800;
-  color: #101a3d;
+  color: var(--cor-texto);
   margin: 0 0 12px;
 }
 
-/* Campo do filtro com ícone Font Awesome 6 à esquerda */
 .filtros-field {
   flex: 0 0 auto;
   position: relative;
@@ -83,7 +71,7 @@
   position: absolute;
   left: 12px;
   font-size: 0.85rem;
-  color: #3c50b4;
+  color: var(--cor-primaria);
   pointer-events: none;
 }
 
@@ -92,7 +80,7 @@
   padding: 10px 12px 10px 36px;
   border: 1px solid #cfd9ee;
   border-radius: var(--sl-raio-sm);
-  background-color: #ffffff;
+  background-color: var(--sl-superficie);
   font-size: 0.85rem;
   font-weight: 600;
   color: #1a1d20;
@@ -111,7 +99,7 @@
 .search-box i {
   position: absolute;
   left: 12px;
-  color: #8e9cbd;
+  color: var(--cor-texto-suave);
   font-size: 0.8rem;
   pointer-events: none;
 }
@@ -122,13 +110,14 @@
   border: 1px solid #cfd9ee;
   border-radius: var(--sl-raio-sm);
   font-size: 0.85rem;
-  background-color: #ffffff;
+  background-color: var(--sl-superficie);
+  color: var(--cor-texto);
   outline: none;
   box-sizing: border-box;
 }
 
 .search-box input:focus {
-  border-color: #3c50b4;
+  border-color: var(--cor-primaria);
 }
 
 .terms-count {
@@ -136,14 +125,14 @@
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.6px;
-  color: #5a6a8f;
+  color: var(--cor-texto-suave);
   display: block;
   margin-bottom: 8px;
 }
 
-/* Lista de palavras: ocupa todo o espaço restante e rola por dentro */
+/* Lista: preenche o espaço restante do card e rola por dentro */
 .terms-list {
-  flex: 1 1 auto;
+  flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -183,7 +172,7 @@
   min-width: 0;
 }
 
-/* Texto da lista SEMPRE preto (alto contraste) */
+/* Nome do termo sempre preto (alto contraste) */
 .term-text strong {
   font-size: 0.88rem;
   font-weight: 700;
@@ -207,7 +196,7 @@
   cursor: pointer;
   font-size: 0.9rem;
   padding: 2px;
-  color: #8e9cbd;
+  color: var(--cor-texto-suave);
   flex-shrink: 0;
 }
 
@@ -222,29 +211,26 @@
   flex-shrink: 0;
 }
 
-.dot.purple { background: #783cc8; }
-.dot.blue { background: #3c8cdc; }
+.dot.purple { background: var(--cor-lilas); }
+.dot.blue { background: var(--cor-azul); }
 .dot.yellow { background: #f59e0b; }
 .dot.red { background: #ef4444; }
 .dot.green { background: #10b981; }
 
-/* --------------------------- Coluna 2 · Apresentação --------------------------- */
+/* ------------------- Coluna 2 · Apresentação do sinal ------------------- */
 
 .content-column {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   gap: 18px;
   min-width: 0;
   height: 100%;
 }
 
-/* Header roxo do termo (restrito ao topo da coluna central)
-   O !important é evitado de propósito: a cor da área é aplicada
-   via JavaScript (inline style) mantendo o código de cores do setor. */
+/* Header do termo: cor base roxa; o JavaScript aplica a cor da área */
 .term-header {
   flex: 0 0 auto;
-  background-color: #783cc8;
+  background-color: var(--cor-lilas);
   color: #ffffff;
   border-radius: var(--sl-raio-sm);
   padding: 18px 20px;
@@ -288,18 +274,18 @@
 }
 
 .btn-fav-large {
-  background-color: rgba(255, 255, 255, 0.18);
-  border: none;
-  border-radius: 50%;
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.18);
+  border: none;
+  border-radius: 50%;
   color: #ffffff;
   font-size: 1.1rem;
-  flex-shrink: 0;
+  cursor: pointer;
   transition: var(--transicao);
 }
 
@@ -307,7 +293,7 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player: 16:9 estrito, sem altura fixa */
+/* Player: 16:9 estrito, largura total da coluna, sem altura fixa */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
@@ -328,16 +314,16 @@
   display: block;
 }
 
-/* Definição: cresce até a base da coluna (rodapé alinhado com a coluna 1) */
+/* Definição: cresce até a base, alinhando com a Coluna 1 */
 .definicao-card {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #ffffff !important;
-  border: 1px solid #e6ebff;
+  background-color: var(--sl-superficie);
+  border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
-  padding: 16px;
+  padding: 18px 20px;
 }
 
 .definicao-head {
@@ -350,41 +336,41 @@
 .definicao-title {
   font-size: 1rem;
   font-weight: 800;
-  color: #783cc8;
+  color: var(--cor-lilas);
   margin: 0;
 }
 
 .definicao-card p {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: #101a3d;
+  color: var(--cor-texto);
   margin: 0;
 }
 
 /* Ícones circulares (Font Awesome 6) */
 .icon-circle {
+  flex-shrink: 0;
   width: 38px;
   height: 38px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
   font-size: 0.95rem;
 }
 
 .icon-circle.roxo {
-  background-color: #783cc8;
+  background-color: var(--cor-lilas);
   color: #ffffff;
 }
 
 .icon-circle.lilas {
   background-color: var(--sl-lilas-suave);
-  color: #783cc8;
+  color: var(--cor-lilas);
 }
 
-/* --------------------------- Coluna 3 · Detalhamento --------------------------- */
+/* ------------------- Coluna 3 · Detalhamento do termo ------------------- */
 
-/* Os 3 cards se distribuem na altura total: o último fecha na base */
+/* Cards compactos; o último fecha na base da coluna */
 .detalhes-column {
   display: flex;
   flex-direction: column;
@@ -394,24 +380,17 @@
   height: 100%;
 }
 
-/* Cards compactos, altura natural, sem sombra e 100% opacos */
 .info-card {
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  flex: 0 0 auto;
-  height: auto;
-  background-color: #ffffff !important;
-  border: 1px solid #e6ebff;
+  background-color: var(--sl-superficie);
+  border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
   padding: 18px;
 }
 
-.info-card--imagem {
-  flex: 0 0 auto;
-}
-
 .info-card--exemplo {
-  flex: 0 0 auto;
   padding: 14px 18px;
 }
 
@@ -426,14 +405,14 @@
 .info-card-title {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #783cc8;
+  color: var(--cor-lilas);
   margin: 0;
 }
 
 .info-card p {
   font-size: 0.92rem;
   line-height: 1.6;
-  color: #101a3d;
+  color: var(--cor-texto);
   margin: 0;
 }
 
@@ -441,16 +420,14 @@
   font-weight: 800;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  color: #101a3d;
 }
 
-/* Área da imagem: curta, limpa e centralizada */
+/* Imagem: moldura clara curta com o termo centralizado */
 .imagem-content {
   flex: 0 0 auto;
   height: 180px;
-  max-height: 200px;
-  background-color: #f7f9ff !important;
-  border: 1px solid #e6ebff;
+  background-color: var(--sl-superficie-alt);
+  border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio-sm);
   padding: 12px;
   display: flex;
@@ -470,7 +447,7 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  color: #8e9cbd;
+  color: var(--cor-texto-suave);
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -479,7 +456,7 @@
   font-size: 1.6rem;
 }
 
-/* ------------------------------ Scrollbars ------------------------------ */
+/* ------------------------------ Scrollbar ------------------------------ */
 
 .terms-list::-webkit-scrollbar {
   width: 6px;
@@ -492,6 +469,8 @@
 
 /* ------------------------------ Responsivo ------------------------------ */
 
+/* Em telas menores as colunas deixam de dividir a linha e o scroll
+   interno da lista passa a ser limitado pela viewport (nunca por pixels). */
 @media (max-width: 1240px) {
   .container.main-layout {
     grid-template-columns: 300px minmax(0, 1fr);
@@ -506,11 +485,10 @@
 
   .filtros-panel {
     height: auto;
-    max-height: 620px;
   }
 
   .terms-list {
-    max-height: 460px;
+    max-height: 60vh;
   }
 
   .definicao-card {
@@ -522,32 +500,20 @@
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    justify-content: normal;
     align-items: start;
-  }
-
-  .info-card--imagem {
-    grid-column: auto;
   }
 }
 
 @media (max-width: 820px) {
   .container.main-layout {
     grid-template-columns: minmax(0, 1fr);
-    padding: 12px 16px;
     gap: 16px;
-  }
-
-  .content-column {
-    height: auto;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .detalhes-column {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .info-card--imagem {
-    grid-column: auto;
   }
 
   .term-title-row h2 {
@@ -556,7 +522,6 @@
 
   .imagem-content {
     height: 200px;
-    max-height: 220px;
   }
 
   .imagem-content img {
