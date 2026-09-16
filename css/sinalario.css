@@ -2,20 +2,23 @@
    SINALÁRIO · Layout flat de 3 colunas (full width)
    -------------------------------------------------------------------------
    Estrutura:
-     Coluna 1 (320px)  · Filtros + lista de termos (scroll interno)
-     Coluna 2 (centro) · Header roxo + player 16:9 + definição do termo
-     Coluna 3 (360px)  · Imagem do termo + Exemplos PT/Libras
-   Modelo de altura (as 3 bases fecham rigorosamente na mesma linha):
-     · Grid com align-items: stretch → as 3 colunas filhas esticam até a base
-       da linha, definida pelo maior conteúdo
+     Coluna 1 (320px) · Filtros + lista de termos (scroll interno)
+     Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
+     Coluna 3 (360px) · Imagem do termo (280px) + Exemplos PT/Libras
+   Modelo de altura (as 3 bases fecham na mesma linha, logo acima do rodapé):
+     · Container em width/max-width 100% com padding lateral de 24px: nenhum
+       teto de largura e nenhuma centralização — o bloco abre até as pontas
+     · min-height: calc(100vh - 140px) dá o piso até o rodapé e, com
+       align-content: stretch, a linha do Grid cresce junto com ele
+     · align-items: stretch estica as 3 colunas até essa mesma linha
      · Coluna 1: height: 100% no card; o teto (--sl-teto-lista) fica na lista
        para muitas palavras não inflarem a linha — ela rola por dentro
      · Coluna 2: o card de definição (flex-grow 1) absorve a sobra abaixo do
        player e encosta na linha de base
-     · Coluna 3: height: 100% + margin-top: auto no último exemplo, que fica
-       travado na mesma base
-     · Coluna do meio limitada (minmax(400px, 680px)) e player com teto de
-       680x380: mesmo em tela larga ou com zoom out o vídeo não infla
+     · Coluna 3: height: 100% com os cards agrupados por gap uniforme e a
+       moldura da imagem ampliada (280px) para fechar o topo da coluna
+     · Player com teto de 420px: acima disso a caixa fica mais larga que 16:9
+       e o iframe usa object-fit: contain (vídeo inteiro, sem distorção)
    Princípios: sem sombras, sem !important, tokens de cor de style.css.
    ========================================================================= */
 
@@ -35,20 +38,22 @@
 
 /* --------------------- Container · grid full width --------------------- */
 
-/* Grid de 3 colunas com a central limitada (minmax(400px, 680px)): é o que
-   impede o player de inflar em resoluções altas. justify-content: center
-   mantém o conjunto centralizado na tela e align-items: stretch estica as
-   colunas até a mesma linha de base. */
+/* Full width limpo: 100% de largura e apenas 24px de respiro lateral, sem
+   teto de largura centralizando o bloco. align-items: stretch iguala as 3
+   colunas na mesma linha e align-content: stretch faz essa linha crescer até
+   o piso de viewport (min-height) — assim as bases encostam juntas logo
+   acima do rodapé. */
 .container.main-layout {
   display: grid;
-  grid-template-columns: 320px minmax(400px, 680px) 360px;
-  justify-content: center;
-  gap: 24px;
+  grid-template-columns: 320px 1fr 360px;
+  gap: 20px;
   align-items: stretch;
+  align-content: stretch;
   width: 100%;
-  max-width: none;
+  max-width: 100%;
   margin: 0;
-  padding: 24px;
+  padding: 20px 24px;
+  min-height: calc(100vh - 140px);
   box-sizing: border-box;
   /* Altura pelo conteúdo do bloco (o flex não estica nem esmaga) */
   flex: 0 0 auto;
@@ -252,11 +257,11 @@
 
 /* Pilha da Coluna 2: header e player com altura de conteúdo; a definição
    (flex-grow 1) absorve a sobra e encosta na linha de base das outras
-   colunas. O gap de 16px mantém o ritmo compacto entre os blocos. */
+   colunas. Sem gap: o ritmo de 16px vem dos margin dos próprios blocos,
+   evitando espaçamento somado. */
 .content-column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
   min-width: 0;
   min-height: 0;
 }
@@ -327,17 +332,17 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player: 16:9 travado e com teto de tamanho. O teto de largura (680px)
-   acompanha o teto de altura (380px) em 16:9 — assim a caixa para de crescer
-   em telas largas ou com zoom out sem quebrar a proporção. */
+/* Player: 16:9 sempre que a largura permitir; o teto de 420px impede que ele
+   cresça sem limite em telas largas ou com zoom out. Quando esse teto entra
+   em ação a caixa fica mais larga que 16:9, e é o object-fit: contain do
+   iframe que mantém o vídeo inteiro, centralizado e sem distorção. */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
-  max-width: 680px;
-  max-height: 380px;
+  max-height: 420px;
   aspect-ratio: 16 / 9;
-  margin: 0 auto;
+  margin: 16px auto 0;
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
   background-color: #000000;
@@ -350,26 +355,27 @@
   height: 100%;
   border: 0;
   display: block;
-  /* contain: o player nunca é cortado, mesmo se a caixa variar 1px */
+  /* o player nunca é cortado nem distorcido */
   object-fit: contain;
 }
 
-/* Definição: cresce para consumir a sobra abaixo do player e fecha na mesma
-   linha de base das Colunas 1 e 3, com o conteúdo centralizado.
-   Usa flex-basis auto (e não flex: 1 puro) para que a altura natural do card
-   ainda conte no cálculo da linha do Grid — sem isso a linha poderia ficar
-   menor que o próprio card. */
+/* Definição: compacta e ajustada ao texto (padding 16px 20px) e colada no
+   player pelo margin-top: 16px. O flex-grow 1 faz o card consumir a sobra da
+   coluna e fechar na linha de base das Colunas 1 e 3, com o conteúdo
+   centralizado. Usa flex-basis auto (e não flex: 1 puro) para a altura
+   natural do card continuar contando no cálculo da linha do Grid. */
 .definicao-card {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   height: auto;
-  min-height: fit-content;
+  min-height: unset;
+  margin-top: 16px;
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
-  padding: 20px;
+  padding: 16px 20px;
 }
 
 .definicao-head {
@@ -416,8 +422,8 @@
 
 /* ------------------- Coluna 3 · Detalhamento do termo ------------------- */
 
-/* Coluna 3 · height: 100% fecha na base da linha; o último exemplo recebe
-   margin-top: auto e trava exatamente na mesma altura das Colunas 1 e 2 */
+/* Coluna 3 · ocupa toda a altura da linha (height: 100%) mantendo os cards
+   agrupados por um gap uniforme, sem espaçamento forçado entre eles */
 .detalhes-column {
   display: flex;
   flex-direction: column;
@@ -445,10 +451,8 @@
   padding: 16px 20px;
 }
 
-/* O último exemplo (Libras) absorve a sobra e trava o rodapé na base comum */
-.info-card--exemplo:last-child {
-  margin-top: auto;
-}
+/* O exemplo em Libras fecha a pilha naturalmente: sem margin automática,
+   nenhum vão branco é criado entre os cards */
 
 .info-card-head {
   display: flex;
@@ -478,11 +482,12 @@
   text-transform: uppercase;
 }
 
-/* Imagem: moldura clara compacta, travada em 180px */
+/* Imagem: moldura clara ampliada para preencher o topo da Coluna 3
+   (sem teto de max-height, só o piso de min-height) */
 .imagem-content {
   flex: 0 0 auto;
-  height: 180px;
-  max-height: 180px;
+  height: 280px;
+  min-height: 260px;
   background-color: var(--sl-superficie-alt);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio-sm);
@@ -494,7 +499,7 @@
 
 .imagem-content img {
   max-width: 100%;
-  max-height: 140px;
+  max-height: 240px;
   object-fit: contain;
   display: block;
 }
@@ -526,14 +531,17 @@
 
 /* ------------------------------ Responsivo ------------------------------ */
 
-/* Em telas menores as colunas deixam de dividir a linha: os tetos de altura
-   e o travamento de base saem de cena e sobra apenas o teto da lista. */
+/* Em telas menores as colunas deixam de dividir a linha: o piso de viewport,
+   o teto do player e o travamento de base saem de cena */
 @media (max-width: 1240px) {
   .container.main-layout {
     grid-template-columns: 300px minmax(0, 1fr);
     gap: 20px;
     align-items: start;
+    align-content: start;
     padding: 24px;
+    /* sem piso de viewport: o bloco volta a crescer com o conteúdo */
+    min-height: 0;
   }
 
   .sidebar-filtros,
@@ -541,12 +549,7 @@
     height: auto;
   }
 
-  .info-card--exemplo:last-child {
-    margin-top: 0;
-  }
-
   .video-wrapper-yt {
-    max-width: 100%;
     max-height: none;
   }
 
@@ -580,6 +583,7 @@
 
   .imagem-content {
     height: 200px;
+    min-height: 0;
   }
 
   .imagem-content img {
