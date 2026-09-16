@@ -6,7 +6,7 @@
   <title>T.I Libras - Sinalário</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css?v=34">
+  <link rel="stylesheet" href="css/sinalario.css?v=36">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -104,12 +104,20 @@
 
         <!-- Player 100% controlado pela YouTube Iframe Player API. O alvo é um
              <div> vazio porque o próprio YT.Player cria e substitui o iframe —
-             não existe mais troca manual de src. Nada de CSS "empurrando" o
-             vídeo para esconder o topo: a barra nativa pesada do YouTube fica
-             desligada pelos playerVars (controls: 0) e os comandos passam a ser
-             a barra customizada do design system logo abaixo do vídeo. -->
+             não existe mais troca manual de src. A barra nativa e os atalhos
+             do YouTube ficam desligados pelos playerVars (controls: 0) e os
+             comandos vêm da barra customizada logo abaixo do vídeo. -->
         <div class="video-wrapper-yt">
           <div id="ytPlayer"></div>
+
+          <!-- Máscara transparente sobre a tela do vídeo, com z-index acima do
+               iframe: nenhum clique nem hover alcança a interface do YouTube,
+               então o menu nativo, o link para o youtube.com e os botões
+               sobrepostos ficam inalcançáveis. É IRMÃ do #ytPlayer de propósito
+               — a API substitui esse <div> pelo iframe, e uma máscara filha
+               seria destruída junto. Nada aqui captura o ponteiro da barra
+               customizada, que vive fora deste wrapper. -->
+          <div class="video-overlay" aria-hidden="true"></div>
         </div>
 
         <!-- Barra de controles customizada (design system da aplicação) -->
@@ -149,19 +157,6 @@
                 <i class="fa-solid fa-rotate-left"></i>
               </button>
 
-              <!-- Com controls: 0 a barra nativa do YouTube some junto com o
-                   botão de som, e o autoplay só é liberado pelo navegador em
-                   vídeo mudo. Sem este botão o sinal ficaria silencioso para
-                   sempre, por isso ele é o único controle extra da barra. -->
-              <button
-                class="player-btn"
-                id="btnMute"
-                type="button"
-                title="Ativar som"
-                aria-label="Ativar som">
-                <i class="fa-solid fa-volume-xmark"></i>
-              </button>
-
               <span class="player-time" id="playerTime">0:00 / 0:00</span>
             </div>
 
@@ -170,6 +165,7 @@
               id="playerSpeeds"
               role="group"
               aria-label="Velocidade de reprodução">
+              <button class="player-speed-btn" type="button" data-speed="0.25" aria-label="Velocidade 0.25x">0.25x</button>
               <button class="player-speed-btn" type="button" data-speed="0.5" aria-label="Velocidade 0.5x">0.5x</button>
               <button class="player-speed-btn" type="button" data-speed="0.75" aria-label="Velocidade 0.75x">0.75x</button>
               <button class="player-speed-btn active" type="button" data-speed="1" aria-label="Velocidade 1x">1x</button>
@@ -231,6 +227,6 @@
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=31"></script>
+  <script src="js/sinalario.js?v=32"></script>
 </body>
 </html>

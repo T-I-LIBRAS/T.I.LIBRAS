@@ -141,9 +141,12 @@ function marcarComoVisto() {
    · showinfo: 0        → esconde título/canal no topo (parâmetro legado que
      o player ainda lê em algumas versões);
    · fs: 0              → desativa o botão nativo de tela cheia;
-   · iv_load_policy: 3  → oculta as anotações sobrepostas ao vídeo.
-   O autoplay: 1 e o loop: 1 são preservados: o sinal continua começando
-   sozinho ao escolher o termo e reiniciando no fim (reforçado no ENDED). */
+   · iv_load_policy: 3  → oculta as anotações sobrepostas ao vídeo;
+   · autoplay: 1        → o sinal começa sozinho ao escolher o termo;
+   · loop: 1            → reinicia no fim (reforçado no handler de ENDED).
+   O 'playlist' — obrigatório para o loop: 1 funcionar — não entra nesta
+   constante porque precisa apontar para o vídeo do termo atual: ele é
+   injetado no construtor, em onYouTubeIframeAPIReady. */
 const PARAMETROS_DO_PLAYER = {
   'controls': 0,
   'disablekb': 1,
@@ -191,34 +194,6 @@ function atualizarBotaoPlayPause() {
     : '<i class="fa-solid fa-play"></i>';
   botao.setAttribute('aria-label', tocando ? 'Pausar vídeo' : 'Reproduzir vídeo');
   botao.title = tocando ? 'Pausar' : 'Reproduzir';
-}
-
-/* O navegador só libera o autoplay de vídeo MUDO e, com controls: 0, a barra
-   nativa do YouTube leva embora o botão de som. Este é o espelho desse botão,
-   sem o qual o sinal ficaria silencioso e sem saída para o usuário. */
-function atualizarBotaoSom() {
-  const botao = document.getElementById('btnMute');
-  if (!botao) return;
-
-  const mudo = !playerDisponivel() || playerYT.isMuted();
-
-  botao.innerHTML = mudo
-    ? '<i class="fa-solid fa-volume-xmark"></i>'
-    : '<i class="fa-solid fa-volume-high"></i>';
-  botao.setAttribute('aria-label', mudo ? 'Ativar som' : 'Desativar som');
-  botao.title = mudo ? 'Ativar som' : 'Desativar som';
-}
-
-function alternarSom() {
-  if (!playerDisponivel()) return;
-
-  if (playerYT.isMuted()) {
-    playerYT.unMute();
-    playerYT.setVolume(100);
-  } else {
-    playerYT.mute();
-  }
-  atualizarBotaoSom();
 }
 
 /* Pinta a trilha, a bolinha e o relógio de uma vez (usado pelo tique
@@ -300,9 +275,13 @@ function onYouTubeIframeAPIReady() {
        nasça com os 640x390 padrão da API antes do CSS entrar em ação. */
     width: '100%',
     height: '100%',
-    /* controls: 0 → a interface nativa pesada Some; o resto (modestbranding,
-       rel, loop e autoplay) mantém o sinal limpo e em repetição contínua */
-    playerVars: PARAMETROS_DO_PLAYER,
+    /* Os playerVars desligam toda a interface nativa (ver PARAMETROS_DO_PLAYER).
+       O 'playlist' entra por fora porque precisa apontar para o vídeo do termo
+       atual — é ele que faz o loop: 1 valer no próprio player. */
+    playerVars: {
+      ...PARAMETROS_DO_PLAYER,
+      'playlist': idInicial
+    },
     events: {
       onReady: () => {
         ytPronto = true;
@@ -312,8 +291,13 @@ function onYouTubeIframeAPIReady() {
         if (typeof playerYT.setPlaybackRate === 'function') {
           playerYT.setPlaybackRate(velocidadeAtual);
         }
+        /* Libras é 100% visual: o sinal toca MUDO por padrão (e o navegador
+           só libera o autoplay assim mesmo). A instância é remontada a cada
+           troca de vídeo, então o mute é reaplicado aqui para não escapar
+           nenhum pico de áudio na troca de termo. */
+        playerYT.mute();
+
         atualizarBotaoPlayPause();
-        atualizarBotaoSom();
         atualizarBarraDeProgresso();
         iniciarVigiaDoVideo();
 
@@ -327,9 +311,12 @@ function onYouTubeIframeAPIReady() {
         /* Cada troca de estado revalida o ícone (o YouTube também pausa
            sozinho quando a aba perde o foco, por exemplo) */
         atualizarBotaoPlayPause();
-        atualizarBotaoSom();
 
         if (evento.data === YT.PlayerState.PLAYING) {
+          /* Rede de segurança: todo vídeo novo (loadVideoById) volta ao mudo
+             antes de aparecer na tela */
+          playerYT.mute();
+
           if (typeof playerYT.setPlaybackRate === 'function') {
             playerYT.setPlaybackRate(velocidadeAtual);
           }
@@ -462,9 +449,6 @@ function configurarControlesDoPlayer() {
 
   const botaoReplay = document.getElementById('btnReplay');
   if (botaoReplay) botaoReplay.addEventListener('click', voltarCincoSegundos);
-
-  const botaoSom = document.getElementById('btnMute');
-  if (botaoSom) botaoSom.addEventListener('click', alternarSom);
 
   document.querySelectorAll('.player-speed-btn').forEach((botao) => {
     botao.addEventListener('click', () => aplicarVelocidade(parseFloat(botao.dataset.speed)));

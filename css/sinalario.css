@@ -573,6 +573,24 @@
   pointer-events: none;
 }
 
+/* Máscara de vidro sobre a tela do vídeo. O iframe fica na camada de base e a
+   máscara declara z-index: 10, cobrindo 100% da área — nenhum clique, hover ou
+   toque chega à interface do YouTube (menu nativo, link para o youtube.com e
+   botões de play/pausa sobrepostos). É transparente de propósito: bloqueia a
+   interação sem tingir as cores nem escurecer o sinal.
+   O seletor é ancorado no wrapper de propósito: a regra acima usa
+   .video-wrapper-yt > div (especificidade maior) para deixar o iframe inerte,
+   e sem esta ancoragem ela também zeraria o pointer-events da máscara,
+   desligando justamente o bloqueio de cliques que queremos. */
+.video-wrapper-yt > .video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background-color: transparent;
+  pointer-events: auto;
+  cursor: default;
+}
+
 /* ------------------ Barra de controles customizada ------------------ */
 
 /* Fica logo abaixo da tela do vídeo, dentro do mesmo card branco, com a mesma
@@ -661,6 +679,9 @@
 
 .player-controls-row {
   display: flex;
+  /* Com as 4 pílulas de velocidade a linha fica larga: em telas estreitas ela
+     quebra em duas linhas em vez de estourar a largura da barra */
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -991,5 +1012,16 @@
 
   .imagem-content img {
     max-height: 170px;
+  }
+
+  /* Barra do player: as 4 velocidades deixam o rodapé apertado no celular,
+     então os botões e as pílulas encolhem juntos para nada vazar da borda */
+  .player-controls {
+    padding: 8px 10px;
+  }
+
+  .player-speed-btn {
+    padding: 4px 7px;
+    font-size: 0.72rem;
   }
 }
