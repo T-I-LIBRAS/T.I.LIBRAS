@@ -2,12 +2,12 @@
    SINALÁRIO · Layout flat de 3 colunas (full width)
    -------------------------------------------------------------------------
    Estrutura:
-     Coluna 1 (320px) · Filtros + lista de termos (scroll interno)
+     Coluna 1 (360px) · Filtros (Custom Select) + lista de termos (scroll interno)
      Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
-     Coluna 3 (360px) · Imagem do termo (280px) + Exemplos PT/Libras
+     Coluna 3 (350px) · Imagem do termo (272px) + Exemplos PT/Libras
    Modelo de altura (as 3 bases fecham na mesma linha, logo acima do rodapé):
-     · Bloco full width com teto de escala (max-width: 1500px + margin auto) e
-       colunas 330px / 1fr / 350px: as laterais mais largas esticam os cards
+     · Bloco full width com teto de escala (max-width: 1560px + margin auto) e
+       colunas 360px / 1fr / 350px: as laterais mais largas esticam os cards
        até as extremidades e a coluna do meio fica limitada pelo container
      · Zoom out não infla nada: o player para em 680px de largura, as colunas
        laterais têm largura fixa e a Coluna 1 não cresce porque a lista interna
@@ -46,20 +46,22 @@
 
 /* --------------------- Container · grid full width --------------------- */
 
-/* Laterais mais generosas (330px / 350px) esticadas até as extremidades, com
-   o teto de escala de 1500px (margin auto) segurando a inflação horizontal no
+/* Laterais mais generosas (360px / 350px) esticadas até as extremidades, com
+   o teto de escala de 1560px (margin auto) segurando a inflação horizontal no
    zoom out. align-items: stretch é a peça-chave: as 3 colunas esticam até a
    MESMA linha, definida pelo conteúdo das Colunas 2 e 3 — a Coluna 1 não
    contribui mais com a altura (a lista tem height: 0). align-content: start
    impede a linha de esticar junto com o piso de viewport. */
 .container.main-layout {
   display: grid;
-  grid-template-columns: 330px 1fr 350px;
+  /* Coluna 1 com 30px a mais (era 330px) para o Custom Select e os termos
+     respirarem melhor; Coluna 3 e a fração central seguem inalteradas */
+  grid-template-columns: 360px 1fr 350px;
   gap: 20px;
   align-items: stretch;
   align-content: start;
   width: 100%;
-  max-width: 1500px;
+  max-width: 1560px;
   margin: 0 auto;
   padding: 20px 28px;
   min-height: calc(100vh - 140px);
