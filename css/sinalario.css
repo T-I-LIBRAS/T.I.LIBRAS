@@ -82,11 +82,16 @@
   box-sizing: border-box;
 }
 
-/* O card ocupa a coluna inteira e fecha na base; quem cede é a lista */
+/* O card ocupa a coluna inteira e fecha na base; quem cede é a lista.
+   Nenhum height: auto/fit-content nem max-height variável aqui: a altura é
+   sempre 100% da coluna, que por sua vez mede a linha do Grid.
+   O space-between é rede de segurança — como a lista absorve toda a sobra
+   com flex: 1, não sobra espaço para ele distribuir nada */
 .filtros-panel {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   height: 100%;
   min-height: 0;
   background-color: var(--sl-superficie);
@@ -175,13 +180,14 @@
   margin-bottom: 8px;
 }
 
-/* Lista: única área rolável do layout. O par flex: 1 + height: 0 é o truque
-   que engessa o card: com altura 0 a lista não entra no cálculo da altura
-   intrínseca do card, então 2 ou 100 termos produzem exatamente a mesma
-   altura — o que passa disso rola aqui dentro. min-height: 0 libera o flex a
-   encolher abaixo do próprio conteúdo. */
+/* Lista: única área rolável do layout — e a única que absorve tamanho interno.
+   flex: 1 1 0px zera a base do flex e min-height: 0 libera o encolhimento; já
+   o height: 0 é o que tira a lista do cálculo da altura intrínseca do card
+   (sem ele, o conteúdo flex ainda empurra a borda inferior do card). Com os
+   três juntos, 1 ou 100 termos produzem exatamente a mesma altura de card, e
+   o excedente rola aqui dentro. */
 .terms-list {
-  flex: 1;
+  flex: 1 1 0px;
   height: 0;
   min-height: 0;
   overflow-y: auto;
@@ -491,11 +497,13 @@
 }
 
 /* Exemplos (PT e Libras): agrupados abaixo da imagem, com respiro interno
-   maior e conteúdo centralizado verticalmente (min-height garante presença
-   mesmo quando o texto é de uma linha só) */
+   maior e conteúdo centralizado verticalmente. O padding vertical é a alavanca
+   fina de altura da Coluna 3: cada 1px aqui desce 2px a base do card, e os
+   dois cards somam 4px — é o que nivela a Coluna 3 com a Coluna 2 e a 1.
+   O min-height serve de piso quando o texto tem só uma linha. */
 .info-card--exemplo {
-  padding: 18px 20px;
-  min-height: 85px;
+  padding: 20px 20px;
+  min-height: 92px;
   display: flex;
   flex-direction: column;
   justify-content: center;
