@@ -550,8 +550,12 @@
 
 /* O <div> alvo do YT.Player — e o iframe que a API cria no lugar dele — ocupa
    100% do container: mesma proporção 16:9, mesmo raio de 12px e nenhum
-   deslocamento. Como controls: 0 desliga a barra nativa pesada do YouTube,
-   não existe mais faixa alguma para esconder. */
+   deslocamento. Como controls: 0 desliga a barra nativa do YouTube, não existe
+   mais faixa alguma para esconder.
+   O pointer-events: none torna a tela do vídeo "de vidro": nenhum clique
+   alcança o iframe, então é impossível abrir o menu nativo do YouTube, cair no
+   site deles ou acionar controles/pausa sobrepostos. Toda a interação acontece
+   na barra customizada (que vive fora deste subtree, então segue 100% clicável). */
 .video-wrapper-yt iframe,
 .video-wrapper-yt > div {
   position: absolute;
@@ -566,6 +570,7 @@
   border-radius: var(--sl-raio-sm);
   display: block;
   transform: none;
+  pointer-events: none;
 }
 
 /* ------------------ Barra de controles customizada ------------------ */

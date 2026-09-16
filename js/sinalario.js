@@ -130,20 +130,30 @@ function marcarComoVisto() {
    mais troca manual de src no iframe e nenhuma regra de CSS desloca o player
    para esconder a barra nativa — quem esconde é o playerVars abaixo. */
 
-/* Parâmetros oficiais do player.
-   · controls: 0      → desliga a barra nativa pesada do YouTube; todos os
-     comandos vêm da barra customizada do design system (logo abaixo do vídeo);
-   · modestbranding: 1 + rel: 0 → sem logos invasivas e sem recomendação de
-     vídeos de outros canais no fim;
-   · loop: 1          → o sinal reinicia sozinho (reforçado no handler de
-     ENDED, que também cobre o loop após um loadVideoById);
-   · autoplay: 1      → inicia o sinal assim que o termo é escolhido. */
+/* Parâmetros do player. TODOS os controles nativos do YouTube são desligados
+   aqui — a interação fica 100% na barra customizada abaixo do vídeo (ver
+   .player-controls no CSS e configurarControlesDoPlayer no JS).
+   · controls: 0        → esconde a barra nativa de reprodução;
+   · disablekb: 1       → desativa os atalhos de teclado nativos (o teclado
+     continua funcionando, mas pela nossa barra de progresso);
+   · modestbranding: 1  → remove a marca d'água grande;
+   · rel: 0             → impede a grade de vídeos recomendados no final;
+   · showinfo: 0        → esconde título/canal no topo (parâmetro legado que
+     o player ainda lê em algumas versões);
+   · fs: 0              → desativa o botão nativo de tela cheia;
+   · iv_load_policy: 3  → oculta as anotações sobrepostas ao vídeo.
+   O autoplay: 1 e o loop: 1 são preservados: o sinal continua começando
+   sozinho ao escolher o termo e reiniciando no fim (reforçado no ENDED). */
 const PARAMETROS_DO_PLAYER = {
-  controls: 0,
-  modestbranding: 1,
-  rel: 0,
-  loop: 1,
-  autoplay: 1
+  'controls': 0,
+  'disablekb': 1,
+  'modestbranding': 1,
+  'rel': 0,
+  'showinfo': 0,
+  'fs': 0,
+  'iv_load_policy': 3,
+  'autoplay': 1,
+  'loop': 1
 };
 
 /* ID do vídeo do termo que está no card central (vazio se ainda não houver) */
