@@ -355,6 +355,18 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
+/* Cabeçalho do card de vídeo: mesmo padrão de identidade roxa dos headers
+   dos outros cards (ícone + rótulo), com o respiro de 8px até o player */
+.card-header-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #6C5CE7;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
 /* Player 16:9 com teto rígido de tamanho. A largura para em 680px (largura do
    player = largura dos cards acima/abaixo) e o max-height em 383px é o
    equivalente exato dessa largura em 16:9 — assim os dois tetos coincidem,
@@ -399,7 +411,7 @@
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
-  padding: 16px 16px 22px;
+  padding: 16px 16px 26px;
 }
 
 .definicao-head {
@@ -514,12 +526,12 @@
 }
 
 /* Imagem: moldura clara ampliada para preencher o topo da Coluna 3
-   (sem teto de max-height, só o piso de min-height). Os 4px a menos em
-   relação ao valor original afinam a coluna de forma imperceptível */
+   (sem teto de max-height, só o piso de min-height). Calibragem milimétrica:
+   4px a menos que compensam os 4px a mais no padding da definição */
 .imagem-content {
   flex: 0 0 auto;
-  height: 276px;
-  min-height: 256px;
+  height: 272px;
+  min-height: 252px;
   background-color: var(--sl-superficie-alt);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio-sm);
