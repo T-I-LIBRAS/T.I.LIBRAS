@@ -1,32 +1,30 @@
 /* =========================================================================
-   SINALÁRIO · Layout compacto · Grid de 3 colunas centrado
-   Coluna 1 (320px): Filtros + lista de palavras (scroll interno, teto 620px)
-   Coluna 2 (máx 520px): Header roxo + player 16:9 compacto + definição
-   Coluna 3 (340px): Imagem curta + Exemplos PT/Libras compactos
-   Flat UI: zero sombras · cards brancos 100% opacos · alturas naturais
+   SINALÁRIO · Full width · Grid de 3 colunas com bases niveladas
+   Coluna 1 (320px): Filtros + lista de palavras (height 100%, scroll interno)
+   Coluna 2 (1fr)  : Header roxo + player 16:9 + definição (flex: 1 até a base)
+   Coluna 3 (360px): Imagem curta + Exemplos PT/Libras (space-between até a base)
+   Flat UI: zero sombras · cards brancos 100% opacos
    ========================================================================= */
 
 :root {
   --sl-lilas-suave: #ece4fd;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
-  --sl-gap: 20px;
 }
 
-/* ---------------- Container centrado (largura máxima controlada) ---------------- */
+/* ------------------ Container full width (sem teto de largura) ------------------ */
 
 .container.main-layout {
   display: grid;
-  grid-template-columns: 320px minmax(420px, 520px) 340px;
+  grid-template-columns: 320px 1fr 360px;
   grid-auto-rows: auto;
-  justify-content: center;
-  gap: 20px;
-  align-items: start;     /* cada coluna com a altura natural do conteúdo */
+  gap: 24px;
+  align-items: stretch;   /* as 3 colunas terminam na MESMA linha horizontal */
   align-content: start;
   width: 100%;
-  max-width: 1380px;
+  max-width: none;
   margin: 0 auto;
-  padding: 16px;
+  padding: 16px 32px;
   height: auto;
   min-height: 0;
   box-sizing: border-box;
@@ -47,12 +45,13 @@
   display: flex;
   min-width: 0;
   min-height: 0;
+  height: 100%;
 }
 
-/* Card da lista de palavras: teto de altura visualmente alinhado ao bloco central */
+/* Card da coluna 1: ocupa a altura total da linha e rola por dentro */
 .filtros-panel {
   width: 100%;
-  max-height: 620px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -64,6 +63,7 @@
 }
 
 .filtros-title {
+  flex: 0 0 auto;
   font-size: 1rem;
   font-weight: 800;
   color: #101a3d;
@@ -72,6 +72,7 @@
 
 /* Campo do filtro com ícone Font Awesome 6 à esquerda */
 .filtros-field {
+  flex: 0 0 auto;
   position: relative;
   display: flex;
   align-items: center;
@@ -100,6 +101,7 @@
 }
 
 .search-box {
+  flex: 0 0 auto;
   position: relative;
   display: flex;
   align-items: center;
@@ -130,6 +132,7 @@
 }
 
 .terms-count {
+  flex: 0 0 auto;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.6px;
@@ -138,11 +141,10 @@
   margin-bottom: 8px;
 }
 
-/* Lista de palavras: preenche o card e rola por dentro */
+/* Lista de palavras: ocupa todo o espaço restante e rola por dentro */
 .terms-list {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -234,8 +236,7 @@
   justify-content: flex-start;
   gap: 18px;
   min-width: 0;
-  max-width: 520px;
-  height: auto;
+  height: 100%;
 }
 
 /* Header roxo do termo (restrito ao topo da coluna central)
@@ -279,7 +280,7 @@
 }
 
 .term-title-row h2 {
-  font-size: 1.7rem;
+  font-size: 1.85rem;
   font-weight: 800;
   color: #ffffff;
   margin: 0;
@@ -306,7 +307,7 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player compacto: 16:9 estrito, nunca estica a coluna */
+/* Player: 16:9 estrito, sem altura fixa */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
@@ -327,12 +328,12 @@
   display: block;
 }
 
-/* Definição: compacta, logo abaixo do vídeo */
+/* Definição: cresce até a base da coluna (rodapé alinhado com a coluna 1) */
 .definicao-card {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   background-color: #ffffff !important;
   border: 1px solid #e6ebff;
   border-radius: var(--sl-raio);
@@ -383,15 +384,17 @@
 
 /* --------------------------- Coluna 3 · Detalhamento --------------------------- */
 
+/* Os 3 cards se distribuem na altura total: o último fecha na base */
 .detalhes-column {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 16px;
   min-width: 0;
-  height: auto;
+  height: 100%;
 }
 
-/* Todos os cards com altura natural — nada de esticar */
+/* Cards compactos, altura natural, sem sombra e 100% opacos */
 .info-card {
   display: flex;
   flex-direction: column;
@@ -407,10 +410,8 @@
   flex: 0 0 auto;
 }
 
-/* Cards de exemplo compactos: só o espaço do texto */
 .info-card--exemplo {
   flex: 0 0 auto;
-  justify-content: flex-start;
   padding: 14px 18px;
 }
 
@@ -443,7 +444,7 @@
   color: #101a3d;
 }
 
-/* Área da imagem: altura fixa curta, imagem centralizada */
+/* Área da imagem: curta, limpa e centralizada */
 .imagem-content {
   flex: 0 0 auto;
   height: 180px;
@@ -494,25 +495,34 @@
 @media (max-width: 1240px) {
   .container.main-layout {
     grid-template-columns: 300px minmax(0, 1fr);
-    justify-content: stretch;
+    align-items: start;
+  }
+
+  .sidebar-filtros,
+  .content-column,
+  .detalhes-column {
+    height: auto;
   }
 
   .filtros-panel {
-    max-height: none;
+    height: auto;
+    max-height: 620px;
   }
 
   .terms-list {
-    max-height: 520px;
+    max-height: 460px;
   }
 
-  .content-column {
-    max-width: none;
+  .definicao-card {
+    flex: 0 0 auto;
+    justify-content: flex-start;
   }
 
   .detalhes-column {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: normal;
     align-items: start;
   }
 
@@ -524,12 +534,12 @@
 @media (max-width: 820px) {
   .container.main-layout {
     grid-template-columns: minmax(0, 1fr);
-    padding: 12px;
+    padding: 12px 16px;
     gap: 16px;
   }
 
   .content-column {
-    max-width: none;
+    height: auto;
   }
 
   .detalhes-column {
@@ -541,7 +551,7 @@
   }
 
   .term-title-row h2 {
-    font-size: 1.5rem;
+    font-size: 1.55rem;
   }
 
   .imagem-content {
