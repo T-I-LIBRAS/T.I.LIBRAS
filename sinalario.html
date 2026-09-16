@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css?v=37">
+  <link rel="stylesheet" href="css/sinalario.css?v=38">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -104,23 +104,21 @@
           <h3 class="info-card-title">Vídeo do sinal</h3>
         </div>
 
-        <!-- Player Plyr: o container oficial envelopa o embed do YouTube e a
-             biblioteca monta a interface própria (play, voltar 5s, progresso,
-             tempo e menu de velocidade). Com isso o layout nativo do YouTube —
-             título, foto do canal, botões de compartilhar — nem chega à tela,
-             sem nenhum corte, zoom ou deslocamento na imagem.
-             O src abaixo já aponta para o primeiro sinal da lista (Monitor, o
-             termo exibido ao abrir a página) e o sinalario.js passa a trocá-lo
-             pela API do Plyr a cada termo escolhido. -->
-        <div class="video-wrapper-yt">
-          <div class="plyr__video-embed" id="player">
-            <iframe
-              src="https://www.youtube.com/embed/x2uwlO43nas?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1"
-              allowfullscreen
-              allowtransparency
-              allow="autoplay"
-            ></iframe>
-          </div>
+        <!-- Player Plyr: aqui só existe uma div receptora vazia. Quem cria o
+             embed do YouTube é o próprio Plyr, a partir de data-plyr-provider
+             e data-plyr-embed-id (atributos oficiais da biblioteca). Sem
+             nenhum iframe fixo escrito no HTML, não sobra um segundo player
+             visível por baixo da interface do Plyr — era isso que sobrepunha
+             os dois players e mantinha a cara do YouTube na tela.
+             O id abaixo aponta para o primeiro sinal da lista (Monitor, o
+             termo exibido ao abrir a página) e o sinalario.js troca a fonte
+             pela API do Plyr (player.source) a cada termo escolhido. -->
+        <div class="video-wrapper-yt" id="player-container">
+          <div
+            id="player"
+            data-plyr-provider="youtube"
+            data-plyr-embed-id="x2uwlO43nas"
+          ></div>
         </div>
       </div>
 
@@ -179,6 +177,6 @@
   <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=33"></script>
+  <script src="js/sinalario.js?v=34"></script>
 </body>
 </html>

@@ -117,10 +117,12 @@ function marcarComoVisto() {
 
 /* ------------------------------ Player Plyr ------------------------------ */
 
-/* O vídeo é envelopado pelo Plyr (CSS + JS carregados no sinalario.html): a
-   biblioteca monta a interface própria sobre o embed do YouTube, então o
-   layout nativo (título, foto do canal, botões de compartilhar) nem chega à
-   tela — sem nenhum corte, zoom ou deslocamento de CSS na imagem.
+/* O #player no sinalario.html é só uma div receptora: o Plyr cria o embed do
+   YouTube inteiro por conta própria (data-plyr-provider / data-plyr-embed-id,
+   os atributos oficiais da biblioteca) e monta a interface dele sobre esse
+   embed. Como nenhum <iframe> é escrito à mão no HTML, não existem dois
+   players na tela nem a interface nativa do YouTube (título, foto do canal,
+   botões de compartilhar) aparecendo por baixo.
 
    Ajustes pensados para o estudo da Libras:
    · 0.25x a 1x no menu de velocidade (configurações);
@@ -129,7 +131,9 @@ function marcarComoVisto() {
    · autoplay + muted → o sinal começa sozinho (o navegador só libera o
      autoplay com o som desligado, e o conteúdo é 100% visual);
    · storage desligado → o player sobe sempre no estado definido aqui, sem
-     restaurar volume/mudo de visitas antigas e quebrar o autoplay. */
+     restaurar volume/mudo de visitas antigas e quebrar o autoplay;
+   · youtube → parâmetros repassados ao embed que o Plyr monta, e são eles que
+     forçam a ocultação da interface do YouTube. */
 const player = new Plyr('#player', {
   controls: ['play', 'rewind', 'progress', 'current-time', 'settings'],
   settings: ['speed'],
@@ -139,6 +143,13 @@ const player = new Plyr('#player', {
   autoplay: true,
   muted: true,              // mudo por padrão (indispensável para o autoplay)
   storage: { enabled: false },
+  youtube: {
+    noCookie: true,         // domínio youtube-nocookie: sem cookies de rastreio
+    rel: 0,                 // sem sugestões de outros vídeos no fim
+    showinfo: 0,            // sem título/canal no topo do embed
+    iv_load_policy: 3,      // sem cards e anotações sobre a imagem
+    modestbranding: 1       // marca d'água discreta
+  },
   /* Rótulos em português: o Plyr só traz o inglês embutido */
   i18n: {
     restart: 'Reiniciar',
@@ -177,23 +188,34 @@ const player = new Plyr('#player', {
 let playerPronto = false;
 let videoIdPendente = '';
 
+/* Id entregue ao Plyr por último. Em modo embed o getter player.source devolve
+   media.currentSrc — que no YouTube não existe —, então a fonte da verdade é
+   este marcador: com ele o mesmo termo nunca é recarregado à toa, nem no
+   primeiro carregamento (o id inicial vem do data-plyr-embed-id do HTML). */
+const elementoDoPlayer = document.getElementById('player');
+let videoIdAtual = extrairIdDoVideo(
+  elementoDoPlayer ? elementoDoPlayer.dataset.plyrEmbedId : ''
+);
+
+/* Troca o vídeo exibido: o Plyr remonta o embed do YouTube inteiro por baixo,
+   então nunca existe manipulação manual de src no HTML */
+function carregarVideo(idYouTube) {
+  const id = extrairIdDoVideo(idYouTube);
+  if (!id || id === videoIdAtual) return;
+
+  videoIdAtual = id;
+  player.source = {
+    type: 'video',
+    sources: [{ src: id, provider: 'youtube' }]
+  };
+}
+
 function aplicarVideoPendente() {
   if (!playerPronto || !videoIdPendente) return;
 
   const id = videoIdPendente;
   videoIdPendente = '';
-
-  /* O Plyr só aceita a troca depois de ficar pronto e entrega o vídeo atual em
-     player.source: quando ele já é o pedido (o src do HTML aponta para o
-     primeiro sinal da lista), não há o que recarregar */
-  if (String(player.source || '').includes(id)) return;
-
-  /* Fonte única da troca de vídeo: o Plyr troca o embed do YouTube inteiro
-     por baixo, então nunca existe manipulação manual de src */
-  player.source = {
-    type: 'video',
-    sources: [{ src: id, provider: 'youtube' }]
-  };
+  carregarVideo(id);
 }
 
 /* Ao trocar de termo na lista: aponta o Plyr para o vídeo do sinal */

@@ -24,10 +24,11 @@
        (só padding, sem flex-grow)
      · Coluna 3: 350px de largura com cards agrupados por gap uniforme e a
        moldura da imagem em 272px fechando o topo
-     · Player: Plyr.js (CDN no sinalario.html) envelopando o embed do YouTube
-       e assumindo a interface: barra nativa, título e foto do canal do YouTube
-       nunca aparecem. Nenhum deslocamento de CSS (margin-top negativo /
-       translateY / corte de posição) é usado
+     · Player: o HTML traz só a div receptora #player e é o Plyr.js (CDN no
+       sinalario.html) que cria o embed do YouTube e assume a interface, então
+       a barra nativa, o título e a foto do canal do YouTube nunca aparecem.
+       Nenhum deslocamento de CSS (margin-top negativo / translateY / corte de
+       posição) é usado
    Princípios: sem sombras, sem !important, tokens de cor de style.css.
    ========================================================================= */
 
@@ -546,11 +547,22 @@
   --plyr-video-control-color: #ffffff;
 }
 
-/* Raio de 12px para alinhar o player aos demais cards e a moldura 16:9 exata
-   do vídeo: como a proporção é respeitada, nada é esticado nem cortado */
+/* Limpeza do container do Plyr: apenas o raio de 12px que alinha o player aos
+   demais cards e o overflow que apara o embed dentro desses cantos. Nenhuma
+   sombra, borda duplicada ou moldura extra é declarada aqui — quem desenha o
+   vídeo é o embed que o Plyr cria. A proporção segue no container para o
+   espaço já nascer reservado (sem salto de layout quando o embed monta). */
 .plyr {
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+/* Moldura 16:9 no próprio embed do YouTube: o .plyr--youtube fica no container
+   (#player) e o .plyr__video-embed na moldura interna que a biblioteca cria
+   dentro dele, então o seletor descendente casa. Como a proporção é
+   respeitada, a imagem aparece inteira — sem zoom, corte ou faixa preta */
+.plyr--youtube .plyr__video-embed {
   aspect-ratio: 16 / 9;
 }
 
