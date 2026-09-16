@@ -6,19 +6,21 @@
      Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
      Coluna 3 (360px) · Imagem do termo (280px) + Exemplos PT/Libras
    Modelo de altura (as 3 bases fecham na mesma linha, logo acima do rodapé):
-     · Bloco full width (max-width: 100%) com colunas 320px / 1fr / 340px: as
-       laterais mais generosas empurram os cards para os cantos e a do meio
-       absorve a sobra. Quem trava a expansão do vídeo no zoom out são os
-       tetos do próprio player (720x380), não mais o Grid
+     · Bloco full width com teto de escala (max-width: 1440px + margin auto) e
+       colunas 320px / 1fr / 340px: as laterais empurram os cards para os
+       cantos e a coluna do meio fica limitada pelo teto do container
+     · Zoom out não infla nada: o player para em 680px de largura e as
+       colunas laterais têm largura fixa
      · min-height: calc(100vh - 140px) dá o piso até o rodapé e, com
        align-content: stretch, a linha do Grid cresce junto com ele
      · align-items: stretch estica as 3 colunas até essa mesma linha
-     · Coluna 1: height: 100% no card; o teto (--sl-teto-painel) trava o card
-       e a lista rola por dentro com max-height relativo a ele mesmo
-     · Coluna 2: header e player com teto (720x380) e a definição (flex-grow 1)
-       absorvendo a sobra até a linha de base
-     · Coluna 3: 290px de largura, height: 100% e cards agrupados por gap
-       uniforme, com a moldura da imagem em 280px fechando o topo
+     · Coluna 1: height: 100% no card, sempre junto do teto --sl-teto-painel;
+       a lista rola por dentro com max-height relativo ao próprio card
+     · Coluna 2: header do termo e definição bem compactos (só padding), sem
+       flex-grow — nada estica a caixa branca para baixo; o player fica em
+       680px de largura máxima, centralizado
+     · Coluna 3: 340px de largura com cards agrupados por gap uniforme e a
+       moldura da imagem em 280px fechando o topo
      · Player: 16:9 (aspect-ratio) + object-fit: contain, então mesmo quando o
        teto de altura entra em ação o vídeo nunca é deformado nem cortado
    Princípios: sem sombras, sem !important, tokens de cor de style.css.
@@ -35,17 +37,20 @@
   --sl-raio-sm: 12px;
   /* Trava do card de filtros: valor absoluto (e não porcentagem) para que a
      altura da lista não infle a linha do Grid durante o cálculo intrínseco —
-     a rolagem em si fica por conta da própria lista */
-  --sl-teto-painel: calc(100vh - 200px);
+     a rolagem em si fica por conta da própria lista. Fica acima do piso de
+     viewport do container (100vh - 140px) para nunca cortar o card antes da
+     linha de base comum */
+  --sl-teto-painel: calc(100vh - 120px);
 }
 
 /* --------------------- Container · grid full width --------------------- */
 
-/* Expansão para os cantos: nenhum teto de largura no container, só os 24px de
-   respiro lateral, e as colunas laterais mais largas (320px / 340px) levando
-   os cards até as pontas. align-items: stretch iguala as 3 colunas na mesma
-   linha e align-content: stretch faz essa linha crescer até o piso de
-   viewport (min-height) — as bases encostam logo acima do rodapé. */
+/* Expansão para os cantos com teto de escala: o max-width de 1440px (com
+   margin auto) é o que impede os cards de inflarem horizontalmente no zoom
+   out, mantendo as colunas laterais nas larguras fixas 320px / 340px.
+   align-items: stretch iguala as 3 colunas na mesma linha e align-content:
+   stretch faz essa linha crescer até o piso de viewport (min-height) — as
+   bases encostam logo acima do rodapé. */
 .container.main-layout {
   display: grid;
   grid-template-columns: 320px 1fr 340px;
@@ -53,8 +58,8 @@
   align-items: stretch;
   align-content: stretch;
   width: 100%;
-  max-width: 100%;
-  margin: 0;
+  max-width: 1440px;
+  margin: 0 auto;
   padding: 16px 24px;
   min-height: calc(100vh - 140px);
   box-sizing: border-box;
@@ -90,7 +95,7 @@
 
 .filtros-title {
   flex: 0 0 auto;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--cor-texto);
   margin: 0 0 12px;
@@ -118,7 +123,7 @@
   border: 1px solid #cfd9ee;
   border-radius: var(--sl-raio-sm);
   background-color: var(--sl-superficie);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #1a1d20;
   cursor: pointer;
@@ -146,7 +151,7 @@
   padding: 9px 10px 9px 32px;
   border: 1px solid #cfd9ee;
   border-radius: var(--sl-raio-sm);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   background-color: var(--sl-superficie);
   color: var(--cor-texto);
   outline: none;
@@ -159,7 +164,7 @@
 
 .terms-count {
   flex: 0 0 auto;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.6px;
   color: var(--cor-texto-suave);
@@ -215,7 +220,7 @@
 
 /* Nome do termo sempre preto (alto contraste) */
 .term-text strong {
-  font-size: 0.88rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #1a1d20;
   display: block;
@@ -225,7 +230,7 @@
 }
 
 .term-text small {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #1a1d20;
   opacity: 0.62;
@@ -235,7 +240,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 2px;
   color: var(--cor-texto-suave);
   flex-shrink: 0;
@@ -260,10 +265,9 @@
 
 /* ------------------- Coluna 2 · Apresentação do sinal ------------------- */
 
-/* Pilha da Coluna 2: header e player com altura de conteúdo; a definição
-   (flex-grow 1) absorve a sobra e encosta na linha de base das outras
-   colunas. Sem gap: o ritmo de 16px vem dos margin dos próprios blocos,
-   evitando espaçamento somado. */
+/* Pilha da Coluna 2: header, player e definição, todos com altura de próprio
+   conteúdo (nenhum flex-grow). O ritmo vertical vem dos margins de cada
+   bloco, sem gap, para não somar espaçamento. */
 .content-column {
   display: flex;
   flex-direction: column;
@@ -278,11 +282,13 @@
   background-color: var(--cor-lilas);
   color: #ffffff;
   border-radius: var(--sl-raio-sm);
-  padding: 18px 20px;
+  padding: 10px 20px;
+  height: auto;
+  min-height: unset;
   margin-bottom: 16px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .category-row {
@@ -339,17 +345,16 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Player 16:9 com teto rígido de tamanho. A largura é limitada pela própria
-   trilha do Grid (máx. 720px) e o max-height segura a altura em 380px — em
-   zoom out ou tela larga o vídeo não infla. Nos pontos em que os dois tetos
-   não batem exatamente em 16:9 (720px pediria 405px), o object-fit: contain
-   do iframe assume: faixas discretas, nunca deformação ou corte. */
+/* Player 16:9 com teto rígido de tamanho. A largura para em 680px (largura do
+   player = largura dos cards acima/abaixo) e o max-height em 383px é o
+   equivalente exato dessa largura em 16:9 — assim os dois tetos coincidem,
+   a proporção nunca quebra e o zoom out não infla o vídeo. */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
-  max-width: 720px;
-  max-height: 380px;
+  max-width: 680px;
+  max-height: 383px;
   aspect-ratio: 16 / 9;
   height: auto;
   margin: 0 auto;
@@ -369,23 +374,21 @@
   object-fit: contain;
 }
 
-/* Definição: encurtada — padding 12px 18px e margin-top: 12px deixam o card
-   mais compacto e alinhado à base da Coluna 3. O flex-grow 1 faz o card
-   consumir a sobra da coluna e fechar na linha de base das Colunas 1 e 3,
-   com o conteúdo centralizado. Usa flex-basis auto (e não flex: 1 puro) para
-   a altura natural do card continuar contando no cálculo da linha do Grid. */
+/* Definição: bem compacta e sem NENHUM esticamento — flex: 0 0 auto (sem
+   flex-grow) e height: auto, então a caixa branca fica exatamente do tamanho
+   do texto. A separação do player é o margin-top de 10px. */
 .definicao-card {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   height: auto;
-  min-height: unset;
-  margin-top: 12px;
+  min-height: fit-content;
+  margin-top: 10px;
   background-color: var(--sl-superficie);
   border: 1px solid var(--sl-borda);
   border-radius: var(--sl-raio);
-  padding: 12px 18px;
+  padding: 12px 16px;
 }
 
 .definicao-head {
@@ -396,14 +399,14 @@
 }
 
 .definicao-title {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--cor-lilas);
   margin: 0;
 }
 
 .definicao-card p {
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.6;
   color: var(--cor-texto);
   margin: 0;
@@ -432,14 +435,15 @@
 
 /* ------------------- Coluna 3 · Detalhamento do termo ------------------- */
 
-/* Coluna 3 · ocupa toda a altura da linha (height: 100%) mantendo os cards
-   agrupados por um gap uniforme, sem espaçamento forçado entre eles */
+/* Coluna 3 · a própria coluna travada do Grid (320px / 340px nas laterais)
+   mais o align-items: stretch dão a altura; de propósito não há height: 100%
+   aqui, para não existir card esticando sem um teto de max-height. Os cards
+   ficam agrupados pelo gap uniforme, sem espaçamento forçado */
 .detalhes-column {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   gap: 16px;
-  height: 100%;
   min-width: 0;
   min-height: 0;
 }
@@ -479,14 +483,14 @@
 }
 
 .info-card-title {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--cor-lilas);
   margin: 0;
 }
 
 .info-card p {
-  font-size: 0.92rem;
+  font-size: 1rem;
   line-height: 1.6;
   color: var(--cor-texto);
   margin: 0;
@@ -526,7 +530,7 @@
   align-items: center;
   gap: 6px;
   color: var(--cor-texto-suave);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
@@ -560,8 +564,7 @@
     min-height: 0;
   }
 
-  .sidebar-filtros,
-  .detalhes-column {
+  .sidebar-filtros {
     height: auto;
   }
 
