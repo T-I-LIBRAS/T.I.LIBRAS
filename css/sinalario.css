@@ -184,7 +184,11 @@
   top: calc(100% + 6px);
   left: 0;
   width: 100%;
+  /* Coluna flex com gap: separa os itens para que os fundos de hover/ativo de
+     opções vizinhas não se colem num único bloco roxo contínuo */
   display: none;
+  flex-direction: column;
+  gap: 4px;
   padding: 6px;
   background: #ffffff;
   border: 1px solid var(--sl-borda);
@@ -196,13 +200,16 @@
 }
 
 .custom-select-container.open .custom-options-menu {
-  display: block;
+  display: flex;
 }
 
 .custom-option {
+  /* Bloco próprio e bem delimitado: sem margem (o respiro vem do gap do menu)
+     e com raio de 8px em cada item */
   display: flex;
   align-items: center;
   gap: 10px;
+  margin: 0;
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 0.95rem;
@@ -212,10 +219,17 @@
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.custom-option:hover,
+/* Hover e item selecionado: cada um com o próprio fundo roxo, separados pelo
+   gap de 4px do menu */
+.custom-option:hover {
+  background: #F1F0FE;
+  color: #6C5CE7;
+}
+
 .custom-option.active {
-  background: var(--sl-lilas-suave);
-  color: var(--cor-lilas);
+  background: #EAE8FD;
+  color: #6C5CE7;
+  font-weight: 600;
 }
 
 .custom-option i,
