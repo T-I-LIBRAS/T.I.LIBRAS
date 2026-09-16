@@ -6,21 +6,23 @@
      Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
      Coluna 3 (360px) · Imagem do termo (280px) + Exemplos PT/Libras
    Modelo de altura (as 3 bases fecham na mesma linha, logo acima do rodapé):
-     · Bloco full width com teto de escala (max-width: 1440px + margin auto) e
-       colunas 320px / 1fr / 340px: as laterais empurram os cards para os
-       cantos e a coluna do meio fica limitada pelo teto do container
-     · Zoom out não infla nada: o player para em 680px de largura e as
-       colunas laterais têm largura fixa
-     · min-height: calc(100vh - 140px) dá o piso até o rodapé e, com
-       align-content: stretch, a linha do Grid cresce junto com ele
-     · align-items: stretch estica as 3 colunas até essa mesma linha
-     · Coluna 1: height: 100% no card, sempre junto do teto --sl-teto-painel;
-       a lista rola por dentro com max-height relativo ao próprio card
-     · Coluna 2: header do termo e definição bem compactos (só padding), sem
-       flex-grow — nada estica a caixa branca para baixo; o player fica em
-       680px de largura máxima, centralizado
-     · Coluna 3: 340px de largura com cards agrupados por gap uniforme e a
-       moldura da imagem em 280px fechando o topo
+     · Bloco full width com teto de escala (max-width: 1500px + margin auto) e
+       colunas 330px / 1fr / 350px: as laterais mais largas esticam os cards
+       até as extremidades e a coluna do meio fica limitada pelo container
+     · Zoom out não infla nada: o player para em 680px de largura, as colunas
+       laterais têm largura fixa e a Coluna 1 não cresce porque a lista interna
+       não contribui com a altura (height: 0)
+     · min-height: calc(100vh - 140px) dá o piso até o rodapé; com
+       align-content: start a linha do Grid fica no tamanho do conteúdo
+     · align-items: stretch estica as 3 colunas até a MESMA linha — é essa
+       peça que mantém a base da Coluna 1 igual à das Colunas 2 e 3
+     · Coluna 1: height: 100% + align-self: stretch (mede exatamente a linha do
+       Grid) e a lista interna com flex: 1 + height: 0: 2 ou 100 termos dão a
+       mesma altura de card, com a rolagem acontecendo só dentro da lista
+     · Coluna 2: card branco do vídeo (.card-video-container) com cabeçalho
+       padrão + player, e definição compacta (só padding, sem flex-grow)
+     · Coluna 3: 350px de largura com cards agrupados por gap uniforme e a
+       moldura da imagem em 272px fechando o topo
      · Player: 16:9 (aspect-ratio) + object-fit: contain, então mesmo quando o
        teto de altura entra em ação o vídeo nunca é deformado nem cortado
    Princípios: sem sombras, sem !important, tokens de cor de style.css.
@@ -35,32 +37,29 @@
   --sl-borda: #e6ebff;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
-  /* Trava do card de filtros: valor absoluto (e não porcentagem) para que a
-     altura da lista não infle a linha do Grid durante o cálculo intrínseco —
-     a rolagem em si fica por conta da própria lista. Fica acima do piso de
-     viewport do container (100vh - 140px) para nunca cortar o card antes da
-     linha de base comum */
-  --sl-teto-painel: calc(100vh - 120px);
+  /* Não existe mais teto de altura na Coluna 1: a altura dela vem do Grid
+     (align-items: stretch + height: 100%) e quem rola é a lista interna,
+     isolada com height: 0 para não contribuir com a altura do card */
 }
 
 /* --------------------- Container · grid full width --------------------- */
 
-/* Expansão para os cantos com teto de escala: o max-width de 1440px (com
-   margin auto) é o que impede os cards de inflarem horizontalmente no zoom
-   out, mantendo as colunas laterais nas larguras fixas 320px / 340px.
-   align-items: stretch iguala as 3 colunas na mesma linha e align-content:
-   stretch faz essa linha crescer até o piso de viewport (min-height) — as
-   bases encostam logo acima do rodapé. */
+/* Laterais mais generosas (330px / 350px) esticadas até as extremidades, com
+   o teto de escala de 1500px (margin auto) segurando a inflação horizontal no
+   zoom out. align-items: stretch é a peça-chave: as 3 colunas esticam até a
+   MESMA linha, definida pelo conteúdo das Colunas 2 e 3 — a Coluna 1 não
+   contribui mais com a altura (a lista tem height: 0). align-content: start
+   impede a linha de esticar junto com o piso de viewport. */
 .container.main-layout {
   display: grid;
-  grid-template-columns: 320px 1fr 340px;
+  grid-template-columns: 330px 1fr 350px;
   gap: 20px;
   align-items: stretch;
-  align-content: stretch;
+  align-content: start;
   width: 100%;
-  max-width: 1440px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 20px 28px;
   min-height: calc(100vh - 140px);
   box-sizing: border-box;
   /* Altura pelo conteúdo do bloco (o flex não estica nem esmaga) */
@@ -69,15 +68,18 @@
 
 /* ------------------- Coluna 1 · Filtros e termos ------------------- */
 
-/* A coluna acompanha a linha do Grid (stretch + height: 100%) e nunca passa
-   disso: max-height: 100% trava a Coluna 1 no tamanho da própria linha */
+/* Coluna 1 com altura engessada: height: 100% + align-self: stretch fazem o
+   card medir exatamente a linha do Grid — a mesma das Colunas 2 e 3 — seja
+   com 2 ou com 100 termos. Sem max-height: ele deixou de ser necessário
+   porque a lista não contribui mais com a altura do card */
 .sidebar-filtros {
   display: flex;
   flex-direction: column;
+  align-self: stretch;
   height: 100%;
-  max-height: 100%;
   min-width: 0;
   min-height: 0;
+  box-sizing: border-box;
 }
 
 /* O card ocupa a coluna inteira e fecha na base; quem cede é a lista */
@@ -86,7 +88,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: var(--sl-teto-painel);
   min-height: 0;
   background-color: var(--sl-superficie);
   border: var(--borda);
@@ -174,14 +175,15 @@
   margin-bottom: 8px;
 }
 
-/* Lista: preenche a sobra do card e rola por dentro. O teto em viewport é
-   absoluto (100vh - 220px) de propósito: além de limitar a altura visível,
-   ele limita o próprio cálculo intrínseco, então nem com zoom out a lista
-   consegue esticar a linha do Grid ou a altura da Coluna 1. */
+/* Lista: única área rolável do layout. O par flex: 1 + height: 0 é o truque
+   que engessa o card: com altura 0 a lista não entra no cálculo da altura
+   intrínseca do card, então 2 ou 100 termos produzem exatamente a mesma
+   altura — o que passa disso rola aqui dentro. min-height: 0 libera o flex a
+   encolher abaixo do próprio conteúdo. */
 .terms-list {
   flex: 1;
+  height: 0;
   min-height: 0;
-  max-height: calc(100vh - 220px);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 4px;
@@ -357,9 +359,20 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* O cabeçalho "Vídeo do sinal" reaproveita as MESMAS classes dos cabeçalhos da
-   Coluna 3 (.info-card-head + .icon-circle.lilas + .info-card-title), então a
-   bolinha roxa clara, a fonte e a cor vêm prontas — sem CSS novo aqui */
+/* Card branco oficial do vídeo: mesma superfície, borda e leitura dos cards da
+   Coluna 3, agora envolvendo o cabeçalho + o player. O cabeçalho reaproveita
+   as MESMAS classes da Coluna 3 (.info-card-head + .icon-circle.lilas +
+   .info-card-title), então a bolinha roxa clara, a fonte e a cor vêm prontas */
+.card-video-container {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid var(--sl-borda);
+  border-radius: 16px;
+  padding: 20px;
+  box-sizing: border-box;
+}
 
 /* Player 16:9 com teto rígido de tamanho. A largura para em 680px (largura do
    player = largura dos cards acima/abaixo) e o max-height em 383px é o
@@ -452,10 +465,10 @@
 
 /* ------------------- Coluna 3 · Detalhamento do termo ------------------- */
 
-/* Coluna 3 · a própria coluna travada do Grid (320px / 340px nas laterais)
-   mais o align-items: stretch dão a altura; de propósito não há height: 100%
-   aqui, para não existir card esticando sem um teto de max-height. Os cards
-   ficam agrupados pelo gap uniforme, sem espaçamento forçado */
+/* Coluna 3 · a largura fixa da trilha (350px) mais o align-items: stretch do
+   Grid dão a altura; de propósito não há height: 100% aqui, para não existir
+   card esticando sem um teto de max-height. Os cards ficam agrupados pelo gap
+   uniforme, sem espaçamento forçado */
 .detalhes-column {
   display: flex;
   flex-direction: column;
@@ -586,12 +599,11 @@
     height: auto;
   }
 
-  .filtros-panel {
-    max-height: none;
-  }
-
+  /* Sem a linha definida do Grid, o height: 0 colapsaria a lista: aqui ela
+     volta a crescer com o conteúdo, limitada pelo teto de 60vh */
   .terms-list {
     flex: 0 1 auto;
+    height: auto;
     max-height: 60vh;
   }
 

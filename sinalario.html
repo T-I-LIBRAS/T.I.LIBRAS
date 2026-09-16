@@ -6,7 +6,7 @@
   <title>T.I Libras - Sinalário</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/sinalario.css?v=20">
+  <link rel="stylesheet" href="css/sinalario.css?v=22">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -63,20 +63,22 @@
         </div>
       </header>
 
-      <!-- Mesmas classes dos cabeçalhos da Coluna 3 (bolinha roxa clara + título) -->
-      <div class="info-card-head">
-        <span class="icon-circle lilas"><i class="fa-solid fa-circle-play"></i></span>
-        <h3 class="info-card-title">Vídeo do sinal</h3>
-      </div>
+      <!-- Card branco oficial do vídeo, com o cabeçalho padrão da Coluna 3 -->
+      <div class="card-video-container">
+        <div class="info-card-head">
+          <span class="icon-circle lilas"><i class="fa-solid fa-circle-play"></i></span>
+          <h3 class="info-card-title">Vídeo do sinal</h3>
+        </div>
 
-      <div class="video-wrapper-yt">
-        <iframe
-          id="ytPlayer"
-          src="https://www.youtube.com/embed/?enablejsapi=1&rel=0"
-          title="Vídeo do Sinal em Libras"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
+        <div class="video-wrapper-yt">
+          <iframe
+            id="ytPlayer"
+            src="https://www.youtube.com/embed/?enablejsapi=1&rel=0"
+            title="Vídeo do Sinal em Libras"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
       </div>
 
       <section class="definicao-card">
