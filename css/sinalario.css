@@ -580,13 +580,23 @@
   height: 200% !important;
 }
 
-/* Botão central sobreposto do Plyr (.plyr__control--overlaid): ele só é criado
-   quando a lista de controls traz "play-large", que não é o nosso caso — ou
-   seja, hoje não existe no DOM e esta regra é rede de segurança, para que o
-   botão não reapareça se "play-large" voltar à lista. A barra roxa inferior,
-   o menu de velocidade e o loop não são afetados: são outros controles */
-.plyr__control--overlaid {
+/* Botão central sobreposto do Plyr e a animação de pause: bloqueio definitivo
+   em todos os estados possíveis — o botão sozinho, o <button> real, o estado
+   .plyr--paused e a variante dentro do wrapper do vídeo.
+   O elemento só é criado quando a lista de controls traz "play-large", que não
+   é o nosso caso, então isto é blindagem: fica neste arquivo porque é ele que
+   entra DEPOIS do plyr.css (importado no sinalario.html), e é essa ordem que
+   faz o estilo do projeto vencer o da biblioteca.
+   Intocados: a barra roxa inferior, o menu de velocidade (0.25x), o botão de
+   voltar 5s e o loop — são outros controles, com data-plyr próprios */
+.plyr__control--overlaid,
+button.plyr__control--overlaid,
+.plyr--paused .plyr__control--overlaid,
+.plyr__video-wrapper .plyr__control--overlaid {
   display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
