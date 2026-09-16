@@ -580,30 +580,12 @@
   height: 200% !important;
 }
 
-/* Centro do vídeo limpo: o botão sobreposto do Plyr fica invisível, mas SEM
-   travar a tela. Nada de pointer-events: none nem visibility: hidden — os dois
-   tiram mesmo o clique da área do vídeo. Com opacity: 0 (e fundo transparente)
-   o elemento continua clicável, então tocar na imagem segue pausando e
-   despausando normalmente, conforme o clickToPlay do sinalario.js.
-   Fica neste arquivo porque é ele que entra DEPOIS do plyr.css (importado no
-   sinalario.html) e é essa ordem que faz o estilo do projeto vencer a lib.
-   As variantes de seletor cobrem o botão em todos os estados (ele mesmo, o
-   <button> real, o estado .plyr--paused e a variante dentro do wrapper).
-   Intocados: a barra roxa inferior, o menu de velocidade (0.25x), o botão de
-   voltar 5s e o loop — são outros controles, com data-plyr próprios */
-.plyr__control--overlaid,
-button.plyr__control--overlaid,
-.plyr--paused .plyr__control--overlaid,
-.plyr__video-wrapper .plyr__control--overlaid {
-  background: transparent !important;
-  opacity: 0 !important;
-}
-
-/* O glifo de Play/Pause do botão central sai de cena por completo */
-.plyr__control--overlaid svg,
-button.plyr__control--overlaid svg {
-  display: none !important;
-}
+/* Aqui não existe nenhuma regra para o botão central, de propósito. O
+   .plyr__control--overlaid só é criado pelo Plyr quando "play-large" está na
+   lista de controls — o que não é o caso — e o ícone que aparece com o vídeo
+   pausado é desenhado pelo próprio YouTube dentro do iframe, fora do alcance
+   de qualquer CSS deste projeto. Quem o mantém fora de cena é o clickToPlay
+   desligado no sinalario.js: sem pause disparado, o overlay não é desenhado. */
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px
