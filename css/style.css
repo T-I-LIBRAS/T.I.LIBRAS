@@ -376,19 +376,40 @@ app-footer {
 }
 
 /* --------------------- Plyr · esconde o botão central ---------------------
-   O Plyr injeta o .plyr__control--overlaid no HTML quando o provider é o
-   YouTube, mesmo com clickToPlay: false (o embed do YouTube devolve o estado
-   pausado e a biblioteca desenha o play grande por cima da imagem).
+   Quando o botão grande de play existe, o plyr.css o exibe com
+     .plyr--full-ui.plyr--video .plyr__control--overlaid { display: block }
+   ou seja, três classes (0,3,0). A regra anterior deste arquivo usava
+   :where(.plyr) .plyr__control--overlaid, que zera a especificidade (0,1,0) e
+   por isso nunca conseguia sobrepor a biblioteca, por mais que este arquivo
+   fosse carregado depois.
 
-   O seletor abaixo usa :where(.plyr), que tem peso ZERO na especificidade.
-   Assim a única classe que conta é a própria .plyr__control--overlaid — a
-   mesma que o plyr.css usa — e o empate é resolvido pela ordem dos arquivos:
-   este style.css é carregado depois do plyr.css no <head> da página. Ou seja,
-   o botão some sem nenhum !important e sem inflar a especificidade.
+   Os seletores abaixo mantêm três classes de peso (0,3,0) e empatam com a
+   regra da biblioteca — o empate é resolvido pela ordem do <head>, onde este
+   style.css entra depois do plyr.css. Resultado: o botão some sem nenhum
+   !important e a barra inferior roxa segue intocada.
 
-   Nada abaixo desta regra interfere na barra inferior roxa, nos botões de
-   velocidade (incluindo 0.25x) nem na troca de termos do sinalário: o seletor
-   atinge apenas o botão sobreposto central. */
-:where(.plyr) .plyr__control--overlaid {
+   Observação sobre a lista: no DOM do Plyr o botão sobreposto é inserido no
+   container ANTES do .plyr__controls (createButton('play-large') faz
+   container.appendChild logo no início do create()), então o combinador
+   .plyr__controls + .plyr__control--overlaid não casa em nenhuma hipótese;
+   ele fica aqui apenas como documentação da intenção. Quem casa de fato são
+   .plyr.plyr--video .plyr__control--overlaid e .plyr--video
+   .plyr__control--overlaid[data-plyr="play"]. Todos os seletores exigem a
+   classe --overlaid, então o play da barra inferior (que é só .plyr__control)
+   continua respondendo normalmente.
+
+   Importante: o Plyr só cria este elemento quando 'play-large' está na lista
+   de controls do sinalario.js — hoje ela não está, então a regra é uma
+   garantia para o caso de o botão ser reativado. O botão gigante que às vezes
+   aparece no centro vem do player do YouTube dentro do iframe (camada nativa
+   tratada em sinalario.css), e esse não é alcançável pelo CSS da página. */
+.plyr--video .plyr__controls + .plyr__control--overlaid,
+.plyr--paused .plyr__control--overlaid,
+.plyr__control--overlaid[data-plyr="play"],
+.plyr.plyr--video .plyr__control--overlaid,
+.plyr--video .plyr__control--overlaid[data-plyr="play"] {
   display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* Garante que cliques passem direto para o vídeo */
 }
