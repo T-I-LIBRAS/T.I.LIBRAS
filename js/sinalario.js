@@ -147,7 +147,14 @@ const player = new Plyr('#player', {
   settings: ['speed'],
   speed: { selected: 1, options: [0.25, 0.5, 0.75, 1] }, // 0.25x para estudo
   seekTime: 5,              // botão de retornar 5 segundos
-  loop: { active: true },   // loop automático infinito
+  /* O loop é feito à mão no handler de 'ended' (mais abaixo). No provider do
+     YouTube o loop do Plyr chama stopVideo() e depois playVideo(), e o
+     stopVideo() joga o embed no estado "cued" — que é exatamente quando o
+     YouTube desenha o botão redondo gigante no centro da imagem. Com sinais
+     curtos em loop, esse ida-e-volta acontecia a cada volta e o botão ficava
+     por cima do peito/mãos da intérprete. Reiniciando por currentTime = 0 o
+     embed nunca sai do estado de reprodução. */
+  loop: { active: false },
   autoplay: true,
   muted: true,              // mudo por padrão (indispensável para o autoplay)
   /* O clique na imagem não pausa. Com o Plyr fora do caminho, o clique não
@@ -200,35 +207,12 @@ const player = new Plyr('#player', {
   }
 });
 
-/* Botão grande de play do Plyr: quando 'play-large' está na lista de controls,
-   a biblioteca cria um <button class="plyr__control plyr__control--overlaid">
-   direto no container, ANTES de montar o .plyr__controls. Em vez de disputar
-   especificidade no CSS, o nó é apagado da própria árvore do DOM assim que o
-   player fica pronto.
-   O MutationObserver logo abaixo é o reforço: se o Plyr voltar a injetar o
-   botão (mudança de controls, remontagem do embed), ele é removido de novo.
-   O seletor exige a classe --overlaid, então o play da barra roxa
-   (.plyr__control, sem o sufixo) nunca é tocado — a barra inferior, o voltar
-   5s, a barra de progresso e o menu de velocidade seguem funcionando. */
-player.on('ready', () => {
-  const removeLargePlay = () => {
-    const largePlayBtn = document.querySelector('.plyr__control--overlaid');
-    if (largePlayBtn) {
-      largePlayBtn.remove(); // Remove o elemento HTML da árvore do DOM
-    }
-  };
-
-  removeLargePlay();
-
-  /* Observa o container do Plyr: se o botão central for injetado de novo, ele
-     é apagado na mesma hora. A própria remoção gera uma mutação, mas então a
-     consulta já volta nula e o observador para de disparar — sem laço. */
-  const container = document.querySelector('.plyr');
-  if (!container) return;
-
-  const observer = new MutationObserver(removeLargePlay);
-  observer.observe(container, { childList: true, subtree: true });
-});
+/* Sobre o botão central do Plyr: não há nada para remover nem para esconder.
+   O .plyr__control--overlaid só é criado quando 'play-large' entra na lista de
+   controls — ver a nota na inicialização acima —, então o elemento não existe
+   no DOM da página. Por isso não há MutationObserver nem regra de CSS aqui: a
+   garantia é a própria lista de controls, e o play/pause da barra roxa (classe
+   .plyr__control, sem o sufixo --overlaid) segue intacto. */
 
 /* Estado da troca de vídeo. O provider do YouTube sobe de forma assíncrona:
    até o Plyr disparar 'ready' ainda não existe player para receber o vídeo,
@@ -286,9 +270,9 @@ player.on('playing', () => {
   player.muted = true;
 });
 
-/* Com o loop ativo quem reinicia o vídeo é o próprio Plyr, então o evento
-   'ended' pode nunca chegar: este tique fecha a contagem de "termo visto"
-   quando a reprodução alcança o final */
+/* Rede de segurança da contagem de "termo visto": o loop manual dispara
+   'ended' a cada volta, mas se o evento não chegar (um seek no fim do vídeo,
+   por exemplo) este tique fecha a contagem ao alcançar o final */
 player.on('timeupdate', () => {
   if (!visto || !visto.termo || visto.videoTerminou) return;
   if (player.duration > 0 && player.currentTime >= player.duration - 1) {
@@ -302,6 +286,11 @@ player.on('ended', () => {
     visto.videoTerminou = true;
     marcarComoVisto();
   }
+
+  /* Loop manual: a reprodução volta ao início e segue, sem stopVideo() — o
+     embed do YouTube nunca cai no estado "cued" que desenha o botão central. */
+  player.currentTime = 0;
+  Promise.resolve(player.play()).catch(() => {});
 });
 
 function alternarFavorito(nomeDoTermo) {

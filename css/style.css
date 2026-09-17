@@ -375,7 +375,9 @@ app-footer {
   }
 }
 
-/* Botão central do Plyr: a remoção é feita no JS (sinalario.js apaga o nó
-   .plyr__control--overlaid do DOM depois do 'ready'). Nenhuma regra de CSS
-   deste arquivo mexe nesse botão — aqui fica só o tema da barra roxa e a
-   limpeza do container .plyr. */
+/* Botão central do Plyr: nenhuma regra de CSS aqui. O .plyr__control--overlaid
+   só existiria se 'play-large' entrasse na lista de controls do sinalario.js —
+   e ele não entra, então o elemento não é criado. O botão redondo que o
+   YouTube desenha no centro do iframe não é alcançável por seletor nenhum da
+   página (ver a camada nativa tratada em sinalario.css). Aqui fica só o tema
+   da barra roxa e a limpeza do container .plyr. */

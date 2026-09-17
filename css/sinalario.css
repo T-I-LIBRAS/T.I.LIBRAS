@@ -581,11 +581,12 @@
 }
 
 /* Botão central: nada de CSS aqui. O Plyr só cria o .plyr__control--overlaid
-   quando 'play-large' entra na lista de controls do sinalario.js, e quem apaga
-   esse nó é o próprio sinalario.js — a remoção é de DOM (depois do 'ready',
-   com um MutationObserver de reforço). O botão gigante que o YouTube desenha
-   dentro do iframe (camada nativa tratada logo acima) continua fora do alcance
-   de qualquer seletor desta página. Nada mais neste arquivo mexe nos
+   quando 'play-large' entra na lista de controls do sinalario.js, e a lista não
+   o inclui — a garantia está nessa lista, não em estilo. O botão redondo que o
+   YouTube desenha dentro do iframe (camada nativa tratada logo acima) não é
+   alcançável por seletor nenhum desta página: quem o mantém fora de cena é o
+   loop manual do sinalario.js, que reinicia o sinal por currentTime = 0 e deixa
+   o embed sempre no estado de reprodução. Nada mais neste arquivo mexe nos
    controles — a barra roxa, as velocidades e a troca de termos seguem
    intactas. */
 
