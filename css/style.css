@@ -375,9 +375,31 @@ app-footer {
   }
 }
 
-/* Botão central do Plyr: nenhuma regra de CSS aqui. O .plyr__control--overlaid
-   só existiria se 'play-large' entrasse na lista de controls do sinalario.js —
-   e ele não entra, então o elemento não é criado. O botão redondo que o
-   YouTube desenha no centro do iframe não é alcançável por seletor nenhum da
-   página (ver a camada nativa tratada em sinalario.css). Aqui fica só o tema
-   da barra roxa e a limpeza do container .plyr. */
+/* --------------------- Plyr · botão central em todos os estados -------------
+   Hoje o .plyr__control--overlaid nem chega a existir: ele só é criado quando
+   'play-large' entra na lista de controls do sinalario.js, e a lista não o
+   inclui. A regra fica como rede de segurança para o caso de ele voltar.
+
+   O plyr.css exibe o botão com .plyr--full-ui.plyr--video
+   .plyr__control--overlaid { display: block } — três classes (0,3,0) —, por
+   isso os seletores abaixo usam no mínimo o mesmo peso e cobrem os estados
+   playing, paused e stopped. O desempate é a ordem do <head>, onde este
+   arquivo entra depois do plyr.css: nenhum !important é necessário.
+
+   O play/pause da barra roxa é .plyr__control (sem o sufixo --overlaid), então
+   não é atingido em nenhum destes seletores.
+
+   O que não é alcançável por CSS nenhum é o ícone que o player do YouTube
+   desenha DENTRO do iframe (estado "cued" ou bezel de troca de estado): ele
+   não pertence a este documento. Quem evita isso é o loop nativo configurado
+   junto ao player (loop: 1 + playlist + mute: 1 nos playerVars), que mantém o
+   embed sempre no estado de reprodução. */
+.plyr--video .plyr__control--overlaid[data-plyr="play"],
+.plyr.plyr--video .plyr__control--overlaid,
+.plyr--paused .plyr.plyr--video .plyr__control--overlaid,
+.plyr--stopped .plyr.plyr--video .plyr__control--overlaid {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none; /* cliques seguem direto para o vídeo */
+}
