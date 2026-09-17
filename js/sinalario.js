@@ -58,107 +58,83 @@ const barraRoxa = {
   tempo: null,
   aviso: null
 };
-
 function normalizar(texto) {
   return String(texto).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
-
 function videoDoSinal() {
   return barraRoxa.video;
 }
-
 function playerDisponivel() {
   return !!videoDoSinal() && !videoIndisponivel;
 }
-
 function duracaoDoSinal() {
   const video = videoDoSinal();
   const duracao = video ? Number(video.duration) : 0;
   return Number.isFinite(duracao) && duracao > 0 ? duracao : 0;
 }
-
 function progressoDisponivel() {
   return !!(window.Progresso && window.Progresso.carregar);
 }
-
 function obterFavoritos() {
   return progressoDisponivel() ? window.Progresso.favoritos() : [];
 }
-
 function reiniciarVisto(termo) {
   if (timerDoVisto) {
-    clearTimeout(timerDoVisto);
-    timerDoVisto = null;
-  }
-
-  visto = { termo: termo, tempoOk: false, videoTerminou: false };
-
-  timerDoVisto = setTimeout(() => {
-    if (visto && visto.termo === termo) {
-      visto.tempoOk = true;
-      marcarComoVisto();
-    }
-  }, INTERVALO_DA_CONTAGEM);
+  clearTimeout(timerDoVisto);
+  timerDoVisto = null;
 }
-
+visto = { termo: termo, tempoOk: false, videoTerminou: false };
+timerDoVisto = setTimeout(() => {
+if (visto && visto.termo === termo) {
+visto.tempoOk = true;
+marcarComoVisto();
+}
+}, INTERVALO_DA_CONTAGEM);
+}
 function marcarComoVisto() {
   if (!visto || !visto.termo) return;
   if (!(visto.tempoOk && visto.videoTerminou)) return;
   if (!progressoDisponivel()) return;
   if (window.Progresso.adicionarSinalVisto(visto.termo)) renderizarLista();
 }
-
 function atualizarIconeDoFiltro(valor) {
   const gatilho = document.getElementById('categoryTrigger');
   if (!gatilho) return;
-
   gatilho.dataset.value = valor;
-
   document.querySelectorAll('.custom-option').forEach((opcao) => {
     opcao.classList.toggle('active', opcao.dataset.value === valor);
   });
-
   const modelo = document.querySelector(`.custom-option[data-value="${valor}"]`);
   const selecionado = gatilho.querySelector('.selected-option');
   if (modelo && selecionado) selecionado.innerHTML = modelo.innerHTML;
-
   const icone = gatilho.querySelector('.selected-option i');
   if (icone) icone.className = `fa-solid ${ICONES_DO_FILTRO[valor] || 'fa-shapes'} icon-${valor}`;
 }
-
 function valoresDoFiltroDisponiveis() {
   return [...document.querySelectorAll('.custom-option')].map((opcao) => opcao.dataset.value);
 }
-
 function atualizarControlesHabilitados() {
   const habilitado = !videoIndisponivel;
-
   [barraRoxa.botaoPlay, barraRoxa.botaoRetroceder, barraRoxa.botaoVelocidade]
-    .forEach((botao) => {
-      if (botao) botao.disabled = !habilitado;
-    });
-
+  .forEach((botao) => {
+  if (botao) botao.disabled = !habilitado;
+  });
   if (barraRoxa.progresso) {
-    barraRoxa.progresso.classList.toggle('esta-desabilitado', !habilitado);
-    barraRoxa.progresso.setAttribute('aria-disabled', habilitado ? 'false' : 'true');
-  }
+  barraRoxa.progresso.classList.toggle('esta-desabilitado', !habilitado);
+  barraRoxa.progresso.setAttribute('aria-disabled', habilitado ? 'false' : 'true');
 }
-
+}
 function formatarTempo(segundos) {
   const total = Math.max(0, Math.floor(Number(segundos) || 0));
   const minutos = Math.floor(total / 60);
   return `${minutos}:${String(total % 60).padStart(2, '0')}`;
 }
-
 function atualizarBarraDeProgresso(instante, duracao) {
   const porcentagem = duracao > 0 ? Math.min(100, (instante / duracao) * 100) : 0;
-
   if (barraRoxa.preenchido) barraRoxa.preenchido.style.width = `${porcentagem}%`;
-
   if (barraRoxa.tempo) {
     barraRoxa.tempo.textContent = `${formatarTempo(instante)} / ${formatarTempo(duracao)}`;
   }
-
   if (barraRoxa.progresso) {
     barraRoxa.progresso.setAttribute('aria-valuenow', String(Math.round(porcentagem)));
     barraRoxa.progresso.setAttribute(
@@ -167,72 +143,53 @@ function atualizarBarraDeProgresso(instante, duracao) {
     );
   }
 }
-
 function atualizarDuracaoDaBarra() {
   const video = videoDoSinal();
-
   if (!video || videoIndisponivel) {
-    atualizarBarraDeProgresso(0, 0);
-    return;
+  atualizarBarraDeProgresso(0, 0);
+  return;
   }
-
-  atualizarBarraDeProgresso(video.currentTime || 0, duracaoDoSinal());
+atualizarBarraDeProgresso(video.currentTime || 0, duracaoDoSinal());
 }
-
 function atualizarIconeDoPlay() {
-  if (!barraRoxa.botaoPlay) return;
-
-  const video = videoDoSinal();
-  const parado = !playerDisponivel() || !video || video.paused;
-
-  barraRoxa.botaoPlay.innerHTML = parado
-    ? '<i class="fa-solid fa-play"></i>'
-    : '<i class="fa-solid fa-pause"></i>';
-
+if (!barraRoxa.botaoPlay) return;
+const video = videoDoSinal();
+const parado = !playerDisponivel() || !video || video.paused;
+barraRoxa.botaoPlay.innerHTML = parado
+  ? '<i class="fa-solid fa-play"></i>'
+  : '<i class="fa-solid fa-pause"></i>';
   barraRoxa.botaoPlay.setAttribute('aria-label', parado ? 'Reproduzir sinal' : 'Pausar sinal');
 }
-
 function atualizarRotuloDaVelocidade() {
   if (!barraRoxa.botaoVelocidade) return;
-
   barraRoxa.botaoVelocidade.textContent = `${velocidadeDoSinal}x`;
   barraRoxa.botaoVelocidade.setAttribute('aria-label', `Velocidade ${velocidadeDoSinal}x`);
 }
-
 function definirVideoIndisponivel(estado) {
   videoIndisponivel = !!estado;
-
   if (barraRoxa.aviso) barraRoxa.aviso.classList.toggle('esta-visivel', videoIndisponivel);
-
   atualizarControlesHabilitados();
   atualizarIconeDoPlay();
 }
-
 function tentarReproduzir() {
   const video = videoDoSinal();
   if (!video || videoIndisponivel) return;
-
   const promessa = video.play();
-
   if (promessa && typeof promessa.catch === 'function') {
     promessa.catch(() => atualizarIconeDoPlay());
   }
 }
-
 function carregarVideoDoTermo(termo) {
   const video = videoDoSinal();
   if (!video) return;
-
   const fonte = termo && termo.video ? termo.video : '';
-
   if (!fonte) {
-    video.removeAttribute('src');
-    video.load();
-    definirVideoIndisponivel(true);
-    atualizarBarraDeProgresso(0, 0);
-    return;
-  }
-
+  video.removeAttribute('src');
+  video.load();
+  definirVideoIndisponivel(true);
+  atualizarBarraDeProgresso(0, 0);
+  return;
+}
   definirVideoIndisponivel(false);
   instanteAnterior = 0;
   video.src = fonte;
