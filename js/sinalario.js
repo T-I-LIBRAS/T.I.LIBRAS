@@ -134,35 +134,27 @@ function marcarComoVisto() {
      restaurar volume/mudo de visitas antigas e quebrar o autoplay;
    · youtube → parâmetros repassados ao embed que o Plyr monta, e são eles que
      forçam a ocultação da interface do YouTube. */
-/* O loop nativo do YouTube (loop: 1 + playlist: <id>) precisa do id já no
-   momento em que o Plyr monta o embed — e isso acontece dentro do construtor,
-   antes de qualquer linha deste arquivo rodar. Por isso o id inicial é lido
-   aqui, direto do data-plyr-embed-id do HTML. */
-const elementoInicialDoPlayer = document.getElementById('player');
-const idInicialDoEmbed = extrairIdDoVideo(
-  elementoInicialDoPlayer ? elementoInicialDoPlayer.dataset.plyrEmbedId : ''
-);
-
 const player = new Plyr('#player', {
   /* Lista explícita do que o Plyr renderiza: 'play-large' NÃO entra aqui, e é
      essa ausência que resolve o botão central. No plyr.js há um único ponto
      que cria o .plyr__control--overlaid — o bloco
      `if (this.config.controls.includes('play-large'))` dentro do create(),
      que monta o <button> e o insere no container antes do .plyr__controls.
-     Fora da lista, o botão nunca é renderizado: não sobra nada para esconder
-     com CSS nem para apagar do DOM. A barra roxa inferior (play, voltar 5s,
-     progresso, tempo e velocidade) segue como o único controle do vídeo. */
+     Fora da lista o botão nem é renderizado — e, como garantia extra, a camada
+     sobreposta também é removida do DOM logo abaixo (removerCamadasSobrepostas)
+     e zerada no CSS. A barra roxa inferior (play, voltar 5s, progresso, tempo e
+     velocidade) segue como o único controle do vídeo. */
   controls: ['play', 'rewind', 'progress', 'current-time', 'settings'],
   settings: ['speed'],
   speed: { selected: 1, options: [0.25, 0.5, 0.75, 1] }, // 0.25x para estudo
   seekTime: 5,              // botão de retornar 5 segundos
-  /* Quem repete o sinal é o próprio embed (loop: 1 + playlist no bloco youtube
-     logo abaixo). O loop do Plyr fica desligado de propósito: o "loop" da
-     biblioteca para YouTube chama stopVideo() e depois playVideo(), e esse
-     stopVideo() joga o embed no estado "cued" — exatamente o estado em que o
-     YouTube desenha o botão redondo no centro da imagem. Com o loop nativo o
-     embed nunca sai do estado de reprodução. O handler de 'ended' mais abaixo
-     fica como rede de segurança para o caso de o vídeo terminar sem repetir. */
+  /* O loop é feito à mão, fora do Plyr (ver o tique de 'timeupdate' e o
+     handler de 'ended' mais abaixo). O loop da PRÓPRIA biblioteca fica
+     desligado de propósito: no provider do YouTube ele chama stopVideo() antes
+     de playVideo(), e o stopVideo() joga o embed no estado "cued" — que é
+     exatamente quando o YouTube desenha o botão redondo gigante no centro da
+     imagem, por cima do peito/mãos da intérprete. O nosso loop só usa
+     currentTime (seekTo), então o embed nunca troca de estado. */
   loop: { active: false },
   autoplay: true,
   muted: true,              // mudo por padrão (indispensável para o autoplay)
@@ -182,18 +174,7 @@ const player = new Plyr('#player', {
        último, então valem como palavra final: sem a barra cinza nativa do
        YouTube e sem o teclado dele (quem responde às teclas é o Plyr) */
     controls: 0,            // oculta a barra cinza nativa do YouTube
-    disablekb: 1,           // desliga os atalhos de teclado do próprio YouTube
-    /* Loop e mudo resolvidos DENTRO do embed, via playerVars: o Plyr repassa
-       este objeto direto para o YouTube (playerVars: extend({}, {...}, config)).
-       O loop nativo (loop: 1 + playlist: <id>) repete o sinal sem nenhuma
-       chamada de API — nada de stopVideo(), seekTo() ou playVideo(), que são
-       justamente as trocas de estado que fazem o player do YouTube desenhar o
-       botão redondo (bezel / estado "cued") no centro da imagem. O playlist é
-       reescrito a cada troca de termo em carregarVideo(). O mute: 1 já cria o
-       embed mudo, então o autoplay não depende de mexer no volume depois. */
-    loop: 1,
-    playlist: idInicialDoEmbed,
-    mute: 1
+    disablekb: 1            // desliga os atalhos de teclado do próprio YouTube
   },
   /* Rótulos em português: o Plyr só traz o inglês embutido */
   i18n: {
@@ -227,12 +208,53 @@ const player = new Plyr('#player', {
   }
 });
 
-/* Sobre o botão central do Plyr: não há nada para remover nem para esconder.
-   O .plyr__control--overlaid só é criado quando 'play-large' entra na lista de
-   controls — ver a nota na inicialização acima —, então o elemento não existe
-   no DOM da página. Por isso não há MutationObserver nem regra de CSS aqui: a
-   garantia é a própria lista de controls, e o play/pause da barra roxa (classe
-   .plyr__control, sem o sufixo --overlaid) segue intacto. */
+/* ---------------- Cena limpa: nada de controle sobre a imagem ---------------
+   Três camadas podem desenhar controles no MEIO do vídeo, e todas são
+   tratadas aqui:
+
+   1) .plyr__control--overlaid — o único elemento que o Plyr centraliza. Ele só
+      é criado quando 'play-large' entra na lista de controls (ver a nota na
+      inicialização acima), e a lista não o inclui. Ainda assim o expurgo
+      abaixo apaga o nó do DOM caso ele reapareça (outra versão da biblioteca,
+      config alterada, etc.);
+   2) .plyr__controls__item / .plyr__control soltos FORA do .plyr__controls —
+      a barra roxa inferior é o único lugar legítimo para esses itens, então
+      qualquer um que apareça fora dela é removido do DOM. Os itens da barra
+      (play, voltar 5s, progresso, tempo e velocidade) seguem intactos porque
+      continuam dentro do .plyr__controls;
+   3) a sobreposição que o PRÓPRIO player do YouTube desenha dentro do iframe
+      (estado "cued" ou fim de vídeo). Ela não pertence a este documento, então
+      não há seletor nem JS capaz de alcançá-la: quem a mantém fora de cena é o
+      loop sem estado de fim montado logo abaixo.
+
+   O MutationObserver roda o mesmo expurgo a cada remontagem do player (o Plyr
+   destrói e recria o embed a cada troca de termo), com custo desprezível. */
+function removerCamadasSobrepostas() {
+  const container = document.getElementById('player');
+  if (!container) return;
+
+  /* 1) botão central do Plyr, em qualquer estado do player */
+  container.querySelectorAll('.plyr__control--overlaid').forEach((no) => no.remove());
+
+  /* 2) só procura controles soltos depois que a barra roxa já foi montada —
+     assim o expurgo nunca corre durante a remontagem do embed */
+  if (!container.querySelector('.plyr__controls')) return;
+  container.querySelectorAll('.plyr__controls__item, .plyr__control').forEach((no) => {
+    if (!no.closest('.plyr__controls')) no.remove();
+  });
+}
+
+removerCamadasSobrepostas();
+
+const containerDasCamadas = document.getElementById('player');
+
+if (window.MutationObserver && containerDasCamadas) {
+  const observadorDeCamadas = new MutationObserver(removerCamadasSobrepostas);
+  observadorDeCamadas.observe(containerDasCamadas, {
+    childList: true,
+    subtree: true
+  });
+}
 
 /* Estado da troca de vídeo. O provider do YouTube sobe de forma assíncrona:
    até o Plyr disparar 'ready' ainda não existe player para receber o vídeo,
@@ -256,10 +278,6 @@ function carregarVideo(idYouTube) {
   if (!id || id === videoIdAtual) return;
 
   videoIdAtual = id;
-
-  /* O playlist do loop nativo acompanha o vídeo: o embed é remontado logo
-     abaixo e lê este valor na hora de montar os playerVars */
-  player.config.youtube.playlist = id;
 
   player.source = {
     type: 'video',
@@ -289,19 +307,42 @@ player.on('ready', () => {
   aplicarVideoPendente();
 });
 
-/* O sinal é 100% visual e o mudo já vem do próprio embed (mute: 1 no bloco
-   youtube), então não existe mais nenhuma chamada de volume/mudo pela API —
-   uma a menos das que fazem o YouTube piscar os ícones no centro do vídeo.
-   Nada pode desmutar por aqui: a barra do projeto não tem volume nem mudo. */
+/* Mudo: nenhuma chamada de volume/mudo fica por aqui. O Plyr reaplica o
+   config.muted (muted: true acima) dentro do build da interface, que o provider
+   do YouTube dispara ~50ms depois do 'ready' — inclusive a cada remontagem
+   feita pela troca de termo. Além disso a barra roxa do projeto não tem volume
+   nem mudo, então nada pode desmutar o sinal. Cada chamada extra a mute()/
+   setVolume() é uma troca de estado a menos no embed, e é justamente uma troca
+   de estado que faz o YouTube desenhar ícones por cima da intérprete. */
 
-/* Rede de segurança da contagem de "termo visto": o loop manual dispara
-   'ended' a cada volta, mas se o evento não chegar (um seek no fim do vídeo,
-   por exemplo) este tique fecha a contagem ao alcançar o final */
+/* Tique do player (no YouTube o Plyr dispara 'timeupdate' a cada 50ms).
+   Duas responsabilidades:
+
+   1) CONTAGEM de "termo visto" — rede de segurança: quando o reinício
+      antecipado abaixo acontece, o embed nunca dispara 'ended', então este
+      tique fecha a contagem ao alcançar o final;
+   2) LOOP SEM ESTADO DE FIM — reinicia o sinal um instante ANTES do último
+      quadro. O embed nunca chega ao estado "ended", que é justamente quando o
+      YouTube desenha a sobreposição de fim de vídeo (retroceder/avançar,
+      replay) por cima do último quadro, em cima do peito/mãos da intérprete.
+      O reinício usa só currentTime (seekTo), que não troca o estado do embed —
+      diferente do stopVideo() que o loop nativo da biblioteca usaria. */
+const ANTECEDENCIA_DO_LOOP = 0.2; // segundos antes do fim
+
 player.on('timeupdate', () => {
-  if (!visto || !visto.termo || visto.videoTerminou) return;
-  if (player.duration > 0 && player.currentTime >= player.duration - 1) {
+  if (!player.duration) return;
+
+  if (
+    visto && visto.termo && !visto.videoTerminou &&
+    player.currentTime >= player.duration - 1
+  ) {
     visto.videoTerminou = true;
     marcarComoVisto();
+  }
+
+  if (player.currentTime >= player.duration - ANTECEDENCIA_DO_LOOP) {
+    player.currentTime = 0;
+    Promise.resolve(player.play()).catch(() => {});
   }
 });
 
@@ -311,9 +352,10 @@ player.on('ended', () => {
     marcarComoVisto();
   }
 
-  /* Rede de segurança: se o loop nativo não repetir (embed remontado com
-     playlist desatualizado, por exemplo), o sinal volta ao início e segue
-     tocando — sem stopVideo(), que é o que desenha o botão central. */
+  /* Rede de segurança do loop (ver o tique de 'timeupdate'): se algum quadro
+     escapar e o embed chegar ao fim, o sinal volta ao início e segue tocando —
+     sempre por currentTime/play(), nunca por stopVideo(), que é o que joga o
+     embed no estado "cued" e desenha o botão central. */
   player.currentTime = 0;
   Promise.resolve(player.play()).catch(() => {});
 });

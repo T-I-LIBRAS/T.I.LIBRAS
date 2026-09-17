@@ -375,31 +375,60 @@ app-footer {
   }
 }
 
-/* --------------------- Plyr · botão central em todos os estados -------------
-   Hoje o .plyr__control--overlaid nem chega a existir: ele só é criado quando
-   'play-large' entra na lista de controls do sinalario.js, e a lista não o
-   inclui. A regra fica como rede de segurança para o caso de ele voltar.
+/* -------------- Plyr · cena 100% limpa: nada sobre a imagem -----------------
+   A tela do vídeo deve mostrar APENAS a intérprete e a barra roxa inferior —
+   nenhuma camada de controle pode nascer no meio da imagem.
 
-   O plyr.css exibe o botão com .plyr--full-ui.plyr--video
-   .plyr__control--overlaid { display: block } — três classes (0,3,0) —, por
-   isso os seletores abaixo usam no mínimo o mesmo peso e cobrem os estados
-   playing, paused e stopped. O desempate é a ordem do <head>, onde este
-   arquivo entra depois do plyr.css: nenhum !important é necessário.
+   1) BOTÃO CENTRAL: .plyr__control--overlaid é o único elemento que o Plyr
+      centraliza, e ele só é criado quando 'play-large' entra na lista de
+      controls do sinalario.js (a lista não o inclui). As regras abaixo cobrem
+      os estados playing, paused e stopped e valem como garantia caso ele
+      reapareça. O plyr.css exibe esse botão com .plyr--full-ui.plyr--video
+      .plyr__control--overlaid { display: block } — três classes (0,3,0) —, por
+      isso os seletores repetem o peso e ainda levam !important: a garantia é
+      visual, sem depender da ordem dos arquivos no <head>. O sinalario.js
+      também apaga esse nó do DOM (ver removerCamadasSobrepostas).
 
-   O play/pause da barra roxa é .plyr__control (sem o sufixo --overlaid), então
-   não é atingido em nenhum destes seletores.
+   2) CONTROLES SOLTOS: a barra roxa inferior (.plyr__controls) é o único lugar
+      legítimo para .plyr__controls__item e .plyr__control. Os seletores de
+      filho direto pegam somente os que apareçam FORA dela; os itens da barra —
+      play, voltar 5s, progresso, tempo e velocidade — seguem intactos.
 
-   O que não é alcançável por CSS nenhum é o ícone que o player do YouTube
-   desenha DENTRO do iframe (estado "cued" ou bezel de troca de estado): ele
-   não pertence a este documento. Quem evita isso é o loop nativo configurado
-   junto ao player (loop: 1 + playlist + mute: 1 nos playerVars), que mantém o
-   embed sempre no estado de reprodução. */
-.plyr--video .plyr__control--overlaid[data-plyr="play"],
+   3) BARRA ROXA: fica ancorada no rodapé do player (position: absolute +
+      bottom: 0 sobre um container posicionado), então ela nunca vira um painel
+      no meio da imagem, mesmo se o tema da biblioteca não carregar.
+
+   O que nenhum seletor alcança é o ícone que o player do YouTube desenha
+   DENTRO do iframe (estado "cued" ou fim de vídeo): ele não pertence a este
+   documento. Quem o mantém fora de cena é o loop sem estado de fim montado no
+   sinalario.js, que reinicia o sinal por currentTime um instante antes do
+   último quadro. */
+.plyr {
+  position: relative; /* referência da barra roxa ancorada no rodapé */
+}
+
+.plyr .plyr__control--overlaid,
 .plyr.plyr--video .plyr__control--overlaid,
+.plyr--video .plyr__control--overlaid[data-plyr="play"],
 .plyr--paused .plyr.plyr--video .plyr__control--overlaid,
 .plyr--stopped .plyr.plyr--video .plyr__control--overlaid {
-  display: none;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none; /* cliques seguem direto para o vídeo */
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important; /* cliques seguem direto para o vídeo */
+}
+
+/* Controles soltos fora da barra roxa (filhos diretos do container) */
+.plyr > .plyr__controls__item,
+.plyr > .plyr__control {
+  display: none !important;
+}
+
+/* A barra roxa é a única superfície de controle, sempre no rodapé */
+.plyr .plyr__controls {
+  position: absolute !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
 }

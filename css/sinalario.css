@@ -580,15 +580,15 @@
   height: 200% !important;
 }
 
-/* Botão central: nada de CSS aqui. O Plyr só cria o .plyr__control--overlaid
-   quando 'play-large' entra na lista de controls do sinalario.js, e a lista não
-   o inclui — a garantia está nessa lista, não em estilo. O botão redondo que o
-   YouTube desenha dentro do iframe (camada nativa tratada logo acima) não é
-   alcançável por seletor nenhum desta página: quem o mantém fora de cena é o
-   loop manual do sinalario.js, que reinicia o sinal por currentTime = 0 e deixa
-   o embed sempre no estado de reprodução. Nada mais neste arquivo mexe nos
-   controles — a barra roxa, as velocidades e a troca de termos seguem
-   intactas. */
+/* Botão central: nada de estilo aqui. A camada que mata qualquer controle
+   sobreposto mora no style.css (regras do .plyr__control--overlaid e dos itens
+   soltos fora da barra roxa), e o sinalario.js ainda apaga esses nós do DOM em
+   removerCamadasSobrepostas. O botão redondo que o YouTube desenha dentro do
+   iframe (camada nativa tratada logo acima) não é alcançável por seletor nenhum
+   desta página: quem o mantém fora de cena é o loop sem estado de fim do
+   sinalario.js, que reinicia o sinal por currentTime um instante antes do
+   último quadro. Nada mais neste arquivo mexe nos controles — a barra roxa, as
+   velocidades e a troca de termos seguem intactas. */
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px
