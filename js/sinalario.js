@@ -286,8 +286,8 @@ normalizarPlayerVarsDoYoutube();
    A sobreposição que o PRÓPRIO player do YouTube desenha DENTRO do iframe não
    pertence a este documento — nenhum seletor ou JS da página a alcança. Quem a
    mantém fora de cena são as duas peças deste arquivo:
-   · o loop sem estado de fim, logo abaixo, que reinicia o sinal por currentTime
-     um instante antes do último quadro (mata o desenho de fim de vídeo);
+   · o loop sem estado de fim, logo abaixo, que reinicia o sinal por seekTo(0)
+     um instante antes do último quadro, em duas camadas ('timeupdate' + vigia);
    · o congelamento por setPlaybackRate(0) da seção "Congelar o sinal" (mata o
      desenho de pausa: o embed nunca chega a PAUSED).
 
@@ -403,10 +403,65 @@ player.on('ready', () => {
       quadro. O embed nunca chega ao estado "ended", que é justamente quando o
       YouTube desenha a sobreposição de fim de vídeo (retroceder/avançar,
       replay) por cima do último quadro, em cima do peito/mãos da intérprete.
-      O reinício usa só currentTime (seekTo), que não troca o estado do embed —
-      diferente do stopVideo() que o loop nativo da biblioteca usaria. */
-const ANTECEDENCIA_DO_LOOP = 0.2; // segundos antes do fim
 
+   O reinício é feito por seekTo(0, true) no PRÓPRIO embed (player.embed, a
+   instância YT.Player que o Plyr guarda), e não pelo setter player.currentTime
+   nem por player.play(): o seekTo durante a reprodução mantém o embed em
+   PLAYING, e é trocar o estado do embed (PAUSED, ENDED, CUED) que faz o ícone
+   central nascer. Como os sinais deste sinalário são curtos, o fim de vídeo do
+   YouTube é interno e instantâneo: por isso o pedido de loop sai em DUAS
+   camadas — o tique de 'timeupdate' (50ms) e um vigia de 25ms lendo o embed.
+   Ambas usam a mesma margem ANTECEDENCIA_DO_LOOP: o seekTo chega antes de o
+   vídeo alcançar a duração total, então o estado ENDED nunca é atingido. */
+
+const ANTECEDENCIA_DO_LOOP = 0.2;        // segundos antes do último quadro
+const INTERVALO_DO_VIGIA_DO_LOOP = 25;   // ms entre duas leituras do embed
+const MINIMO_ENTRE_REINICIOS = 250;      // ms: impede dois seeks no mesmo ciclo
+
+let ultimoReinicioDoLoop = 0;
+let ultimoEstadoDoEmbed = null;
+
+/* Diagnóstico de validação, sem nenhum ruído no console: no DevTools do
+   navegador, `loopDoSinalario.reinicios` mostra quantas vezes o ciclo voltou ao
+   segundo 0 e `loopDoSinalario.resgates` quantas dessas vezes o embed teve de
+   ser arrancado de um estado proibido (ENDED/CUED). `resgates` zerado é o
+   atestado de que o loop nunca deixou a mídia sair de PLAYING — ou seja, nenhum
+   ícone central teve chance de ser desenhado. */
+const diagnosticoDoLoop = { reinicios: 0, resgates: 0 };
+window.loopDoSinalario = diagnosticoDoLoop;
+
+/* Reinicia o ciclo no segundo 0 mantendo a mídia em execução: seekTo() não
+   alterna o embed para PAUSED, ENDED nem CUED — a reprodução simplesmente
+   continua do ponto zero. O playVideo() entra só como recuperação, para o caso
+   de o embed ter escapado para um desses estados antes desta chamada. */
+function reiniciarCicloDoSinal() {
+  const embed = embedDoYoutube();
+  if (!embed || sinalCongelado) return false;   // congelado: o quadro é do usuário
+
+  const agora = Date.now();
+  if (agora - ultimoReinicioDoLoop < MINIMO_ENTRE_REINICIOS) return false;
+
+  ultimoReinicioDoLoop = agora;
+  diagnosticoDoLoop.reinicios += 1;
+
+  embed.seekTo(0, true);
+
+  /* Saída de ENDED (0) e CUED (5) sem passar pelo stopVideo(): é a única
+     transição possível para PLAYING que não desenha o botão central */
+  if (Number(embed.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
+    embed.playVideo();
+    diagnosticoDoLoop.resgates += 1;
+  }
+
+  /* O fim de vídeo deixaria o ícone da barra roxa em "reproduzir"; como o sinal
+     nunca parou de tocar, o ícone certo é "pausar" — sem nenhum pauseVideo() */
+  avisarBarraRoxa(false);
+
+  return true;
+}
+
+/* Camada 1 — o tique pedido: 'timeupdate' do player. Fecha a contagem do termo
+   visto e pede o reinício quando o instante entra na margem do fim. */
 player.on('timeupdate', () => {
   if (!player.duration) return;
 
@@ -418,11 +473,49 @@ player.on('timeupdate', () => {
     marcarComoVisto();
   }
 
+  if (sinalCongelado) return;
+
   if (player.currentTime >= player.duration - ANTECEDENCIA_DO_LOOP) {
-    player.currentTime = 0;
-    Promise.resolve(player.play()).catch(() => {});
+    reiniciarCicloDoSinal();
   }
 });
+
+/* Camada 2 — vigia de alta frequência. O tique do Plyr chega a cada ~50ms e o
+   fim de vídeo do YouTube é instantâneo: entre dois tiques o embed pode cruzar
+   a linha de chegada e pintar a sobreposição. Este vigia lê duração, instante e
+   estado direto do embed a cada 25ms, com a mesma margem, e ainda resgata o
+   embed dos estados proibidos — ENDED (0) e CUED (5) — assim que aparecem. */
+let vigiaDoLoop = null;
+
+function iniciarVigiaDoLoop() {
+  if (vigiaDoLoop) return;
+
+  vigiaDoLoop = setInterval(() => {
+    const embed = embedDoYoutube();
+    if (!embed || sinalCongelado) return;
+
+    const duracao = Number(embed.getDuration());
+    if (!duracao) return;
+
+    const instante = Number(embed.getCurrentTime());
+    const estado = Number(embed.getPlayerState());
+    const estadoAnterior = ultimoEstadoDoEmbed;
+    ultimoEstadoDoEmbed = estado;
+
+    /* CUED só é recuperado se o sinal JÁ vinha tocando: no carregamento inicial
+       esse estado é normal (o autoplay está a caminho) e insistir ali viraria
+       uma enxurrada de playVideo a cada tique */
+    const perdido = estado === ESTADO_DO_YOUTUBE.FINALIZADO ||
+      (estado === ESTADO_DO_YOUTUBE.EM_ESPERA &&
+        estadoAnterior === ESTADO_DO_YOUTUBE.REPRODUZINDO);
+
+    if (perdido || instante >= duracao - ANTECEDENCIA_DO_LOOP) {
+      reiniciarCicloDoSinal();
+    }
+  }, INTERVALO_DO_VIGIA_DO_LOOP);
+}
+
+iniciarVigiaDoLoop();
 
 player.on('ended', () => {
   if (visto && visto.termo) {
@@ -430,12 +523,13 @@ player.on('ended', () => {
     marcarComoVisto();
   }
 
-  /* Rede de segurança do loop (ver o tique de 'timeupdate'): se algum quadro
-     escapar e o embed chegar ao fim, o sinal volta ao início e segue tocando —
-     sempre por currentTime/play(), nunca por stopVideo(), que é o que joga o
-     embed no estado "cued" e desenha o botão central. */
-  player.currentTime = 0;
-  Promise.resolve(player.play()).catch(() => {});
+  /* Rede de segurança (ver as duas camadas acima): se algum quadro escapar e o
+     embed chegar ao fim, o sinal volta ao início e segue tocando — sempre por
+     seekTo/playVideo, nunca por stopVideo(), que é o que joga o embed no estado
+     "cued" e desenha o botão central. A janela mínima entre reinícios é zerada
+     aqui porque este é o instante exato em que a sobreposição nasce. */
+  ultimoReinicioDoLoop = 0;
+  reiniciarCicloDoSinal();
 });
 
 /* ============ Congelar o sinal: pausar sem entrar no PAUSED ============
@@ -622,6 +716,17 @@ if (containerDoPlayer) {
       (codigo === ESTADO_DO_YOUTUBE.EM_ESPERA || codigo === ESTADO_DO_YOUTUBE.FINALIZADO)
     ) {
       aplicarCongelamento();
+      return;
+    }
+
+    /* Fim de vídeo com o sinal solto: é neste instante que o YouTube acaba de
+       desenhar a sobreposição de fim (retroceder/avançar/replay) sobre o
+       último quadro, em cima do peito/mãos da intérprete. A resposta é o mesmo
+       reinício do loop, mas aqui SEM a janela mínima entre reinícios: este é o
+       evento exato do desenho, e o seekTo precisa sair no mesmo ciclo. */
+    if (!sinalCongelado && codigo === ESTADO_DO_YOUTUBE.FINALIZADO) {
+      ultimoReinicioDoLoop = 0;
+      reiniciarCicloDoSinal();
     }
   });
 }
