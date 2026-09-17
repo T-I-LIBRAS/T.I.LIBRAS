@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T.I Libras - Quiz Prático</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/praticar.css">
+  <link rel="stylesheet" href="css/style.css?v=50">
+  <link rel="stylesheet" href="css/praticar.css?v=50">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="data/termos.js"></script>
 </head>
 <body>
   <app-header></app-header>
@@ -48,7 +49,7 @@
               <p class="desc-text">Aprenda e fixe os sinais dos componentes físicos de computadores, periféricos e peças internas.</p>
             </div>
             <div>
-              <div class="meta-info">17 Questões · Peças e Componentes</div>
+              <div class="meta-info" data-meta="Hardware">0 Questões · Peças e Componentes</div>
               <div class="card-actions">
                 <button class="btn-card-start" type="button" onclick="iniciarQuiz('Hardware')">Começar</button>
                 <a href="sinalario.html?cat=Hardware" class="btn-card-consult">Consultar</a>
@@ -64,7 +65,7 @@
               <p class="desc-text">Testes com conceitos de sistemas operacionais, aplicativos de escritório e programas essenciais.</p>
             </div>
             <div>
-              <div class="meta-info">11 Questões · Sistemas e Apps</div>
+              <div class="meta-info" data-meta="Software">0 Questões · Sistemas e Apps</div>
               <div class="card-actions">
                 <button class="btn-card-start" type="button" onclick="iniciarQuiz('Software')">Começar</button>
                 <a href="sinalario.html?cat=Software" class="btn-card-consult">Consultar</a>
@@ -80,7 +81,7 @@
               <p class="desc-text">Pratique a sinalização de algoritmos, linguagens de programação, variáveis e estruturas de código.</p>
             </div>
             <div>
-              <div class="meta-info">12 Questões · Código e Algoritmos</div>
+              <div class="meta-info" data-meta="Programação">0 Questões · Código e Algoritmos</div>
               <div class="card-actions">
                 <button class="btn-card-start" type="button" onclick="iniciarQuiz('Programação')">Começar</button>
                 <a href="sinalario.html?cat=Programacao" class="btn-card-consult">Consultar</a>
@@ -96,7 +97,7 @@
               <p class="desc-text">Conceitos fundamentais de circuitos, tensão, ferramentas elétricas e grandezas físicas em Libras.</p>
             </div>
             <div>
-              <div class="meta-info">11 Questões · Circuitos Elétricos</div>
+              <div class="meta-info" data-meta="Eletricidade">0 Questões · Circuitos Elétricos</div>
               <div class="card-actions">
                 <button class="btn-card-start" type="button" onclick="iniciarQuiz('Eletricidade')">Começar</button>
                 <a href="sinalario.html?cat=Eletricidade" class="btn-card-consult">Consultar</a>
@@ -112,7 +113,7 @@
               <p class="desc-text">Termos relacionados à internet, navegadores, conexões, links e segurança digital.</p>
             </div>
             <div>
-              <div class="meta-info">12 Questões · Internet e Conexões</div>
+              <div class="meta-info" data-meta="Redes">0 Questões · Internet e Conexões</div>
               <div class="card-actions">
                 <button class="btn-card-start" type="button" onclick="iniciarQuiz('Redes')">Começar</button>
                 <a href="sinalario.html?cat=Redes" class="btn-card-consult">Consultar</a>
@@ -128,7 +129,7 @@
               <p class="desc-text">Desafio completo reunindo todas as 5 categorias misturadas aleatoriamente em um só teste.</p>
             </div>
             <div>
-              <div class="meta-info">63 Questões · Todas as Áreas</div>
+              <div class="meta-info" data-meta="Todos">0 Questões · Todas as Áreas</div>
               <div class="card-actions">
                 <button class="btn-card-start" type="button" onclick="iniciarQuiz('Todos')">Começar</button>
                 <a href="sinalario.html" class="btn-card-consult">Consultar</a>
@@ -145,7 +146,7 @@
           <button class="btn-back" type="button" onclick="voltarParaSelecao()"><i class="fa-solid fa-arrow-left"></i> Voltar à Seleção</button>
           <div class="quiz-header-info">
             <span class="category-tag" id="qCategory">HARDWARE</span>
-            <h2 id="qTitle">Pergunta 1 de 17</h2>
+            <h2 id="qTitle">Pergunta 1 de 1</h2>
           </div>
         </div>
         <div class="timer-badge"><i class="fa-solid fa-clock"></i> Tempo: <span id="timer">01:00</span></div>
@@ -153,9 +154,12 @@
 
       <div class="quiz-body-grid">
         <div class="quiz-media-col">
-          <div class="video-placeholder-box">
-            <span class="video-icon"><i class="fa-solid fa-video"></i></span>
-            <span class="video-label" id="qVideoText">Sinal Demonstrativo em Libras</span>
+          <div class="quiz-video-box">
+            <video id="qVideo" playsinline loop preload="auto"></video>
+            <div class="quiz-video-aviso" id="qVideoAviso">
+              <i class="fa-solid fa-video-slash"></i>
+              <span>Vídeo do sinal em breve</span>
+            </div>
           </div>
           <p class="quiz-media-hint">Assista ao vídeo e selecione o termo correspondente à direita:</p>
         </div>
@@ -176,6 +180,6 @@
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/praticar.js"></script>
+  <script src="js/praticar.js?v=47"></script>
 </body>
 </html>

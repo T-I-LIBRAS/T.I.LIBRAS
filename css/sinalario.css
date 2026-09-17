@@ -1,71 +1,14 @@
-/* =========================================================================
-   SINALÁRIO · Layout flat de 3 colunas (full width)
-   -------------------------------------------------------------------------
-   Estrutura:
-     Coluna 1 (360px) · Filtros (Custom Select) + lista de termos (scroll interno)
-     Coluna 2 (1fr)   · Header roxo + player 16:9 + definição do termo
-     Coluna 3 (370px) · Imagem do termo (272px) + Exemplos PT/Libras
-   Modelo de altura (as 3 bases fecham na mesma linha, logo acima do rodapé):
-     · Bloco full width com teto de escala (max-width: 1550px + margin auto) e
-       colunas 360px / 1fr / 370px: as laterais mais largas esticam os cards
-       até as extremidades e a coluna do meio fica limitada pelo container
-     · Zoom out não infla nada: o player para em 680px de largura, as colunas
-       laterais têm largura fixa e a Coluna 1 não cresce porque a lista interna
-       não contribui com a altura (height: 0)
-     · min-height: calc(100vh - 140px) dá o piso até o rodapé; com
-       align-content: start a linha do Grid fica no tamanho do conteúdo
-     · align-items: stretch estica as 3 colunas até a MESMA linha — é essa
-       peça que mantém a base da Coluna 1 igual à das Colunas 2 e 3
-     · Coluna 1: height: 100% + align-self: stretch (mede exatamente a linha do
-       Grid) e a lista interna com flex: 1 + height: 0: 2 ou 100 termos dão a
-       mesma altura de card, com a rolagem acontecendo só dentro da lista
-     · Coluna 2: card branco do vídeo (.card-video-container) com cabeçalho
-       padrão + player + barra de controles customizada, e definição compacta
-       (só padding, sem flex-grow)
-     · Coluna 3: 350px de largura com cards agrupados por gap uniforme e a
-       moldura da imagem em 272px fechando o topo
-     · Player: o HTML traz só a div receptora #player e é a YouTube Iframe
-       Player API oficial (script no sinalario.html, sem nenhuma biblioteca
-       intermediária) que cria o embed e recebe os comandos. O wrapper fica
-       com pointer-events: none, então nenhum clique, hover ou arrasto alcança
-       o embed: a interface nativa do YouTube (título, "Assistir no YouTube" e
-       o botão central redondo) não tem como ser ativada. Nenhum deslocamento
-       de CSS (margin-top negativo / translateY / corte de posição) é usado
-   Princípios: sem sombras, sem !important, tokens de cor de style.css.
-   ========================================================================= */
-
-/* ------------------------------- Tokens ------------------------------- */
-
 :root {
   --sl-lilas-suave: #ece4fd;
   --sl-superficie: #ffffff;
   --sl-superficie-alt: #f7f9ff;
-  /* Borda única dos cards brancos da página: mesmo tom exato da borda do card
-     da Coluna 1 (--borda em style.css) para consistência total do Flat UI */
   --sl-borda: #dbe3f7;
   --sl-raio: 14px;
   --sl-raio-sm: 12px;
-  /* Não existe mais teto de altura na Coluna 1: a altura dela vem do Grid
-     (align-items: stretch + height: 100%) e quem rola é a lista interna,
-     isolada com height: 0 para não contribuir com a altura do card */
 }
 
-/* --------------------- Container · grid full width --------------------- */
-
-/* Laterais mais generosas (360px / 370px) esticadas até as extremidades, com
-   o teto de escala de 1550px (margin auto) segurando a inflação horizontal no
-   zoom out. O ganho das laterais (+30px na Coluna 1 e +20px na Coluna 3, 50px
-   no total) foi somado ao teto antigo de 1500px: assim a trilha central segue
-   com os MESMOS 724px de antes (1550 - 96 de padding/gaps - 360 - 370) e o
-   player continua parando no seu teto de 680px, sem esticar nem encolher.
-   align-items: stretch é a peça-chave: as 3 colunas esticam até a MESMA linha,
-   definida pelo conteúdo das Colunas 2 e 3 — a Coluna 1 não contribui mais com
-   a altura (a lista tem height: 0). align-content: start impede a linha de
-   esticar junto com o piso de viewport. */
 .container.main-layout {
   display: grid;
-  /* Coluna 1 em 360px (era 330px) e Coluna 3 em 370px (era 350px): o ganho
-     vai todo para as laterais, sem alargar a coluna do meio */
   grid-template-columns: 360px 1fr 370px;
   gap: 20px;
   align-items: stretch;
@@ -76,16 +19,9 @@
   padding: 20px 28px;
   min-height: calc(100vh - 140px);
   box-sizing: border-box;
-  /* Altura pelo conteúdo do bloco (o flex não estica nem esmaga) */
   flex: 0 0 auto;
 }
 
-/* ------------------- Coluna 1 · Filtros e termos ------------------- */
-
-/* Coluna 1 com altura engessada: height: 100% + align-self: stretch fazem o
-   card medir exatamente a linha do Grid — a mesma das Colunas 2 e 3 — seja
-   com 2 ou com 100 termos. Sem max-height: ele deixou de ser necessário
-   porque a lista não contribui mais com a altura do card */
 .sidebar-filtros {
   display: flex;
   flex-direction: column;
@@ -96,11 +32,6 @@
   box-sizing: border-box;
 }
 
-/* O card ocupa a coluna inteira e fecha na base; quem cede é a lista.
-   Nenhum height: auto/fit-content nem max-height variável aqui: a altura é
-   sempre 100% da coluna, que por sua vez mede a linha do Grid.
-   O space-between é rede de segurança — como a lista absorve toda a sobra
-   com flex: 1, não sobra espaço para ele distribuir nada */
 .filtros-panel {
   flex: 1 1 auto;
   display: flex;
@@ -130,14 +61,6 @@
   align-items: center;
   margin-bottom: 10px;
 }
-
-/* ------------------- Custom select de áreas (Coluna 1) ------------------- */
-/* Substitui o <select> nativo: o menu suspenso do sistema era azul genérico,
-   não aceitava ícones nas <option> e destoava do design system. Aqui cada
-   opção carrega a cor oficial da sua área, o estado ativo/hover usa o lilás
-   suave da página e o menu flutua sobre a lista de termos (z-index 100).
-   As alturas são as mesmas do campo anterior (padding 10px + 1px de borda),
-   então o ritmo vertical da Coluna 1 e a altura do card não mudam. */
 
 .custom-select-container {
   position: relative;
@@ -186,7 +109,6 @@
   transition: transform 0.2s ease;
 }
 
-/* Seta gira ao abrir, reforçando o estado do menu */
 .custom-select-container.open .custom-select-trigger .arrow-icon {
   transform: rotate(180deg);
 }
@@ -196,8 +118,6 @@
   top: calc(100% + 6px);
   left: 0;
   width: 100%;
-  /* Coluna flex com gap: separa os itens para que os fundos de hover/ativo de
-     opções vizinhas não se colem num único bloco roxo contínuo */
   display: none;
   flex-direction: column;
   gap: 4px;
@@ -216,8 +136,6 @@
 }
 
 .custom-option {
-  /* Bloco próprio e bem delimitado: sem margem (o respiro vem do gap do menu)
-     e com raio de 8px em cada item */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -231,8 +149,6 @@
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* Hover e item selecionado: cada um com o próprio fundo roxo, separados pelo
-   gap de 4px do menu */
 .custom-option:hover {
   background: #F1F0FE;
   color: #6C5CE7;
@@ -251,8 +167,6 @@
   text-align: center;
 }
 
-/* Ícone de cada área na mesma cor oficial de coresDasAreas (sinalario.js).
-   A classe acompanha o data-value da opção, no formato icon-<valor> */
 .icon-todos { color: var(--cor-texto-suave); }
 .icon-hardware { color: #783cc8; }
 .icon-software { color: #3c8cdc; }
@@ -303,12 +217,6 @@
   margin-bottom: 8px;
 }
 
-/* Lista: única área rolável do layout — e a única que absorve tamanho interno.
-   flex: 1 1 0px zera a base do flex e min-height: 0 libera o encolhimento; já
-   o height: 0 é o que tira a lista do cálculo da altura intrínseca do card
-   (sem ele, o conteúdo flex ainda empurra a borda inferior do card). Com os
-   três juntos, 1 ou 100 termos produzem exatamente a mesma altura de card, e
-   o excedente rola aqui dentro. */
 .terms-list {
   flex: 1 1 0px;
   height: 0;
@@ -351,7 +259,6 @@
   min-width: 0;
 }
 
-/* Nome do termo sempre preto (alto contraste) */
 .term-text strong {
   font-size: 1rem;
   font-weight: 700;
@@ -383,7 +290,6 @@
   color: #D63031;
 }
 
-/* Coração preenchido (favorito ativo): vermelho vívido e escuro */
 .btn-fav .fa-solid.fa-heart {
   color: #D63031;
 }
@@ -401,11 +307,6 @@
 .dot.red { background: #ef4444; }
 .dot.green { background: #10b981; }
 
-/* ------------------- Coluna 2 · Apresentação do sinal ------------------- */
-
-/* Pilha da Coluna 2: header, player e definição, todos com altura de próprio
-   conteúdo (nenhum flex-grow). O ritmo vertical vem dos margins de cada
-   bloco, sem gap, para não somar espaçamento. */
 .content-column {
   display: flex;
   flex-direction: column;
@@ -413,10 +314,6 @@
   min-height: 0;
 }
 
-/* Header do termo: cor base roxa; o JavaScript aplica a cor da área.
-   Flex column (categoria acima do título) com o conteúdo centralizado na
-   altura; o margin-bottom de 16px é o respiro até o player. O coração fica
-   travado à direita na altura do card */
 .term-header {
   flex: 0 0 auto;
   display: flex;
@@ -424,8 +321,6 @@
   justify-content: center;
   align-items: stretch;
   align-content: center;
-  /* Referência de posicionamento do coração: o botão é ancorado no meio
-     exato do card (padding simétrico, então 50% = linha média real) */
   position: relative;
   background-color: var(--cor-lilas);
   color: #ffffff;
@@ -461,9 +356,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  /* Mantém a linha com pelo menos a altura do botão (antes vinha do próprio
-     botão no fluxo) e reserva os mesmos 52px à direita (40px do botão + 12px
-     do gap), então a altura e as quebras do card roxo não mudam */
   flex: 1 1 auto;
   min-height: 40px;
   padding-right: 52px;
@@ -478,14 +370,9 @@
 }
 
 .btn-fav-large {
-  /* Centralização vertical definitiva: ancorado no meio exato do card roxo
-     (top: 50% sobre o padding box + translateY(-50%)), sem nenhum top/margin
-     herdado empurrando o círculo para baixo. Como é absoluto, a posição não
-     depende mais da linha de categoria acima dele; a altura do card segue
-     preservada pelo min-height da .term-title-row */
   position: absolute;
   top: 50%;
-  right: 20px;                  /* alinhado ao padding horizontal do card */
+  right: 20px;
   transform: translateY(-50%);
   margin: 0;
   flex-shrink: 0;
@@ -507,16 +394,10 @@
   background-color: rgba(255, 255, 255, 0.32);
 }
 
-/* Coração preenchido (favorito ativo): vermelho vívido e escuro, com contraste
-   perfeito sobre o fundo roxo do card e o círculo de destaque */
 .btn-fav-large .fa-solid.fa-heart {
   color: #D63031;
 }
 
-/* Card branco oficial do vídeo: mesma superfície, borda e leitura dos cards da
-   Coluna 3, agora envolvendo o cabeçalho + o player. O cabeçalho reaproveita
-   as MESMAS classes da Coluna 3 (.info-card-head + .icon-circle.lilas +
-   .info-card-title), então a bolinha roxa clara, a fonte e a cor vêm prontas */
 .card-video-container {
   flex: 0 0 auto;
   display: flex;
@@ -528,46 +409,24 @@
   box-sizing: border-box;
 }
 
-/* Player nativo do YouTube: o wrapper limita a régua de largura (os mesmos
-   680px de antes) e centraliza o player. O `pointer-events: none` isola 100%
-   da superfície do embed: como nenhum clique, hover ou arrasto chega ao
-   iframe, a interface do Google (título, "Assistir no YouTube", botão central
-   redondo, barra cinza) não tem como ser ativada. Quem controla o vídeo é
-   exclusivamente a barra roxa logo abaixo. */
-.video-wrapper-yt {
+.video-wrapper {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  pointer-events: none;
 }
 
-/* Filho direto do wrapper: é a div #player antes de a API montar o embed e o
-   iframe depois que ela o substitui. A mesma moldura 16:9, o mesmo raio e o
-   mesmo fundo preto valem para os dois estados, então não há salto de layout
-   quando o player nasce. */
-.video-wrapper-yt > :not(.video-indisponivel) {
+.video-sinal {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 0;
   border-radius: var(--sl-raio-sm);
-  overflow: hidden;
   background-color: #000000;
+  object-fit: contain;
 }
 
-/* O iframe também se protege por conta própria: nunca captura o ponteiro nem
-   é selecionado/arrastado pelo mouse */
-.video-wrapper-yt iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  pointer-events: none;
-}
-
-/* Termo ainda sem vídeo cadastrado: o aviso cobre o embed em vez de deixar o
-   letreiro cinza de erro do YouTube aparecer no meio da tela */
 .video-indisponivel {
   position: absolute;
   inset: 0;
@@ -593,12 +452,6 @@
   opacity: 0.8;
 }
 
-/* -------------------- Barra roxa de controles (custom) --------------------
-   Única superfície de controle do vídeo: roxo principal da aplicação
-   (#6C5CE7) no fundo, branco nos ícones e no preenchimento do progresso.
-   Cada botão chama direto os métodos nativos da API do YouTube (playVideo,
-   seekTo, setPlaybackRate) em js/sinalario.js — nenhuma biblioteca de player
-   no meio do caminho. */
 .barra-sinalario {
   display: flex;
   align-items: center;
@@ -606,7 +459,7 @@
   margin-top: 16px;
   padding: 10px 14px;
   border-radius: var(--sl-raio-sm);
-  background-color: #6C5CE7; /* Roxo principal da aplicação */
+  background-color: #6C5CE7;
   color: #ffffff;
 }
 
@@ -639,8 +492,6 @@
   outline-offset: 2px;
 }
 
-/* Termo sem vídeo cadastrado: a barra continua visível, porém inerte (o aviso
-   "em breve" cobre a área do player) */
 .barra-sinalario__botao:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -650,14 +501,11 @@
   background-color: rgba(255, 255, 255, 0.16);
 }
 
-/* Rótulos curtos ("5s" e "1x") um degrau menores que o ícone */
 .barra-sinalario__botao--texto span {
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
 }
 
-/* Progresso: a área clicável é bem mais alta que a trilha, para dar um alvo
-   generoso no mouse e no toque */
 .barra-sinalario__progresso {
   flex: 1 1 auto;
   display: flex;
@@ -703,10 +551,6 @@
   white-space: nowrap;
 }
 
-/* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
-   O margin-top de 16px pareia a distância player -> definição com os 16px
-   que separam a imagem dos exemplos na Coluna 3. O padding-bottom maior
-   empurra a base deste card até a linha de base das Colunas 1 e 3. */
 .definicao-card {
   flex: 0 0 auto;
   display: flex;
@@ -742,7 +586,6 @@
   margin: 0;
 }
 
-/* Ícones circulares (Font Awesome 6) */
 .icon-circle {
   flex-shrink: 0;
   width: 38px;
@@ -763,14 +606,6 @@
   color: var(--cor-lilas);
 }
 
-/* ------------------- Coluna 3 · Detalhamento do termo ------------------- */
-
-/* Coluna 3 · a largura fixa da trilha (350px) mais o align-items: stretch do
-   Grid dão a altura. O height: 100% + justify-content: space-between abaixo
-   são o alinhamento automático: o último card é empurrado até a base exata da
-   linha, então o rodapé da coluna crava na régua das Colunas 1 e 2 sozinho,
-   sem depender de valores em pixel chutados. A folga que sobrar é distribuída
-   nos vãos, de forma imperceptível */
 .detalhes-column {
   display: flex;
   flex-direction: column;
@@ -781,7 +616,6 @@
   min-height: 0;
 }
 
-/* Cards compactos: altura automática, sem espaço branco interno */
 .info-card {
   flex: 0 0 auto;
   height: auto;
@@ -793,10 +627,6 @@
   padding: 18px;
 }
 
-/* Exemplos (PT e Libras): agrupados abaixo da imagem, com respiro interno
-   maior e conteúdo centralizado verticalmente. Como o alinhamento de base
-   agora é automático (space-between no container), este padding só define a
-   presença visual dos cards. O min-height é piso para texto de uma linha */
 .info-card--exemplo {
   padding: 24px 20px;
   min-height: 110px;
@@ -804,9 +634,6 @@
   flex-direction: column;
   justify-content: center;
 }
-
-/* O exemplo em Libras fecha a pilha naturalmente: sem margin automática,
-   nenhum vão branco é criado entre os cards */
 
 .info-card-head {
   display: flex;
@@ -836,9 +663,6 @@
   text-transform: uppercase;
 }
 
-/* Imagem: moldura clara ampliada para preencher o topo da Coluna 3
-   (sem teto de max-height, só o piso de min-height). Calibragem milimétrica:
-   4px a menos que compensam os 4px a mais no padding da definição */
 .imagem-content {
   flex: 0 0 auto;
   height: 272px;
@@ -873,8 +697,6 @@
   font-size: 1.6rem;
 }
 
-/* ------------------------------ Scrollbar ------------------------------ */
-
 .terms-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -884,10 +706,6 @@
   border-radius: 999px;
 }
 
-/* ------------------------------ Responsivo ------------------------------ */
-
-/* Em telas menores as colunas deixam de dividir a linha: o piso de viewport,
-   o teto do player e o travamento de base saem de cena */
 @media (max-width: 1240px) {
   .container.main-layout {
     grid-template-columns: 300px minmax(0, 1fr);
@@ -895,7 +713,6 @@
     align-items: start;
     align-content: start;
     padding: 24px;
-    /* sem piso de viewport: o bloco volta a crescer com o conteúdo */
     min-height: 0;
   }
 
@@ -903,8 +720,6 @@
     height: auto;
   }
 
-  /* Sem a linha definida do Grid, o height: 0 colapsaria a lista: aqui ela
-     volta a crescer com o conteúdo, limitada pelo teto de 60vh */
   .terms-list {
     flex: 0 1 auto;
     height: auto;
@@ -942,5 +757,4 @@
   .imagem-content img {
     max-height: 170px;
   }
-
 }

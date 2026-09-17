@@ -43,25 +43,20 @@
 .video-quiz-box {
   background: var(--cor-texto);
   border-radius: var(--raio);
-  padding: 2.5rem 1rem;
+  padding: 16px;
   text-align: center;
   color: #ffffff;
 }
 
-.video-content .video-emoji {
-  font-size: 2.5rem;
-  line-height: 1;
-}
-
-.video-content h4 {
-  font-size: 1.1rem;
-  margin-top: 8px;
-}
-
-.video-content p {
-  opacity: 0.85;
-  font-size: 0.9rem;
-  margin-top: 4px;
+.quiz-video {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--raio);
+  background: #000000;
+  object-fit: contain;
 }
 
 .quiz-play-btn {
@@ -108,8 +103,18 @@
   border-color: var(--cor-primaria);
 }
 
-.option-btn .opt-icon {
-  font-size: 1.5rem;
+.option-btn:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.option-btn .opt-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--raio);
+  object-fit: contain;
+  background: #e4eaf6;
+  flex-shrink: 0;
 }
 
 .status-badge {

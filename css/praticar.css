@@ -294,29 +294,42 @@
   align-items: center;
   justify-content: center;
 }
-.video-placeholder-box {
+.quiz-video-box {
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #e4eaf6;
-  border: 2px dashed #cfd9ee;
+  background: #14142b;
   border-radius: var(--raio);
-  display: flex;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.quiz-video-box video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #14142b;
+}
+.quiz-video-aviso {
+  position: absolute;
+  inset: 0;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #4a5a7d;
-  margin-bottom: 12px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-.video-icon {
-  font-size: 2.6rem;
-  margin-bottom: 8px;
-}
-.video-label {
-  font-weight: 700;
+  gap: 8px;
+  padding: 16px;
   text-align: center;
-  padding: 0 16px;
+  color: #ffffff;
+  font-weight: 700;
+  background: #14142b;
+}
+.quiz-video-aviso.esta-visivel {
+  display: flex;
+}
+.quiz-video-aviso i {
+  font-size: 1.8rem;
+  opacity: 0.8;
 }
 .quiz-media-hint {
   margin: 0;

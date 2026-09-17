@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', voltarParaInicio);
   });
 
-  /* Mostrar/ocultar senha: alterna o campo entre password e text */
   document.querySelectorAll('[data-toggle-pass]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const campo = document.getElementById(btn.getAttribute('data-toggle-pass'));

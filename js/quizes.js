@@ -1,74 +1,40 @@
-const bancoPerguntas = {
-  hardware: [
-    {
-      pergunta: 'Qual termo de Hardware está sendo sinalizado?',
-      correta: 'Mouse',
-      opcoes: [
-        { nome: 'Mouse', icone: '🖱️' },
-        { nome: 'Teclado', icone: '⌨️' },
-        { nome: 'Monitor', icone: '🖥️' },
-        { nome: 'Processador', icone: '💾' }
-      ]
-    },
-    {
-      pergunta: 'Qual termo representa a unidade de entrada do computador?',
-      correta: 'Teclado',
-      opcoes: [
-        { nome: 'Processador', icone: '💾' },
-        { nome: 'Teclado', icone: '⌨️' },
-        { nome: 'Mouse', icone: '🖱️' },
-        { nome: 'Monitor', icone: '🖥️' }
-      ]
-    },
-    {
-      pergunta: 'Qual periférico exibe as informações visuais na tela?',
-      correta: 'Monitor',
-      opcoes: [
-        { nome: 'Teclado', icone: '⌨️' },
-        { nome: 'Mouse', icone: '🖱️' },
-        { nome: 'Monitor', icone: '🖥️' },
-        { nome: 'Processador', icone: '💾' }
-      ]
-    }
-  ],
-  software: [
-    {
-      pergunta: 'Qual item é considerado um Sistema Operacional?',
-      correta: 'Linux',
-      opcoes: [
-        { nome: 'Linux', icone: '🐧' },
-        { nome: 'HDMI', icone: '🔌' },
-        { nome: 'RAM', icone: '🎰' },
-        { nome: 'Fonte', icone: '⚡' }
-      ]
-    },
-    {
-      pergunta: 'Qual software é utilizado para navegar na Web?',
-      correta: 'Navegador Web',
-      opcoes: [
-        { nome: 'Navegador Web', icone: '🌐' },
-        { nome: 'Placa Mãe', icone: '🎛️' },
-        { nome: 'Cabo de Rede', icone: '🧶' },
-        { nome: 'HD Externo', icone: '💽' }
-      ]
-    }
-  ],
-  redes: [
-    {
-      pergunta: 'Qual dispositivo conecta computadores em uma rede local?',
-      correta: 'Roteador',
-      opcoes: [
-        { nome: 'Roteador', icone: '📡' },
-        { nome: 'Monitor', icone: '🖥️' },
-        { nome: 'Teclado', icone: '⌨️' },
-        { nome: 'Pendrive', icone: '💾' }
-      ]
-    }
-  ]
+const CATEGORIAS_DO_QUIZ = {
+  hardware: 'Hardware',
+  software: 'Software',
+  programacao: 'Programação',
+  eletricidade: 'Eletricidade',
+  redes: 'Redes'
 };
 
+function termosDoProjeto() {
+  return typeof TERMOS !== 'undefined' && Array.isArray(TERMOS) ? TERMOS : [];
+}
+
+function termoPorNome(nome) {
+  return termosDoProjeto().find((item) => item.termo === nome) || null;
+}
+
+function embaralhar(lista) {
+  return [...lista].sort(() => 0.5 - Math.random());
+}
+
+function nomeDaCategoria(chave) {
+  return CATEGORIAS_DO_QUIZ[String(chave || '').toLowerCase()] || 'Hardware';
+}
+
+function perguntasDaCategoria(nome) {
+  return embaralhar(termosDoProjeto().filter((item) => item.categoria === nome));
+}
+
+function nomesDasOpcoes(pergunta) {
+  const opcoes = Array.isArray(pergunta.opcoes) ? pergunta.opcoes : [];
+  const validas = opcoes.filter((nome) => termoPorNome(nome));
+
+  if (validas.includes(pergunta.termo)) return validas;
+  return [pergunta.termo, ...validas];
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-  /* Carrega o progresso da conta do usuário no Supabase */
   if (window.Progresso && window.Progresso.carregar) {
     await window.Progresso.carregar();
   }
@@ -79,11 +45,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const porcentagemQuiz = document.getElementById('quizPercent');
   const numeroPergunta = document.getElementById('qNum');
   const cardQuiz = document.querySelector('.quiz-card');
+  const videoQuiz = document.getElementById('quizVideo');
+  const botaoVideo = document.getElementById('quizPlayBtn');
 
   const parametros = new URLSearchParams(window.location.search);
   const categoriaDaUrl = parametros.get('categoria') || 'hardware';
+  const nomeCategoria = nomeDaCategoria(categoriaDaUrl);
 
-  const perguntasAtivas = bancoPerguntas[categoriaDaUrl] || bancoPerguntas.hardware;
+  const perguntasAtivas = perguntasDaCategoria(nomeCategoria);
   let indicePerguntaAtual = 0;
   let pontuacao = 0;
 
@@ -101,80 +70,128 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  function atualizarIconeDoVideo() {
+    if (!botaoVideo || !videoQuiz) return;
+
+    const parado = videoQuiz.paused;
+    botaoVideo.innerHTML = parado
+      ? '<i class="fa-solid fa-play"></i>'
+      : '<i class="fa-solid fa-pause"></i>';
+    botaoVideo.setAttribute('aria-label', parado ? 'Reproduzir sinal' : 'Pausar sinal');
+  }
+
+  function carregarVideoDaPergunta(pergunta) {
+    if (!videoQuiz) return;
+
+    const fonte = pergunta && pergunta.video ? pergunta.video : '';
+
+    if (!fonte) {
+      videoQuiz.removeAttribute('src');
+      videoQuiz.load();
+      atualizarIconeDoVideo();
+      return;
+    }
+
+    videoQuiz.src = fonte;
+    videoQuiz.load();
+
+    const promessa = videoQuiz.play();
+    if (promessa && typeof promessa.catch === 'function') promessa.catch(() => {});
+
+    atualizarIconeDoVideo();
+  }
+
+  function montarOpcao(opcao, pergunta) {
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'option-btn';
+    botao.dataset.termo = opcao.termo;
+
+    const imagem = document.createElement('img');
+    imagem.className = 'opt-thumb';
+    imagem.src = opcao.imagem;
+    imagem.alt = '';
+    imagem.addEventListener('error', function () { this.style.visibility = 'hidden'; });
+
+    const bloco = document.createElement('div');
+
+    const nome = document.createElement('div');
+    nome.textContent = opcao.termo;
+    bloco.appendChild(nome);
+
+    const estado = document.createElement('span');
+    estado.className = 'status-badge';
+    bloco.appendChild(estado);
+
+    botao.appendChild(imagem);
+    botao.appendChild(bloco);
+
+    botao.addEventListener('click', () => selecionarResposta(botao, opcao.termo, pergunta.termo));
+
+    return botao;
+  }
+
   function carregarPergunta() {
     botaoProxima.style.display = 'none';
     gradeOpcoes.innerHTML = '';
 
     const pergunta = perguntasAtivas[indicePerguntaAtual];
+
+    if (!pergunta) {
+      exibirResultadoFinal();
+      return;
+    }
+
     const total = perguntasAtivas.length;
     const progresso = Math.round((indicePerguntaAtual / total) * 100);
 
-    const nomeCategoria = categoriaDaUrl.charAt(0).toUpperCase() + categoriaDaUrl.slice(1);
     caminhoQuiz.innerText = `${nomeCategoria} · Questão ${indicePerguntaAtual + 1} de ${total}`;
     porcentagemQuiz.innerText = `${progresso}% concluído`;
-    numeroPergunta.innerText = indicePerguntaAtual + 1;
+    numeroPergunta.innerText = String(indicePerguntaAtual + 1);
 
-    document.querySelector('.quiz-header h2').innerText = pergunta.pergunta;
+    document.querySelector('.quiz-header h2').innerText =
+      `Qual termo de ${nomeCategoria} está sendo sinalizado?`;
 
-    pergunta.opcoes.forEach((opcao) => {
-      const botao = document.createElement('button');
-      botao.className = 'option-btn';
-      botao.innerHTML = `
-        <span class="opt-icon">${opcao.icone}</span>
-        <div>
-          <div>${opcao.nome}</div>
-          <span class="status-badge"></span>
-        </div>
-      `;
+    carregarVideoDaPergunta(pergunta);
 
-      botao.addEventListener('click', () => selecionarResposta(botao, opcao.nome, pergunta.correta));
-      gradeOpcoes.appendChild(botao);
+    embaralhar(nomesDasOpcoes(pergunta)).forEach((nome) => {
+      const opcao = termoPorNome(nome);
+      if (opcao) gradeOpcoes.appendChild(montarOpcao(opcao, pergunta));
     });
   }
 
   function selecionarResposta(botaoEscolhido, opcaoEscolhida, opcaoCorreta) {
     const todosOsBotoes = gradeOpcoes.querySelectorAll('.option-btn');
-    todosOsBotoes.forEach((botao) => { botao.style.pointerEvents = 'none'; });
+    todosOsBotoes.forEach((botao) => { botao.disabled = true; });
 
     if (opcaoEscolhida === opcaoCorreta) {
       botaoEscolhido.classList.add('correct');
       botaoEscolhido.querySelector('.status-badge').innerText = '✓ Correto!';
-      pontuacao++;
+      pontuacao += 1;
 
-      registrarQuestaoFeita(categoriaDaUrl);
+      registrarQuestaoFeita(nomeCategoria);
 
       botaoProxima.innerText = indicePerguntaAtual < perguntasAtivas.length - 1
         ? 'Próxima Questão →'
         : 'Finalizar Quiz 🏆';
       botaoProxima.style.display = 'block';
-    } else {
-      botaoEscolhido.classList.add('incorrect');
-      botaoEscolhido.querySelector('.status-badge').innerText = 'X Errou! Reiniciando...';
-
-      todosOsBotoes.forEach((botao) => {
-        if (botao.innerText.includes(opcaoCorreta)) {
-          botao.classList.add('correct');
-        }
-      });
-
-      setTimeout(() => {
-        alert('Você errou uma questão! O quiz será reiniciado do começo.');
-        indicePerguntaAtual = 0;
-        pontuacao = 0;
-        carregarPergunta();
-      }, 1800);
+      return;
     }
-  }
 
-  botaoProxima.addEventListener('click', () => {
-    if (indicePerguntaAtual < perguntasAtivas.length - 1) {
-      indicePerguntaAtual++;
+    botaoEscolhido.classList.add('incorrect');
+    botaoEscolhido.querySelector('.status-badge').innerText = 'X Errou! Reiniciando...';
+
+    todosOsBotoes.forEach((botao) => {
+      if (botao.dataset.termo === opcaoCorreta) botao.classList.add('correct');
+    });
+
+    setTimeout(() => {
+      alert('Você errou uma questão! O quiz será reiniciado do começo.');
+      indicePerguntaAtual = 0;
+      pontuacao = 0;
       carregarPergunta();
-    } else {
-      registrarQuizConcluido(categoriaDaUrl);
-      exibirResultadoFinal();
-    }
-  });
+    }, 1800);
+  }
 
   function exibirResultadoFinal() {
     cardQuiz.innerHTML = `
@@ -182,15 +199,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         <span style="font-size: 3.5rem;">🎉</span>
         <h2 style="margin: 10px 0; color: var(--cor-primaria);">Parabéns! Quiz Concluído!</h2>
         <p style="color: #64748b; margin-bottom: 20px;">
-          Você acertou todas as ${perguntasAtivas.length} questões da categoria ${categoriaDaUrl}!
+          Você acertou todas as ${perguntasAtivas.length} questões da categoria ${nomeCategoria}!
         </p>
         <a href="praticar.html" class="btn btn-primary">Voltar para Praticar</a>
       </div>
     `;
+
     gradeOpcoes.innerHTML = '';
     botaoProxima.style.display = 'none';
     porcentagemQuiz.innerText = '100% concluído';
   }
+
+  if (botaoVideo) {
+    botaoVideo.addEventListener('click', () => {
+      if (!videoQuiz) return;
+      if (videoQuiz.paused) {
+        const promessa = videoQuiz.play();
+        if (promessa && typeof promessa.catch === 'function') promessa.catch(() => {});
+      } else {
+        videoQuiz.pause();
+      }
+      atualizarIconeDoVideo();
+    });
+  }
+
+  if (videoQuiz) {
+    videoQuiz.addEventListener('play', atualizarIconeDoVideo);
+    videoQuiz.addEventListener('pause', atualizarIconeDoVideo);
+  }
+
+  botaoProxima.addEventListener('click', () => {
+    if (indicePerguntaAtual < perguntasAtivas.length - 1) {
+      indicePerguntaAtual += 1;
+      carregarPergunta();
+    } else {
+      registrarQuizConcluido(nomeCategoria);
+      exibirResultadoFinal();
+    }
+  });
 
   carregarPergunta();
 });

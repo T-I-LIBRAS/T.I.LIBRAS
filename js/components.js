@@ -96,8 +96,6 @@ class AppHeader extends HTMLElement {
       const sair = this.querySelector('#headerSair');
       const nav = this.querySelector('.nav-links');
       const logo = this.querySelector('.logo');
-      /* Logado, a logo leva direto ao Sinalário: a página de
-         apresentação fica indisponível durante a sessão. */
       if (logo) logo.setAttribute('href', logado ? PAGINA_INICIAL_APP : 'index.html');
       if (praticar) praticar.style.display = logado ? '' : 'none';
       if (sinalario) sinalario.style.display = logado ? '' : 'none';

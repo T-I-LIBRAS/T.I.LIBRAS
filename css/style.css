@@ -1,11 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* -----------------------------------------------------------------------
-     Paleta oficial da NOVA logo T.I. Libras (extraída da própria imagem):
-     azul índigo #3c50b4 · azul royal #3c64c8 · azul claro #3c8cdc
-     azul celeste #afd7f7 · lilás #783cc8 · lilás claro #dcb4f0
-     ----------------------------------------------------------------------- */
   --cor-primaria: #3c50b4;
   --cor-primaria-2: #3c64c8;
   --cor-azul: #3c8cdc;
@@ -344,9 +339,6 @@ app-footer {
   border-radius: var(--raio);
 }
 
-/* Container base: ocupa 100% da largura útil da tela, sem teto de largura.
-   Páginas que precisam de coluna estreita definem o próprio max-width
-   (ex.: .quiz-container em quiz.css). */
 .container {
   flex: 1;
   width: 100%;
@@ -374,8 +366,3 @@ app-footer {
     font-size: 0.9rem;
   }
 }
-
-/* O estilo do player do Sinalário (embed nativo do YouTube + barra roxa de
-   controles) vive em css/sinalario.css, junto do layout daquela página. Aqui
-   não existe mais nenhuma regra de biblioteca de player: o projeto não usa
-   Plyr nem nenhum outro wrapper sobre o embed. */

@@ -3,22 +3,9 @@
   color: var(--cor-texto);
 }
 
-/* ---------------------------------------------------------------------------
-   Split screen 50/50
-   Duas colunas iguais (50% cada) ocupando 100% da largura e da altura
-   disponíveis entre o header e o footer, com gradiente unificado de ponta
-   a ponta e sem sombras.
-   - Esquerda: card branco ocupando 100% da coluna (mesma largura e altura
-     em Login e Cadastro), colado na borda esquerda e na divisão central,
-     com cantos esquerdos retos e cantos direitos arredondados.
-   - Direita: texto da apresentação centralizado sobre o gradiente.
-   --------------------------------------------------------------------------- */
 .auth-inline {
   width: 100%;
   flex: 1;
-  /* min-height 0 quebra o mínimo automático do flex: a área ocupa
-     exatamente o espaço entre header e footer, sem crescer conforme
-     o formulário (Login tem menos campos que o Cadastro) */
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -37,17 +24,12 @@
   gap: 0;
   margin: 0;
   padding: 0;
-  /* Altura vinda do container pai (header + footer fixos): estável e
-     idêntica nas duas telas, então o footer nunca é empurrado */
   min-height: 0;
   max-height: 100%;
   overflow: hidden;
-  /* Gradiente oficial unificado, de ponta a ponta */
   background: var(--gradiente-marca);
 }
 
-/* Sem animações de entrada, deslizamento ou transições pesadas
-   ao alternar entre os formulários */
 .auth-inline,
 .auth-page,
 .auth-form-side,
@@ -58,21 +40,16 @@
   transition: none;
 }
 
-/* ----------------- Coluna esquerda (50%): formulário --------------------- */
-
 .auth-form-side {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  /* O card ocupa a coluna inteira, de ponta a ponta */
   padding: 0;
   background: transparent;
-  /* Sem scroll desnecessário: a altura vem do container pai */
   overflow: hidden;
 }
 
-/* Link "Voltar" limpo: sem caixa, fundo, borda ou sombra */
 .btn-back-inline {
   display: inline-flex;
   align-items: center;
@@ -94,7 +71,6 @@
   text-decoration: underline;
 }
 
-/* Dentro do card branco, no topo e alinhado à esquerda */
 .auth-card .btn-back-inline {
   align-self: flex-start;
   margin-bottom: 14px;
@@ -109,8 +85,6 @@
   margin: 0;
 }
 
-/* Card branco com 100% da coluna da esquerda (largura e altura),
-   idêntico nas telas de Login e Cadastro */
 .auth-card {
   flex: 1;
   width: 100%;
@@ -119,7 +93,6 @@
   margin: 0;
   background: #ffffff;
   border: none;
-  /* Lado esquerdo reto (surge do canto da tela) e direito curvado */
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 24px;
@@ -131,7 +104,6 @@
   overflow-y: auto;
 }
 
-/* Conteúdo interno: coluna flex que preenche a caixa uniformemente */
 .auth-card-inner {
   flex: 1;
   width: 100%;
@@ -143,14 +115,12 @@
   gap: 18px;
 }
 
-/* Bloco principal (Voltar + título + formulário) centralizado no espaço livre */
 .auth-form-main {
   margin: auto 0;
   display: flex;
   flex-direction: column;
 }
 
-/* Bloco inferior (link de troca + termos) ancorado na base do card */
 .auth-form-foot {
   display: flex;
   flex-direction: column;
@@ -161,13 +131,10 @@
   margin-bottom: 12px;
 }
 
-/* ------------------------------- Formulário ------------------------------ */
-
 .form .field {
   margin-bottom: 16px;
 }
 
-/* Opção "Lembrar de mim" logo abaixo do campo de senha */
 .form-check {
   display: flex;
   align-items: center;
@@ -228,7 +195,6 @@
   border-color: var(--cor-primaria);
 }
 
-/* Campo de senha com botão de mostrar/ocultar */
 .pass-field {
   position: relative;
   display: block;
@@ -315,8 +281,6 @@
   border-color: #cfd9ee;
 }
 
-/* -------------- Coluna direita (50%): gradiente oficial ------------------ */
-
 .auth-visual {
   display: flex;
   align-items: center;
@@ -354,12 +318,9 @@ app-footer {
   margin-top: auto;
 }
 
-/* ------------------------------- Responsivo ------------------------------ */
-
 @media (max-width: 900px) {
   .auth-page {
     grid-template-columns: 1fr;
-    /* No mobile o conteúdo volta a crescer e a página rola normalmente */
     min-height: 0;
     max-height: none;
     overflow: visible;

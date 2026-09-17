@@ -143,13 +143,15 @@
   overflow: hidden;
 }
 
-.video-card-frame iframe {
+.video-card-frame video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
   display: block;
+  object-fit: contain;
+  background: var(--cor-texto);
 }
 
 .presentation {
@@ -284,8 +286,6 @@
 .auth-inline[hidden] {
   display: none;
 }
-
-/* ---------------------- Categorias disponíveis ---------------------- */
 
 #categorias {
   margin-bottom: clamp(40px, 6vw, 72px);

@@ -4,18 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>T.I Libras - Sinalário</title>
-<!-- Player 100% nativo: a página não usa nenhuma biblioteca de player. O único
-     script de terceiros é a YouTube Iframe Player API oficial, carregada de
-     forma assíncrona — ela chama window.onYouTubeIframeAPIReady (definido em
-     js/sinalario.js) quando o módulo do player fica disponível. -->
-<script src="https://www.youtube.com/iframe_api"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="css/style.css?v=49">
-<link rel="stylesheet" href="css/sinalario.css?v=47">
+<link rel="stylesheet" href="css/style.css?v=50">
+<link rel="stylesheet" href="css/sinalario.css?v=48">
 <script src="js/components.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
-<script src="js/dados.js"></script>
+<script src="data/termos.js"></script>
 </head>
 <body>
 <app-header></app-header>
@@ -70,13 +65,12 @@ title="Filtrar por área">
 <input type="text" id="searchInput" placeholder="Buscar Termo...">
 </div>
 
-<span class="terms-count" id="termsCount">16 TERMOS</span>
+<span class="terms-count" id="termsCount">0 TERMOS</span>
 
 <div class="terms-list" id="termsList"></div>
 </div>
 </aside>
 
-<!-- ============ COLUNA 2 · APRESENTAÇÃO DO SINAL ============ -->
 <main class="content-column">
 
 <header class="term-header" id="termHeader">
@@ -97,30 +91,27 @@ title="Filtrar por área">
 <h3 class="info-card-title">Vídeo do sinal</h3>
 </div>
 
-<!-- Superfície de vídeo: a div #player é só o ponto de montagem — a API do
-     YouTube a substitui pelo iframe do embed. O wrapper inteiro fica com
-     pointer-events: none (ver css/sinalario.css), então nenhum clique, hover
-     ou arrasto chega ao player nativo: sem overlays, sem barra cinza, sem
-     botão central do Google. O aviso cobre o embed quando o termo ainda não
-     tem vídeo cadastrado. -->
-<div class="video-wrapper-yt" id="player-container">
-<div id="player" data-video-id="x2uwlO43nas"></div>
+<div class="video-wrapper" id="videoWrapper">
+<video
+class="video-sinal"
+id="videoSinal"
+playsinline
+loop
+preload="auto"></video>
 <div class="video-indisponivel" id="avisoVideoIndisponivel">
 <i class="fa-solid fa-video-slash"></i>
 <span>Vídeo do sinal em breve</span>
 </div>
 </div>
 
-<!-- Barra roxa de controles: única superfície de controle do vídeo, 100%
-     ligada aos métodos nativos da API do YouTube (js/sinalario.js) -->
 <div class="barra-sinalario" id="barraSinalario">
 <button
 type="button"
 class="barra-sinalario__botao"
 id="btnPlayPause"
-aria-label="Pausar sinal"
+aria-label="Reproduzir sinal"
 title="Reproduzir / Pausar">
-<i class="fa-solid fa-pause"></i>
+<i class="fa-solid fa-play"></i>
 </button>
 
 <button
@@ -162,7 +153,7 @@ title="Velocidade de reprodução">1x</button>
 <span class="icon-circle roxo"><i class="fa-solid fa-book-open"></i></span>
 <h3 class="definicao-title">Definição do termo</h3>
 </div>
-<p id="displayDef">Dispositivo de saída que exibe a interface visual do computador.</p>
+<p id="displayDef"></p>
 </section>
 </main>
 <aside class="detalhes-column">
@@ -172,7 +163,7 @@ title="Velocidade de reprodução">1x</button>
 <h3 class="info-card-title">Imagem do termo</h3>
 </div>
 <div class="imagem-content">
-<img src="img/monitor.png" alt="Termo" id="termImage">
+<img src="" alt="Termo" id="termImage">
 <span class="img-placeholder" id="imgPlaceholder">
 <i class="fa-solid fa-image"></i>
 <span>Imagem em breve</span>
@@ -180,22 +171,20 @@ title="Velocidade de reprodução">1x</button>
 </div>
 </section>
 
-<!-- 2º · MEIO: Exemplo em português -->
 <section class="info-card info-card--exemplo">
 <div class="info-card-head">
 <span class="icon-circle lilas"><i class="fa-solid fa-comment-dots"></i></span>
 <h3 class="info-card-title">Exemplo em português</h3>
 </div>
-<p id="displayExPt">"O monitor exibe a imagem em alta definição."</p>
+<p id="displayExPt"></p>
 </section>
 
-<!-- 3º · BASE: Exemplo em Libras -->
 <section class="info-card info-card--exemplo">
 <div class="info-card-head">
 <span class="icon-circle lilas"><i class="fa-solid fa-hands"></i></span>
 <h3 class="info-card-title">Exemplo em Libras</h3>
 </div>
-<p class="libras-text" id="displayExGlosa">MONITOR MOSTRAR IMAGEM BONITO</p>
+<p class="libras-text" id="displayExGlosa"></p>
 </section>
 
     </aside>
@@ -203,10 +192,8 @@ title="Velocidade de reprodução">1x</button>
 
   <app-footer></app-footer>
 
-  <!-- js/sinalario.js define window.onYouTubeIframeAPIReady e faz toda a ponte
-       entre a barra roxa e a API nativa do YouTube -->
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=46"></script>
+  <script src="js/sinalario.js?v=47"></script>
 </body>
 </html>

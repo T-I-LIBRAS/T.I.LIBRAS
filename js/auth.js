@@ -19,8 +19,6 @@ function estaNaPaginaInicial() {
   return caminho.endsWith('index.html') || caminho.endsWith('/') || caminho === '';
 }
 
-/* Resolve o destino pós-login garantindo que ele nunca aponte de volta
-   para a apresentação, evitando qualquer laço de redirecionamento. */
 function destinoSeguro(next) {
   if (!next) return PAGINA_INICIAL;
   const alvo = decodeURIComponent(next);
@@ -28,10 +26,6 @@ function destinoSeguro(next) {
   return alvo;
 }
 
-/* Regra restritiva de sessão: enquanto houver sessão ativa o usuário não
-   pode permanecer na página de apresentação (index.html). Ele é sempre
-   enviado para o Sinalário — ou para o destino indicado em ?next=.
-   A apresentação só volta a ficar acessível após o logout. */
 function redirecionarUsuarioLogado(session) {
   if (!session) return;
   if (!estaNaPaginaInicial()) return;

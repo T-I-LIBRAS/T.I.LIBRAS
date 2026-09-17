@@ -1,17 +1,3 @@
-/* =========================================================================
-   progresso.js — Persistência do progresso do usuário no Supabase
-   -------------------------------------------------------------------------
-   Todo o progresso do usuário (sinais vistos, termos favoritos, quizzes
-   concluídos e pontuações) é lido e gravado na tabela `progresso_usuario`
-   do Supabase, vinculado ao `user_id` (auth.users.id).
-
-   Nenhum dado de progresso é armazenado em localStorage: a única fonte de
-   verdade é a conta do usuário no banco de dados.
-
-   Requer que js/supabase-config.js (window.supabaseClient) já tenha sido
-   carregado e que js/auth.js esteja definindo window.currentUser.
-   ========================================================================= */
-
 const TABELA_PROGRESSO = 'progresso_usuario';
 
 function progressoVazio() {
@@ -163,8 +149,6 @@ function agendarGravacao() {
   }, 350);
 }
 
-/* ----------------------------- Sinais vistos ----------------------------- */
-
 function sinaisVistos() {
   return dadosProgresso.sinais_vistos.slice();
 }
@@ -185,8 +169,6 @@ function removerSinalVisto(termo) {
   }
   return false;
 }
-
-/* --------------------------- Termos favoritos --------------------------- */
 
 function favoritos() {
   return dadosProgresso.termos_favoritos.slice();
@@ -211,8 +193,6 @@ function alternarFavorito(termo) {
   return ehFavorito(termo);
 }
 
-/* --------------------------- Quizzes concluídos -------------------------- */
-
 function quizzesConcluidos() {
   return dadosProgresso.quizzes_concluidos.slice();
 }
@@ -233,8 +213,6 @@ function limparQuizzesConcluidos() {
   agendarGravacao();
 }
 
-/* -------------------------------- Pontuações ----------------------------- */
-
 function pontuacoes() {
   return { ...dadosProgresso.pontuacoes };
 }
@@ -243,8 +221,6 @@ function pontuacaoDe(categoria) {
   return { ...(dadosProgresso.pontuacoes[categoria] || {}) };
 }
 
-/* Mescla os valores na pontuação da categoria sobrescrevendo as chaves
-   informadas — ideal para guardar a última pontuação obtida. */
 function registrarPontuacao(categoria, valores) {
   if (!categoria || !valores) return;
 
@@ -257,7 +233,6 @@ function registrarPontuacao(categoria, valores) {
   agendarGravacao();
 }
 
-/* Soma valores numéricos aos já gravados — ideal para contadores. */
 function incrementarPontuacao(categoria, valores) {
   if (!categoria || !valores) return;
 
@@ -286,8 +261,6 @@ function definirPontuacao(categoria, valores) {
   };
   agendarGravacao();
 }
-
-/* --------------------------------- Eventos ------------------------------- */
 
 window.addEventListener('auth-changed', async () => {
   const uid = idDoUsuarioAtual();
