@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T.I Libras - Quiz Prático</title>
-  <link rel="stylesheet" href="css/style.css?v=51">
-  <link rel="stylesheet" href="css/praticar.css?v=51">
+  <link rel="stylesheet" href="css/style.css?v=53">
+  <link rel="stylesheet" href="css/praticar.css?v=53">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,36 +17,29 @@
 
   <main class="quiz-container-box">
     <div id="selectionScreen">
-      <div class="progress-section">
-        <div class="progress-info">
-          <h4><i class="fa-solid fa-chart-simple"></i> Progresso nos Quizes</h4>
-          <span class="progress-pct" id="progressText">0 / 6 Concluídos (0%)</span>
+      <section class="progress-panel">
+        <div class="progress-head">
+          <h4 class="progress-title"><i class="fa-solid fa-chart-simple"></i> Progresso nos Quizzes</h4>
+          <p class="progress-pct" id="progressText">0 / 6 Concluídos (0%)</p>
         </div>
         <div class="stars-row" id="starsRow" aria-label="Estrelas de conquista por categoria"></div>
         <p class="progress-message" id="progressMessage">Vamos começar? Escolha uma categoria abaixo!</p>
-      </div>
+      </section>
 
-      <div class="card carousel-card">
-        <div class="carousel-header">
-          <div>
-            <h2><i class="fa-solid fa-bullseye"></i> Praticar Quiz de TI em Libras</h2>
-            <p class="carousel-sub">Escolha uma categoria técnica para testar seus conhecimentos. Ao errar uma questão, o quiz é reiniciado!</p>
-          </div>
-          <div class="carousel-nav-btns">
-            <button class="btn-scroll" type="button" onclick="rolarCarrossel(-360)" title="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="btn-scroll" type="button" onclick="rolarCarrossel(360)" title="Próximo"><i class="fa-solid fa-chevron-right"></i></button>
-          </div>
-        </div>
+      <section class="categories-panel">
+        <header class="categories-header">
+          <h2><i class="fa-solid fa-bullseye"></i> Praticar Quiz de TI em Libras</h2>
+          <p class="categories-sub">Escolha uma categoria para testar seus conhecimentos. Ao errar uma questão, o quiz é reiniciado!</p>
+        </header>
 
         <div class="selection-grid" id="selectionGrid">
           <article class="category-card cat-hardware" id="card-Hardware">
-            <div class="card-head">
-              <span class="badge-icon"><i class="fa-solid fa-desktop"></i></span>
+            <div class="card-top">
               <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-desktop"></i></span>
+              <h3>Hardware</h3>
             </div>
-            <h3>Hardware</h3>
-            <p class="desc-text">Aprenda e fixe os sinais dos componentes físicos de computadores, periféricos e peças internas.</p>
-            <div class="card-progress">
+            <div class="card-mid">
               <div class="donut" data-donut="Hardware">
                 <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
                   <circle class="donut-track" cx="60" cy="60" r="52"></circle>
@@ -60,7 +53,6 @@
               <ul class="card-stats">
                 <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
                 <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
-                <li class="meta-info" data-meta="Hardware" data-legenda="Peças e Componentes">0 Questões · Peças e Componentes</li>
               </ul>
             </div>
             <div class="card-actions">
@@ -70,13 +62,12 @@
           </article>
 
           <article class="category-card cat-software" id="card-Software">
-            <div class="card-head">
-              <span class="badge-icon"><i class="fa-solid fa-compact-disc"></i></span>
+            <div class="card-top">
               <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-compact-disc"></i></span>
+              <h3>Software</h3>
             </div>
-            <h3>Software</h3>
-            <p class="desc-text">Testes com conceitos de sistemas operacionais, aplicativos de escritório e programas essenciais.</p>
-            <div class="card-progress">
+            <div class="card-mid">
               <div class="donut" data-donut="Software">
                 <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
                   <circle class="donut-track" cx="60" cy="60" r="52"></circle>
@@ -90,7 +81,6 @@
               <ul class="card-stats">
                 <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
                 <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
-                <li class="meta-info" data-meta="Software" data-legenda="Sistemas e Apps">0 Questões · Sistemas e Apps</li>
               </ul>
             </div>
             <div class="card-actions">
@@ -100,13 +90,12 @@
           </article>
 
           <article class="category-card cat-programacao" id="card-Programação">
-            <div class="card-head">
-              <span class="badge-icon"><i class="fa-solid fa-laptop-code"></i></span>
+            <div class="card-top">
               <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-laptop-code"></i></span>
+              <h3>Programação</h3>
             </div>
-            <h3>Programação</h3>
-            <p class="desc-text">Pratique a sinalização de algoritmos, linguagens de programação, variáveis e estruturas de código.</p>
-            <div class="card-progress">
+            <div class="card-mid">
               <div class="donut" data-donut="Programação">
                 <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
                   <circle class="donut-track" cx="60" cy="60" r="52"></circle>
@@ -120,7 +109,6 @@
               <ul class="card-stats">
                 <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
                 <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
-                <li class="meta-info" data-meta="Programação" data-legenda="Código e Algoritmos">0 Questões · Código e Algoritmos</li>
               </ul>
             </div>
             <div class="card-actions">
@@ -130,13 +118,12 @@
           </article>
 
           <article class="category-card cat-eletricidade" id="card-Eletricidade">
-            <div class="card-head">
-              <span class="badge-icon"><i class="fa-solid fa-plug"></i></span>
+            <div class="card-top">
               <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-plug"></i></span>
+              <h3>Eletricidade</h3>
             </div>
-            <h3>Eletricidade</h3>
-            <p class="desc-text">Conceitos fundamentais de circuitos, tensão, ferramentas elétricas e grandezas físicas em Libras.</p>
-            <div class="card-progress">
+            <div class="card-mid">
               <div class="donut" data-donut="Eletricidade">
                 <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
                   <circle class="donut-track" cx="60" cy="60" r="52"></circle>
@@ -150,7 +137,6 @@
               <ul class="card-stats">
                 <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
                 <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
-                <li class="meta-info" data-meta="Eletricidade" data-legenda="Circuitos Elétricos">0 Questões · Circuitos Elétricos</li>
               </ul>
             </div>
             <div class="card-actions">
@@ -160,13 +146,12 @@
           </article>
 
           <article class="category-card cat-redes" id="card-Redes">
-            <div class="card-head">
-              <span class="badge-icon"><i class="fa-solid fa-tower-broadcast"></i></span>
+            <div class="card-top">
               <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-tower-broadcast"></i></span>
+              <h3>Redes</h3>
             </div>
-            <h3>Redes</h3>
-            <p class="desc-text">Termos relacionados à internet, navegadores, conexões, links e segurança digital.</p>
-            <div class="card-progress">
+            <div class="card-mid">
               <div class="donut" data-donut="Redes">
                 <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
                   <circle class="donut-track" cx="60" cy="60" r="52"></circle>
@@ -180,7 +165,6 @@
               <ul class="card-stats">
                 <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
                 <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
-                <li class="meta-info" data-meta="Redes" data-legenda="Internet e Conexões">0 Questões · Internet e Conexões</li>
               </ul>
             </div>
             <div class="card-actions">
@@ -190,13 +174,12 @@
           </article>
 
           <article class="category-card cat-todos" id="card-Todos">
-            <div class="card-head">
-              <span class="badge-icon"><i class="fa-solid fa-trophy"></i></span>
+            <div class="card-top">
               <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-trophy"></i></span>
+              <h3>Simulado Geral</h3>
             </div>
-            <h3>Simulado Geral</h3>
-            <p class="desc-text">Desafio completo reunindo todas as 5 categorias misturadas aleatoriamente em um só teste.</p>
-            <div class="card-progress">
+            <div class="card-mid">
               <div class="donut" data-donut="Todos">
                 <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
                   <circle class="donut-track" cx="60" cy="60" r="52"></circle>
@@ -210,7 +193,6 @@
               <ul class="card-stats">
                 <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
                 <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
-                <li class="meta-info" data-meta="Todos" data-legenda="Todas as Áreas">0 Questões · Todas as Áreas</li>
               </ul>
             </div>
             <div class="card-actions">
@@ -219,7 +201,7 @@
             </div>
           </article>
         </div>
-      </div>
+      </section>
     </div>
 
     <div id="quizScreen" class="quiz-card quiz-screen">
@@ -262,6 +244,6 @@
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/praticar.js?v=51"></script>
+  <script src="js/praticar.js?v=53"></script>
 </body>
 </html>

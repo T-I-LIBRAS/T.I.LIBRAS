@@ -32,22 +32,6 @@ function totalDaCategoria(categoria) {
   return termosDaCategoria(categoria).length;
 }
 
-function rolarCarrossel(distancia) {
-  const grade = document.getElementById('selectionGrid');
-  if (!grade) return;
-  grade.scrollBy({ left: distancia, behavior: 'smooth' });
-}
-
-function atualizarEstadoDoCarrossel() {
-  const grade = document.getElementById('selectionGrid');
-  const botoes = document.querySelector('.carousel-nav-btns');
-  if (!grade) return;
-
-  const temTransbordo = grade.scrollWidth > grade.clientWidth + 1;
-  if (botoes) botoes.style.display = temTransbordo ? 'flex' : 'none';
-  grade.style.justifyContent = temTransbordo ? 'flex-start' : 'center';
-}
-
 function progressoDisponivel() {
   return !!(window.Progresso && window.Progresso.quizzesConcluidos);
 }
@@ -131,12 +115,6 @@ function atualizarDadosDoCard(categoria, resumo) {
 
   const recordeEl = card.querySelector('[data-stat="recorde"]');
   if (recordeEl) recordeEl.textContent = formatarTempo(resumo.recorde);
-
-  const meta = card.querySelector('.meta-info');
-  if (meta) {
-    const legenda = meta.dataset.legenda || '';
-    meta.textContent = legenda ? `${resumo.total} Questões · ${legenda}` : `${resumo.total} Questões`;
-  }
 }
 
 function desenharEstrelas(quantidade) {
@@ -252,7 +230,6 @@ function voltarParaSelecao() {
 
   pararVideoDaPergunta();
   atualizarProgresso();
-  atualizarEstadoDoCarrossel();
 }
 
 function iniciarCronometro() {
@@ -451,7 +428,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   atualizarProgresso();
-  atualizarEstadoDoCarrossel();
 
   window.addEventListener('progresso-carregado', atualizarProgresso);
 
@@ -468,5 +444,3 @@ document.addEventListener('DOMContentLoaded', async () => {
   const categoria = parametros.get('cat');
   if (categoria && CATEGORIAS_DA_PROGRESSAO.includes(categoria)) iniciarQuiz(categoria);
 });
-
-window.addEventListener('resize', atualizarEstadoDoCarrossel);
