@@ -1,172 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>T.I Libras - Sinalário</title>
-  <!-- Plyr (CSS) entra primeiro: o CSS do projeto carrega depois e assume o
-       tema do player (roxo da aplicação, raio de 12px e proporção 16:9) -->
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css?v=44">
-  <link rel="stylesheet" href="css/sinalario.css?v=43">
-  <script src="js/components.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/dados.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T.I Libras - Sinalário</title>
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css?v=44">
+<link rel="stylesheet" href="css/sinalario.css?v=43">
+<script src="js/components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/dados.js"></script>
 </head>
 <body>
-  <app-header></app-header>
+<app-header></app-header>
+<div class="container main-layout">
+<aside class="sidebar-filtros">
+<div class="filtros-panel">
+  <h2 class="filtros-title">Filtros</h2>
+<div class="filtros-field">
+<div class="custom-select-container" id="categoryCustomSelect">
+<button
+class="custom-select-trigger"
+id="categoryTrigger"
+type="button"
+data-value="todos"
+aria-haspopup="listbox"
+aria-expanded="false"
+title="Filtrar por área">
+<span class="selected-option">
+  <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
+</span>
+<i class="fa-solid fa-chevron-down arrow-icon"></i>
+</button>
 
-  <div class="container main-layout">
+<div class="custom-options-menu" role="listbox">
+  <div class="custom-option active" data-value="todos" role="option">
+    <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
+  </div>
+  <div class="custom-option" data-value="hardware" role="option">
+    <i class="fa-solid fa-desktop icon-hardware"></i> Hardware
+  </div>
+  <div class="custom-option" data-value="software" role="option">
+    <i class="fa-solid fa-compact-disc icon-software"></i> Software
+  </div>
+  <div class="custom-option" data-value="programacao" role="option">
+    <i class="fa-solid fa-laptop-code icon-programacao"></i> Programação
+  </div>
+  <div class="custom-option" data-value="eletricidade" role="option">
+    <i class="fa-solid fa-plug icon-eletricidade"></i> Eletricidade
+  </div>
+  <div class="custom-option" data-value="redes" role="option">
+    <i class="fa-solid fa-tower-broadcast icon-redes"></i> Redes
+  </div>
+  <div class="custom-option" data-value="favoritos" role="option">
+    <i class="fa-solid fa-heart icon-favoritos"></i> Favoritos
+  </div>
+</div>
+</div>
+</div>
 
-    <!-- ============ COLUNA 1 · FILTROS + LISTA DE TERMOS ============ -->
-    <aside class="sidebar-filtros">
-      <div class="filtros-panel">
-        <h2 class="filtros-title">Filtros</h2>
+<div class="search-box">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input type="text" id="searchInput" placeholder="Buscar Termo...">
+</div>
 
-        <div class="filtros-field">
-          <!-- Custom select: substitui o <select> nativo (que abria o menu azul
-               genérico do SO) por um dropdown do design system, com as cores de
-               cada área nos ícones e lilás suave no hover/ativo -->
-          <div class="custom-select-container" id="categoryCustomSelect">
-            <button
-              class="custom-select-trigger"
-              id="categoryTrigger"
-              type="button"
-              data-value="todos"
-              aria-haspopup="listbox"
-              aria-expanded="false"
-              title="Filtrar por área">
-              <span class="selected-option">
-                <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
-              </span>
-              <i class="fa-solid fa-chevron-down arrow-icon"></i>
-            </button>
+<span class="terms-count" id="termsCount">16 TERMOS</span>
 
-            <div class="custom-options-menu" role="listbox">
-              <div class="custom-option active" data-value="todos" role="option">
-                <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
-              </div>
-              <div class="custom-option" data-value="hardware" role="option">
-                <i class="fa-solid fa-desktop icon-hardware"></i> Hardware
-              </div>
-              <div class="custom-option" data-value="software" role="option">
-                <i class="fa-solid fa-compact-disc icon-software"></i> Software
-              </div>
-              <div class="custom-option" data-value="programacao" role="option">
-                <i class="fa-solid fa-laptop-code icon-programacao"></i> Programação
-              </div>
-              <div class="custom-option" data-value="eletricidade" role="option">
-                <i class="fa-solid fa-plug icon-eletricidade"></i> Eletricidade
-              </div>
-              <div class="custom-option" data-value="redes" role="option">
-                <i class="fa-solid fa-tower-broadcast icon-redes"></i> Redes
-              </div>
-              <div class="custom-option" data-value="favoritos" role="option">
-                <i class="fa-solid fa-heart icon-favoritos"></i> Favoritos
-              </div>
-            </div>
-          </div>
-        </div>
+<div class="terms-list" id="termsList"></div>
+</div>
+</aside>
 
-        <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="searchInput" placeholder="Buscar Termo...">
-        </div>
+<!-- ============ COLUNA 2 · APRESENTAÇÃO DO SINAL ============ -->
+<main class="content-column">
 
-        <span class="terms-count" id="termsCount">16 TERMOS</span>
+<header class="term-header" id="termHeader">
+<span class="category-row">
+<i class="fa-solid fa-desktop" id="displayCategoryIcon"></i>
+<span class="category-tag" id="displayCategory">HARDWARE</span>
+</span>
+<div class="term-title-row">
+<h2 id="displayTerm">Monitor</h2>
+<button class="btn-fav-large" id="btnMainFav" title="Favoritar Termo">
+<i class="fa-regular fa-heart"></i>
+</button>
+</div>
+</header>
+<div class="card-video-container">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-circle-play"></i></span>
+<h3 class="info-card-title">Vídeo do sinal</h3>
+</div>
+<div class="video-wrapper-yt" id="player-container">
+<div
+id="player"
+data-plyr-provider="youtube"
+data-plyr-embed-id="x2uwlO43nas"
+></div>
+</div>
+</div>
+<section class="definicao-card">
+<div class="definicao-head">
+<span class="icon-circle roxo"><i class="fa-solid fa-book-open"></i></span>
+<h3 class="definicao-title">Definição do termo</h3>
+</div>
+<p id="displayDef">Dispositivo de saída que exibe a interface visual do computador.</p>
+</section>
+</main>
+<aside class="detalhes-column">
+<section class="info-card info-card--imagem">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-image"></i></span>
+<h3 class="info-card-title">Imagem do termo</h3>
+</div>
+<div class="imagem-content">
+<img src="img/monitor.png" alt="Termo" id="termImage">
+<span class="img-placeholder" id="imgPlaceholder">
+<i class="fa-solid fa-image"></i>
+<span>Imagem em breve</span>
+</span>
+</div>
+</section>
 
-        <div class="terms-list" id="termsList"></div>
-      </div>
-    </aside>
+<!-- 2º · MEIO: Exemplo em português -->
+<section class="info-card info-card--exemplo">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-comment-dots"></i></span>
+<h3 class="info-card-title">Exemplo em português</h3>
+</div>
+<p id="displayExPt">"O monitor exibe a imagem em alta definição."</p>
+</section>
 
-    <!-- ============ COLUNA 2 · APRESENTAÇÃO DO SINAL ============ -->
-    <main class="content-column">
-
-      <header class="term-header" id="termHeader">
-        <span class="category-row">
-          <i class="fa-solid fa-desktop" id="displayCategoryIcon"></i>
-          <span class="category-tag" id="displayCategory">HARDWARE</span>
-        </span>
-        <div class="term-title-row">
-          <h2 id="displayTerm">Monitor</h2>
-          <button class="btn-fav-large" id="btnMainFav" title="Favoritar Termo">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-        </div>
-      </header>
-
-      <!-- Card branco oficial do vídeo, com o cabeçalho padrão da Coluna 3 -->
-      <div class="card-video-container">
-        <div class="info-card-head">
-          <span class="icon-circle lilas"><i class="fa-solid fa-circle-play"></i></span>
-          <h3 class="info-card-title">Vídeo do sinal</h3>
-        </div>
-
-        <!-- Player Plyr: aqui só existe uma div receptora vazia. Quem cria o
-             embed do YouTube é o próprio Plyr, a partir de data-plyr-provider
-             e data-plyr-embed-id (atributos oficiais da biblioteca). Sem
-             nenhum iframe fixo escrito no HTML, não sobra um segundo player
-             visível por baixo da interface do Plyr — era isso que sobrepunha
-             os dois players e mantinha a cara do YouTube na tela.
-             O id abaixo aponta para o primeiro sinal da lista (Monitor, o
-             termo exibido ao abrir a página) e o sinalario.js troca a fonte
-             pela API do Plyr (player.source) a cada termo escolhido. -->
-        <div class="video-wrapper-yt" id="player-container">
-          <div
-            id="player"
-            data-plyr-provider="youtube"
-            data-plyr-embed-id="x2uwlO43nas"
-          ></div>
-        </div>
-      </div>
-
-      <section class="definicao-card">
-        <div class="definicao-head">
-          <span class="icon-circle roxo"><i class="fa-solid fa-book-open"></i></span>
-          <h3 class="definicao-title">Definição do termo</h3>
-        </div>
-        <p id="displayDef">Dispositivo de saída que exibe a interface visual do computador.</p>
-      </section>
-
-    </main>
-
-    <!-- ============ COLUNA 3 · DETALHAMENTO DO TERMO ============ -->
-    <aside class="detalhes-column">
-
-      <!-- 1º · TOPO: Imagem do termo -->
-      <section class="info-card info-card--imagem">
-        <div class="info-card-head">
-          <span class="icon-circle lilas"><i class="fa-solid fa-image"></i></span>
-          <h3 class="info-card-title">Imagem do termo</h3>
-        </div>
-        <div class="imagem-content">
-          <img src="img/monitor.png" alt="Termo" id="termImage">
-          <span class="img-placeholder" id="imgPlaceholder">
-            <i class="fa-solid fa-image"></i>
-            <span>Imagem em breve</span>
-          </span>
-        </div>
-      </section>
-
-      <!-- 2º · MEIO: Exemplo em português -->
-      <section class="info-card info-card--exemplo">
-        <div class="info-card-head">
-          <span class="icon-circle lilas"><i class="fa-solid fa-comment-dots"></i></span>
-          <h3 class="info-card-title">Exemplo em português</h3>
-        </div>
-        <p id="displayExPt">"O monitor exibe a imagem em alta definição."</p>
-      </section>
-
-      <!-- 3º · BASE: Exemplo em Libras -->
-      <section class="info-card info-card--exemplo">
-        <div class="info-card-head">
-          <span class="icon-circle lilas"><i class="fa-solid fa-hands"></i></span>
-          <h3 class="info-card-title">Exemplo em Libras</h3>
-        </div>
-        <p class="libras-text" id="displayExGlosa">MONITOR MOSTRAR IMAGEM BONITO</p>
-      </section>
+<!-- 3º · BASE: Exemplo em Libras -->
+<section class="info-card info-card--exemplo">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-hands"></i></span>
+<h3 class="info-card-title">Exemplo em Libras</h3>
+</div>
+<p class="libras-text" id="displayExGlosa">MONITOR MOSTRAR IMAGEM BONITO</p>
+</section>
 
     </aside>
   </div>
