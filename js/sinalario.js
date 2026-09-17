@@ -135,6 +135,14 @@ function marcarComoVisto() {
    · youtube → parâmetros repassados ao embed que o Plyr monta, e são eles que
      forçam a ocultação da interface do YouTube. */
 const player = new Plyr('#player', {
+  /* Lista explícita do que o Plyr renderiza: 'play-large' NÃO entra aqui, e é
+     essa ausência que resolve o botão central. No plyr.js há um único ponto
+     que cria o .plyr__control--overlaid — o bloco
+     `if (this.config.controls.includes('play-large'))` dentro do create(),
+     que monta o <button> e o insere no container antes do .plyr__controls.
+     Fora da lista, o botão nunca é renderizado: não sobra nada para esconder
+     com CSS nem para apagar do DOM. A barra roxa inferior (play, voltar 5s,
+     progresso, tempo e velocidade) segue como o único controle do vídeo. */
   controls: ['play', 'rewind', 'progress', 'current-time', 'settings'],
   settings: ['speed'],
   speed: { selected: 1, options: [0.25, 0.5, 0.75, 1] }, // 0.25x para estudo
