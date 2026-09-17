@@ -158,6 +158,7 @@ const player = new Plyr('#player', {
   loop: { active: false },
   autoplay: true,
   muted: true,              // mudo por padrão (indispensável para o autoplay)
+  hl: 'pt-BR',              // idioma da interface do embed (playerVars hl)
   /* O clique na imagem não pausa. Com o Plyr fora do caminho, o clique não
      dispara o pause do próprio iframe — e é justamente o pause que faz o
      YouTube desenhar o botão gigante no centro da imagem. O play/pause segue
@@ -176,25 +177,39 @@ const player = new Plyr('#player', {
      embed. O bloco `playerVars` mais abaixo é o mesmo pacote escrito como a
      API do YouTube o chama, e é achatado para o nível de cima por
      normalizarPlayerVarsDoYoutube(), antes de o iframe existir: um objeto
-     aninhado viraria o parâmetro inútil `playerVars=[object Object]`. */
+     aninhado viraria o parâmetro inútil `playerVars=[object Object]`.
+
+     Cada chave existe para tirar uma camada nativa de cima da imagem — o
+     iframe deve sobrar como superfície de vídeo puro. O que a API do YouTube
+     não desliga por parâmetro nenhum é a barra de título que aparece ao passar
+     o mouse (com título, canal e "assistir no YouTube"): endereço dela é
+     dentro do iframe, e `showinfo` está obsoleto justamente por isso. */
   youtube: {
     noCookie: true,          // youtube-nocookie.com: sem cookies de rastreio
     customControls: true,    // barra roxa do projeto no lugar da barra nativa
+    mute: 1,                 // o embed NASCE mudo: é o que o YouTube exige para
+                             // liberar o autoplay na origem. Sem isto o Plyr só
+                             // muta depois do 'ready', e o YouTube, recusando o
+                             // autoplay, deixa o próprio botão de play no centro
+                             // (o placeholder cinza) em cima da intérprete
     rel: 0,                  // sem sugestões de outros vídeos no fim
     showinfo: 0,             // sem título/canal no topo do embed
     iv_load_policy: 3,       // sem cards e anotações sobre a imagem
     modestbranding: 1,       // marca d'água discreta
+    cc_load_policy: 0,       // legendas nunca desenhadas sobre a intérprete
     controls: 0,             // sem a barra cinza nativa do YouTube
     disablekb: 1,            // sem os atalhos de teclado do próprio YouTube
     fs: 0,                   // sem o botão de tela cheia do YouTube
     playsinline: 1,          // embutido, sem tela cheia automática no iOS
     /* O mesmo pacote na nomenclatura oficial da API do YouTube; é achatado
-       na criação do player, logo abaixo, porque o Plyr quer as chaves soltas */
+       na criação do player, logo abaixo, porque o Plyr quer as chaves soltas.
+       Em caso de chave repetida, o valor daqui vence o do nível de cima. */
     playerVars: {
       controls: 0,
       disablekb: 1,
       fs: 0,
-      rel: 0
+      rel: 0,
+      cc_load_policy: 0
     }
   },
   /* Rótulos em português: o Plyr só traz o inglês embutido */
