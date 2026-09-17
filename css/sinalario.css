@@ -574,21 +574,25 @@
    50%, e o YouTube — que centraliza o vídeo 16:9 dentro do iframe — desenha a
    imagem exatamente na metade que aparece, de forma inteira e sem corte,
    enquanto a faixa nativa nasce acima do que se vê.
-   O !important vence o posicionamento que o próprio plyr.css aplica ao iframe */
+   Sem !important: o plyr.css posiciona esse mesmo seletor (.plyr__video-embed
+   iframe, peso 0,1,1) e este arquivo entra depois no <head>, então a vitória no
+   cascade é por ordem. */
 .plyr__video-embed iframe {
-  top: -50% !important;
-  height: 200% !important;
+  top: -50%;
+  height: 200%;
 }
 
-/* Botão central: nada de estilo aqui. A camada que mata qualquer controle
-   sobreposto mora no style.css (regras do .plyr__control--overlaid e dos itens
-   soltos fora da barra roxa), e o sinalario.js ainda apaga esses nós do DOM em
-   removerCamadasSobrepostas. O botão redondo que o YouTube desenha dentro do
-   iframe (camada nativa tratada logo acima) não é alcançável por seletor nenhum
-   desta página: quem o mantém fora de cena é o loop sem estado de fim do
-   sinalario.js, que reinicia o sinal por currentTime um instante antes do
-   último quadro. Nada mais neste arquivo mexe nos controles — a barra roxa, as
-   velocidades e a troca de termos seguem intactas. */
+/* Botão central: nenhum estilo aqui. A remoção vem antes do CSS — a lista de
+   controls do sinalario.js não inclui 'play-large', que é o único gatilho de
+   criação do .plyr__control--overlaid na biblioteca. Como redes, o próprio
+   sinalario.js apaga o nó do DOM (removerBotaoCentral) e o style.css mantém a
+   camada invisível por especificidade, sem !important. O botão redondo que o
+   YouTube desenha dentro do iframe (camada nativa tratada logo acima) não é
+   alcançável por seletor nenhum desta página: quem o mantém fora de cena é o
+   loop sem estado de fim do sinalario.js, que reinicia o sinal por currentTime
+   um instante antes do último quadro. Nada mais neste arquivo mexe nos
+   controles — a barra roxa, as velocidades e a troca de termos seguem
+   intactas. */
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px

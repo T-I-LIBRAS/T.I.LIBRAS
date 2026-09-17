@@ -140,10 +140,10 @@ const player = new Plyr('#player', {
      que cria o .plyr__control--overlaid — o bloco
      `if (this.config.controls.includes('play-large'))` dentro do create(),
      que monta o <button> e o insere no container antes do .plyr__controls.
-     Fora da lista o botão nem é renderizado — e, como garantia extra, a camada
-     sobreposta também é removida do DOM logo abaixo (removerCamadasSobrepostas)
-     e zerada no CSS. A barra roxa inferior (play, voltar 5s, progresso, tempo e
-     velocidade) segue como o único controle do vídeo. */
+     Fora da lista o botão nem é renderizado — e, como garantia extra, o nó é
+     apagado do DOM por removerBotaoCentral() (logo abaixo) e mantido invisível
+     pela regra sem !important do style.css. A barra roxa inferior (play, voltar
+     5s, progresso, tempo e velocidade) segue como o único controle do vídeo. */
   controls: ['play', 'rewind', 'progress', 'current-time', 'settings'],
   settings: ['speed'],
   speed: { selected: 1, options: [0.25, 0.5, 0.75, 1] }, // 0.25x para estudo
@@ -209,52 +209,66 @@ const player = new Plyr('#player', {
 });
 
 /* ---------------- Cena limpa: nada de controle sobre a imagem ---------------
-   Três camadas podem desenhar controles no MEIO do vídeo, e todas são
-   tratadas aqui:
+   O botão central do Plyr (.plyr__control--overlaid) tem UM único ponto de
+   criação na biblioteca: o bloco `if (this.config.controls.includes
+   ('play-large'))` de Controls.create(), que monta o <button> e o insere
+   direto no container, antes do .plyr__controls. Como 'play-large' está fora
+   da lista de controls acima, o nó não nasce no DOM — e é essa a remoção
+   definitiva: nenhum botão é criado, nada precisa ser escondido nem apagado.
 
-   1) .plyr__control--overlaid — o único elemento que o Plyr centraliza. Ele só
-      é criado quando 'play-large' entra na lista de controls (ver a nota na
-      inicialização acima), e a lista não o inclui. Ainda assim o expurgo
-      abaixo apaga o nó do DOM caso ele reapareça (outra versão da biblioteca,
-      config alterada, etc.);
-   2) .plyr__controls__item / .plyr__control soltos FORA do .plyr__controls —
-      a barra roxa inferior é o único lugar legítimo para esses itens, então
-      qualquer um que apareça fora dela é removido do DOM. Os itens da barra
-      (play, voltar 5s, progresso, tempo e velocidade) seguem intactos porque
-      continuam dentro do .plyr__controls;
-   3) a sobreposição que o PRÓPRIO player do YouTube desenha dentro do iframe
-      (estado "cued" ou fim de vídeo). Ela não pertence a este documento, então
-      não há seletor nem JS capaz de alcançá-la: quem a mantém fora de cena é o
-      loop sem estado de fim montado logo abaixo.
+   As duas camadas seguintes são redes de segurança, na ordem em que agem:
 
-   O MutationObserver roda o mesmo expurgo a cada remontagem do player (o Plyr
-   destrói e recria o embed a cada troca de termo), com custo desprezível. */
-function removerCamadasSobrepostas() {
+   1) removerBotaoCentral() apaga o nó do DOM se alguma versão futura da
+      biblioteca (ou uma config alterada) voltar a criá-lo. Roda na montagem, a
+      cada mutação do container — o Plyr destrói e remonta o embed inteiro a
+      cada troca de termo — e a cada troca de estado do player (ready, playing,
+      pause, ended, seeked, loadstart), que é quando a interface é reconstruída;
+
+   2) a regra .plyr__control--overlaid do style.css, SEM !important e com peso
+      maior que a da biblioteca, mantém a camada invisível mesmo no intervalo
+      entre uma inserção e a remoção (garantia visual, de custo zero).
+
+   A barra roxa inferior (.plyr__controls) e seus itens (play, voltar 5s,
+   progresso, tempo e velocidade) não são alcançados por nada daqui: o expurgo
+   mira apenas o botão central, nunca os filhos da barra.
+
+   A sobreposição que o PRÓPRIO player do YouTube desenha DENTRO do iframe não
+   pertence a este documento — nenhum seletor ou JS da página a alcança. Quem a
+   mantém fora de cena é o loop sem estado de fim montado logo abaixo, que
+   reinicia o sinal por currentTime um instante antes do último quadro. */
+function removerBotaoCentral() {
   const container = document.getElementById('player');
   if (!container) return;
 
-  /* 1) botão central do Plyr, em qualquer estado do player */
   container.querySelectorAll('.plyr__control--overlaid').forEach((no) => no.remove());
-
-  /* 2) só procura controles soltos depois que a barra roxa já foi montada —
-     assim o expurgo nunca corre durante a remontagem do embed */
-  if (!container.querySelector('.plyr__controls')) return;
-  container.querySelectorAll('.plyr__controls__item, .plyr__control').forEach((no) => {
-    if (!no.closest('.plyr__controls')) no.remove();
-  });
 }
 
-removerCamadasSobrepostas();
+/* Garantia extra: se 'play-large' voltar à lista de controls numa edição
+   futura, ele é descartado antes de qualquer remontagem da interface. */
+if (player.config && Array.isArray(player.config.controls)) {
+  player.config.controls = player.config.controls.filter(
+    (controle) => controle !== 'play-large'
+  );
+}
 
-const containerDasCamadas = document.getElementById('player');
+removerBotaoCentral();
 
-if (window.MutationObserver && containerDasCamadas) {
-  const observadorDeCamadas = new MutationObserver(removerCamadasSobrepostas);
-  observadorDeCamadas.observe(containerDasCamadas, {
+const containerDoPlayer = document.getElementById('player');
+
+if (window.MutationObserver && containerDoPlayer) {
+  const observadorDoBotaoCentral = new MutationObserver(removerBotaoCentral);
+  observadorDoBotaoCentral.observe(containerDoPlayer, {
     childList: true,
     subtree: true
   });
 }
+
+/* Cada troca de estado do player é um ponto onde a camada central poderia ser
+   recriada, então o expurgo também roda nesses eventos — não só nas mutações
+   do DOM observadas acima */
+['ready', 'playing', 'pause', 'ended', 'seeked', 'loadstart'].forEach((evento) => {
+  player.on(evento, removerBotaoCentral);
+});
 
 /* Estado da troca de vídeo. O provider do YouTube sobe de forma assíncrona:
    até o Plyr disparar 'ready' ainda não existe player para receber o vídeo,
