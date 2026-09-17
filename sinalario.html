@@ -6,7 +6,7 @@
 <title>T.I Libras - Sinalário</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="css/style.css?v=50">
-<link rel="stylesheet" href="css/sinalario.css?v=48">
+<link rel="stylesheet" href="css/sinalario.css?v=49">
 <script src="js/components.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
@@ -95,57 +95,15 @@ title="Filtrar por área">
 <video
 class="video-sinal"
 id="videoSinal"
-playsinline
+autoplay
 loop
+muted
+playsinline
 preload="auto"></video>
 <div class="video-indisponivel" id="avisoVideoIndisponivel">
 <i class="fa-solid fa-video-slash"></i>
 <span>Vídeo do sinal em breve</span>
 </div>
-</div>
-
-<div class="barra-sinalario" id="barraSinalario">
-<button
-type="button"
-class="barra-sinalario__botao"
-id="btnPlayPause"
-aria-label="Reproduzir sinal"
-title="Reproduzir / Pausar">
-<i class="fa-solid fa-play"></i>
-</button>
-
-<button
-type="button"
-class="barra-sinalario__botao barra-sinalario__botao--texto"
-id="btnRewind"
-aria-label="Voltar 5 segundos"
-title="Voltar 5 segundos">
-<i class="fa-solid fa-rotate-left"></i>
-<span>5s</span>
-</button>
-
-<div
-class="barra-sinalario__progresso"
-id="barraProgresso"
-role="slider"
-tabindex="0"
-aria-label="Progresso do vídeo"
-aria-valuemin="0"
-aria-valuemax="100"
-aria-valuenow="0">
-<div class="barra-sinalario__trilha">
-<div class="barra-sinalario__preenchido" id="progressoPreenchido"></div>
-</div>
-</div>
-
-<span class="barra-sinalario__tempo" id="tempoSinal">0:00 / 0:00</span>
-
-<button
-type="button"
-class="barra-sinalario__botao barra-sinalario__botao--texto"
-id="btnVelocidade"
-aria-label="Velocidade de reprodução"
-title="Velocidade de reprodução">1x</button>
 </div>
 </div>
 <section class="definicao-card">
@@ -194,6 +152,6 @@ title="Velocidade de reprodução">1x</button>
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=47"></script>
+  <script src="js/sinalario.js?v=48"></script>
 </body>
 </html>

@@ -411,10 +411,8 @@
 
 .video-wrapper {
   position: relative;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
 }
 
 .video-sinal {
@@ -422,9 +420,10 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 0;
-  border-radius: var(--sl-raio-sm);
-  background-color: #000000;
-  object-fit: contain;
+  border-radius: var(--sl-raio);
+  background-color: var(--sl-superficie-alt);
+  object-fit: cover;
+  overflow: hidden;
 }
 
 .video-indisponivel {
@@ -436,7 +435,7 @@
   justify-content: center;
   gap: 8px;
   padding: 16px;
-  border-radius: var(--sl-raio-sm);
+  border-radius: var(--sl-raio);
   background-color: #14142b;
   color: #ffffff;
   font-weight: 700;
@@ -450,105 +449,6 @@
 .video-indisponivel i {
   font-size: 1.6rem;
   opacity: 0.8;
-}
-
-.barra-sinalario {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  padding: 10px 14px;
-  border-radius: var(--sl-raio-sm);
-  background-color: #6C5CE7;
-  color: #ffffff;
-}
-
-.barra-sinalario__botao {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-width: 42px;
-  height: 40px;
-  padding: 0 12px;
-  border: none;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: var(--transicao);
-}
-
-.barra-sinalario__botao:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.barra-sinalario__botao:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
-}
-
-.barra-sinalario__botao:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.barra-sinalario__botao:disabled:hover {
-  background-color: rgba(255, 255, 255, 0.16);
-}
-
-.barra-sinalario__botao--texto span {
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.barra-sinalario__progresso {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  min-width: 90px;
-  height: 40px;
-  cursor: pointer;
-  touch-action: none;
-}
-
-.barra-sinalario__progresso:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-
-.barra-sinalario__progresso.esta-desabilitado {
-  cursor: default;
-}
-
-.barra-sinalario__trilha {
-  position: relative;
-  width: 100%;
-  height: 8px;
-  border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.32);
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.barra-sinalario__preenchido {
-  width: 0%;
-  height: 100%;
-  border-radius: 999px;
-  background-color: #ffffff;
-}
-
-.barra-sinalario__tempo {
-  flex-shrink: 0;
-  font-size: 0.85rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 .definicao-card {
