@@ -164,17 +164,38 @@ const player = new Plyr('#player', {
      disponível na barra roxa inferior e pela barra de espaço */
   clickToPlay: false,
   storage: { enabled: false },
+  /* Parâmetros nativos do player do YouTube. No Plyr 3.7.8 o provider monta a
+     URL do embed assim (código da própria biblioteca, no arquivo plyr.js):
+
+       playerVars: { ...{autoplay, hl, controls, disablekb, playsinline,
+                         cc_load_policy, cc_lang_pref, widget_referrer}, ...youtube }
+
+     Ou seja: TODAS as chaves deste objeto viram parâmetros do iframe e as do
+     projeto entram por último, vencendo as da biblioteca. Por isso os nomes
+     nativos ficam aqui no nível de cima — é o formato que o Plyr repassa ao
+     embed. O bloco `playerVars` mais abaixo é o mesmo pacote escrito como a
+     API do YouTube o chama, e é achatado para o nível de cima por
+     normalizarPlayerVarsDoYoutube(), antes de o iframe existir: um objeto
+     aninhado viraria o parâmetro inútil `playerVars=[object Object]`. */
   youtube: {
-    noCookie: true,         // domínio youtube-nocookie: sem cookies de rastreio
-    rel: 0,                 // sem sugestões de outros vídeos no fim
-    showinfo: 0,            // sem título/canal no topo do embed
-    iv_load_policy: 3,      // sem cards e anotações sobre a imagem
-    modestbranding: 1,      // marca d'água discreta
-    /* Estas duas chaves entram no playerVars do embed e são aplicadas por
-       último, então valem como palavra final: sem a barra cinza nativa do
-       YouTube e sem o teclado dele (quem responde às teclas é o Plyr) */
-    controls: 0,            // oculta a barra cinza nativa do YouTube
-    disablekb: 1            // desliga os atalhos de teclado do próprio YouTube
+    noCookie: true,          // youtube-nocookie.com: sem cookies de rastreio
+    customControls: true,    // barra roxa do projeto no lugar da barra nativa
+    rel: 0,                  // sem sugestões de outros vídeos no fim
+    showinfo: 0,             // sem título/canal no topo do embed
+    iv_load_policy: 3,       // sem cards e anotações sobre a imagem
+    modestbranding: 1,       // marca d'água discreta
+    controls: 0,             // sem a barra cinza nativa do YouTube
+    disablekb: 1,            // sem os atalhos de teclado do próprio YouTube
+    fs: 0,                   // sem o botão de tela cheia do YouTube
+    playsinline: 1,          // embutido, sem tela cheia automática no iOS
+    /* O mesmo pacote na nomenclatura oficial da API do YouTube; é achatado
+       na criação do player, logo abaixo, porque o Plyr quer as chaves soltas */
+    playerVars: {
+      controls: 0,
+      disablekb: 1,
+      fs: 0,
+      rel: 0
+    }
   },
   /* Rótulos em português: o Plyr só traz o inglês embutido */
   i18n: {
@@ -208,6 +229,21 @@ const player = new Plyr('#player', {
   }
 });
 
+/* Traduz a nomenclatura da API do YouTube (playerVars) para a que o Plyr
+   repassa ao embed, e deixa no iframe apenas parâmetros primitivos. Roda de
+   forma síncrona, logo depois do `new Plyr(...)`: o provider lê
+   `config.youtube` só na hora de montar a URL, e essa hora é sempre posterior
+   a este script — o embed nasce quando a API do YouTube avisa que carregou. */
+function normalizarPlayerVarsDoYoutube() {
+  const config = player.config && player.config.youtube;
+  if (!config || !config.playerVars || typeof config.playerVars !== 'object') return;
+
+  player.config.youtube = Object.assign({}, config, config.playerVars);
+  delete player.config.youtube.playerVars;
+}
+
+normalizarPlayerVarsDoYoutube();
+
 /* ---------------- Cena limpa: nada de controle sobre a imagem ---------------
    O botão central do Plyr (.plyr__control--overlaid) tem UM único ponto de
    criação na biblioteca: o bloco `if (this.config.controls.includes
@@ -234,13 +270,20 @@ const player = new Plyr('#player', {
 
    A sobreposição que o PRÓPRIO player do YouTube desenha DENTRO do iframe não
    pertence a este documento — nenhum seletor ou JS da página a alcança. Quem a
-   mantém fora de cena é o loop sem estado de fim montado logo abaixo, que
-   reinicia o sinal por currentTime um instante antes do último quadro. */
-function removerBotaoCentral() {
-  const container = document.getElementById('player');
-  if (!container) return;
+   mantém fora de cena são as duas peças deste arquivo:
+   · o loop sem estado de fim, logo abaixo, que reinicia o sinal por currentTime
+     um instante antes do último quadro (mata o desenho de fim de vídeo);
+   · o congelamento por setPlaybackRate(0) da seção "Congelar o sinal" (mata o
+     desenho de pausa: o embed nunca chega a PAUSED).
 
-  container.querySelectorAll('.plyr__control--overlaid').forEach((no) => no.remove());
+   Sobre o nó alvo: o #player do HTML é só a div receptora do embed. Quando a
+   API do YouTube fica pronta, o provider do Plyr a troca por uma div nova
+   (media = replaceElement(div, media)) e o nó que sobrevive é o container que
+   recebe a classe .plyr — daí containerDoPlayer, e nunca #player. */
+function removerBotaoCentral() {
+  if (!containerDoPlayer) return;
+
+  containerDoPlayer.querySelectorAll('.plyr__control--overlaid').forEach((no) => no.remove());
 }
 
 /* Garantia extra: se 'play-large' voltar à lista de controls numa edição
@@ -251,9 +294,11 @@ if (player.config && Array.isArray(player.config.controls)) {
   );
 }
 
-removerBotaoCentral();
+/* O nó vivo do player (ver o comentário acima): é ele que continua no
+   documento a cada troca de termo, quando o #player já foi substituído */
+const containerDoPlayer = player.elements ? player.elements.container : null;
 
-const containerDoPlayer = document.getElementById('player');
+removerBotaoCentral();
 
 if (window.MutationObserver && containerDoPlayer) {
   const observadorDoBotaoCentral = new MutationObserver(removerBotaoCentral);
@@ -292,6 +337,10 @@ function carregarVideo(idYouTube) {
   if (!id || id === videoIdAtual) return;
 
   videoIdAtual = id;
+
+  /* O termo novo entra tocando (autoplay + loop), então o congelamento do
+     termo anterior não atravessa a troca — ver "Congelar o sinal" */
+  reiniciarCongelamento();
 
   player.source = {
     type: 'video',
@@ -372,6 +421,215 @@ player.on('ended', () => {
      embed no estado "cued" e desenha o botão central. */
   player.currentTime = 0;
   Promise.resolve(player.play()).catch(() => {});
+});
+
+/* ============ Congelar o sinal: pausar sem entrar no PAUSED ============
+
+   O botão gigante que aparece em cima da intérprete é desenhado pelo PRÓPRIO
+   player do YouTube DENTRO do iframe, e ele só surge em dois estados do embed:
+   PAUSED (2) e CUED (5) — este último é onde o stopVideo() deixa o vídeo.
+   Nenhum seletor nem JS desta página alcança aquele desenho, então a única
+   saída é o embed nunca entrar nesses dois estados.
+
+   Por isso o play/pause da barra roxa CONGELA o quadro em vez de pausar:
+
+   · player.embed é a instância YT.Player da API oficial do YouTube (o Plyr
+     guarda a instância ali e a refaz a cada troca de termo, daí embedDoYoutube());
+   · setPlaybackRate(0) para a imagem e o tempo, com o embed seguindo em
+     PLAYING — nenhum dos estados que pintam o botão;
+   · player.speed = 0 NÃO serve: o setter do Plyr limita a velocidade entre
+     minimumSpeed e maximumSpeed, e no provider do YouTube esses limites são o
+     menor e o maior item do menu ([0.25 ... 1]) — o 0 viraria 0.25;
+   · media.paused + o evento 'pause' (o mesmo par que o provider usa por dentro)
+     trocam o ícone da barra, sem nenhum pauseVideo().
+
+   Caminhos de pausa, todos cobertos:
+   · botão da barra e teclas espaço/k → player.togglePlay();
+   · chamadas diretas à API do Plyr → player.pause();
+   · o clique na imagem chega ao iframe e o YouTube pausa por conta própria —
+     o 'statechange' abaixo desfaz o PAUSED na hora, congelando o quadro;
+   · se o embed recusar a taxa 0 (o YouTube pode impor um piso de velocidade),
+     o quadro passa a ser segurado por currentTime, sempre em PLAYING.
+
+   player.togglePlay e player.pause são propriedades da instância criadas uma
+   única vez no construtor do Plyr, então as trocas sobrevivem às remontagens
+   do embed a cada troca de termo. */
+
+const ESTADO_DO_YOUTUBE = {
+  FINALIZADO: 0,
+  REPRODUZINDO: 1,
+  PAUSADO: 2,
+  EM_ESPERA: 5             // "cued": o outro estado que desenha o botão central
+};
+
+const INTERVALO_DA_RESERVA = 250;  // ms entre uma segurada do quadro e outra
+const CONFERENCIA_DA_TAXA = 300;   // ms para o embed confirmar a taxa 0
+
+let sinalCongelado = false;
+let velocidadeDoSinal = 1;         // velocidade do menu, guardada para o play
+let instanteDoSinal = 0;           // quadro segurado no modo de reserva
+let reservaDoQuadro = null;        // interval do modo de reserva
+let conferenciaDaTaxa = null;      // timeout da conferência da taxa 0
+
+function embedDoYoutube() {
+  return player.embed && typeof player.embed.setPlaybackRate === 'function'
+    ? player.embed
+    : null;
+}
+
+function taxaAtualDoEmbed() {
+  const embed = embedDoYoutube();
+  return embed ? Number(embed.getPlaybackRate()) : null;
+}
+
+/* O ícone do item play é decidido por media.paused (checkPlaying do Plyr).
+   Mexer nesse flag e disparar o mesmo evento que o provider dispara troca o
+   ícone da barra sem que o iframe receba um pauseVideo(). */
+function avisarBarraRoxa(pausado) {
+  if (!player.media || player.media.paused === pausado) return;
+
+  player.media.paused = pausado;
+  player.media.dispatchEvent(new CustomEvent(pausado ? 'pause' : 'play', {
+    detail: { plyr: player }
+  }));
+}
+
+function pararReservaDoQuadro() {
+  if (!reservaDoQuadro) return;
+
+  clearInterval(reservaDoQuadro);
+  reservaDoQuadro = null;
+}
+
+/* Reserva: segura o quadro por currentTime, mantendo o embed em PLAYING */
+function iniciarReservaDoQuadro() {
+  const embed = embedDoYoutube();
+  if (!embed || reservaDoQuadro) return;
+
+  instanteDoSinal = Number(embed.getCurrentTime());
+  reservaDoQuadro = setInterval(() => {
+    const atual = embedDoYoutube();
+    if (!sinalCongelado || !atual) {
+      pararReservaDoQuadro();
+      return;
+    }
+
+    atual.seekTo(instanteDoSinal, true);
+    if (Number(atual.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
+      atual.playVideo();
+    }
+    avisarBarraRoxa(true);
+  }, INTERVALO_DA_RESERVA);
+}
+
+/* Aplica (ou reafirma) o congelamento no embed */
+function aplicarCongelamento() {
+  const embed = embedDoYoutube();
+  if (!embed) return;
+
+  avisarBarraRoxa(true);
+  embed.setPlaybackRate(0);
+
+  /* Estado proibido: sai dele sem largar o quadro */
+  if (Number(embed.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
+    embed.playVideo();
+    avisarBarraRoxa(true);   // a volta para PLAYING avisa o Plyr do contrário
+  }
+
+  /* O embed confirma a taxa só depois do ciclo de mensagens do iframe: se ele
+     recusar o 0, o quadro passa a ser segurado por currentTime */
+  clearTimeout(conferenciaDaTaxa);
+  conferenciaDaTaxa = setTimeout(() => {
+    if (!sinalCongelado) return;
+
+    if (taxaAtualDoEmbed() === 0) pararReservaDoQuadro();
+    else iniciarReservaDoQuadro();
+  }, CONFERENCIA_DA_TAXA);
+}
+
+function congelarSinal() {
+  const embed = embedDoYoutube();
+  if (!embed) return;   // embed ainda carregando: não há quadro para congelar
+
+  sinalCongelado = true;
+  velocidadeDoSinal = taxaAtualDoEmbed() || player.config.speed.selected || 1;
+  instanteDoSinal = Number(embed.getCurrentTime());
+  aplicarCongelamento();
+}
+
+function descongelarSinal() {
+  const embed = embedDoYoutube();
+
+  sinalCongelado = false;
+  pararReservaDoQuadro();
+  clearTimeout(conferenciaDaTaxa);
+
+  if (!embed) return;
+
+  embed.setPlaybackRate(velocidadeDoSinal || 1);
+  Promise.resolve(player.play()).catch(() => {});   // segue de onde parou
+}
+
+/* Troca de termo: o embed é remontado do zero e o termo novo já entra tocando
+   (autoplay + loop), então o congelamento não atravessa a troca */
+function reiniciarCongelamento() {
+  sinalCongelado = false;
+  pararReservaDoQuadro();
+  clearTimeout(conferenciaDaTaxa);
+}
+
+/* Os dois pontos de entrada do play/pause do Plyr congelam em vez de pausar */
+player.togglePlay = (forcar) => {
+  const deveReproduzir = typeof forcar === 'boolean' ? forcar : !player.playing;
+  if (deveReproduzir) descongelarSinal();
+  else congelarSinal();
+};
+
+player.pause = () => {
+  congelarSinal();
+};
+
+/* O iframe também pausa sozinho (clique na imagem, por exemplo): o estado
+   proibido é desfeito na hora. A biblioteca dispara 'statechange' no container
+   do player, com o código do estado do YouTube no detail. */
+if (containerDoPlayer) {
+  containerDoPlayer.addEventListener('statechange', (evento) => {
+    const codigo = evento.detail ? Number(evento.detail.code) : null;
+
+    if (codigo === ESTADO_DO_YOUTUBE.PAUSADO) {
+      if (sinalCongelado) aplicarCongelamento();
+      else congelarSinal();
+      return;
+    }
+
+    if (
+      sinalCongelado &&
+      (codigo === ESTADO_DO_YOUTUBE.EM_ESPERA || codigo === ESTADO_DO_YOUTUBE.FINALIZADO)
+    ) {
+      aplicarCongelamento();
+    }
+  });
+}
+
+/* Com o sinal congelado, a volta para PLAYING (depois de um playVideo de
+   recuperação) não pode trocar o ícone da barra para "pausar" */
+['play', 'playing'].forEach((evento) => {
+  player.on(evento, () => {
+    if (sinalCongelado) avisarBarraRoxa(true);
+  });
+});
+
+/* Trocar a velocidade com o sinal congelado não pode descongelar a imagem: o
+   menu escreve em media.playbackRate, então a taxa 0 é reaplicada e a nova
+   velocidade fica guardada para quando o play voltar */
+player.on('ratechange', () => {
+  if (!sinalCongelado) return;
+
+  const taxa = taxaAtualDoEmbed();
+  if (taxa === 0 || taxa === null) return;
+
+  velocidadeDoSinal = taxa;
+  aplicarCongelamento();
 });
 
 function alternarFavorito(nomeDoTermo) {
