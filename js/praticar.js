@@ -1,12 +1,14 @@
 const CATEGORIAS_DO_PRATICAR = ['Hardware', 'Software', 'Programação', 'Eletricidade', 'Redes'];
 const CATEGORIAS_DA_PROGRESSAO = [...CATEGORIAS_DO_PRATICAR, 'Todos'];
 const TEMPO_DA_QUESTAO = 60;
+const PERIMETRO_DO_ANEL = 2 * Math.PI * 52;
 
 let categoriaAtual = 'Hardware';
 let perguntasAtivas = [];
 let perguntaAtual = 0;
 let cronometroIntervalo = null;
 let tempoRestante = TEMPO_DA_QUESTAO;
+let inicioDaExecucao = 0;
 
 function termosDoProjeto() {
   return typeof TERMOS !== 'undefined' && Array.isArray(TERMOS) ? TERMOS : [];
@@ -26,6 +28,10 @@ function termosDaCategoria(categoria) {
   return todos.filter((item) => item.categoria === categoria);
 }
 
+function totalDaCategoria(categoria) {
+  return termosDaCategoria(categoria).length;
+}
+
 function rolarCarrossel(distancia) {
   const grade = document.getElementById('selectionGrid');
   if (!grade) return;
@@ -42,14 +48,6 @@ function atualizarEstadoDoCarrossel() {
   grade.style.justifyContent = temTransbordo ? 'flex-start' : 'center';
 }
 
-function atualizarContadoresDasCategorias() {
-  document.querySelectorAll('.meta-info[data-meta]').forEach((meta) => {
-    const categoria = meta.dataset.meta;
-    const total = termosDaCategoria(categoria).length;
-    meta.textContent = meta.textContent.replace(/^\d+/, String(total));
-  });
-}
-
 function progressoDisponivel() {
   return !!(window.Progresso && window.Progresso.quizzesConcluidos);
 }
@@ -58,60 +56,182 @@ function obterQuizzesConcluidos() {
   return progressoDisponivel() ? window.Progresso.quizzesConcluidos() : [];
 }
 
-function registrarQuizConcluido(categoria, totalDeQuestoes) {
-  if (!progressoDisponivel()) return;
+function lerPontuacao(categoria) {
+  if (!progressoDisponivel() || typeof window.Progresso.pontuacaoDe !== 'function') return {};
+  return window.Progresso.pontuacaoDe(categoria) || {};
+}
 
-  window.Progresso.concluirQuiz(categoria);
-  window.Progresso.registrarPontuacao(categoria, {
-    ultima_pontuacao: totalDeQuestoes,
-    total_questoes: totalDeQuestoes,
-    ultima_conclusao: new Date().toISOString()
+function formatarTempo(segundos) {
+  const total = Number(segundos);
+  if (!Number.isFinite(total) || total <= 0) return '--:--';
+
+  const arredondado = Math.round(total);
+  const minutos = Math.floor(arredondado / 60);
+  const resto = arredondado % 60;
+  return `${String(minutos).padStart(2, '0')}:${String(resto).padStart(2, '0')}`;
+}
+
+function resumoDaCategoria(categoria) {
+  const total = totalDaCategoria(categoria);
+  const registro = lerPontuacao(categoria);
+  const concluido = obterQuizzesConcluidos().includes(categoria);
+
+  let concluidas = Number(registro.melhor_progresso);
+  if (!Number.isFinite(concluidas) || concluidas < 0) concluidas = 0;
+  concluidas = Math.min(Math.round(concluidas), total);
+  if (concluido && total > 0) concluidas = total;
+
+  const porcentagem = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+  const recorde = Number(registro.melhor_tempo);
+
+  return {
+    total,
+    concluidas,
+    porcentagem,
+    concluido: concluido || (total > 0 && porcentagem === 100),
+    recorde: Number.isFinite(recorde) && recorde > 0 ? Math.round(recorde) : null
+  };
+}
+
+function desenharAnel(categoria, resumo) {
+  const anel = document.querySelector(`.donut[data-donut="${categoria}"]`);
+  if (!anel) return;
+
+  const valor = anel.querySelector('.donut-value');
+  if (valor) {
+    valor.style.strokeDasharray = String(PERIMETRO_DO_ANEL);
+    valor.style.strokeDashoffset = String(PERIMETRO_DO_ANEL * (1 - resumo.porcentagem / 100));
+  }
+
+  anel.classList.toggle('is-completo', resumo.concluido);
+
+  const centro = anel.querySelector('.donut-center');
+  if (!centro) return;
+
+  if (resumo.concluido) {
+    centro.innerHTML = '<i class="fa-solid fa-check donut-check"></i><span class="donut-pct">100%</span><span class="donut-status">Concluído!</span>';
+    return;
+  }
+
+  const status = resumo.porcentagem > 0 ? 'Em andamento' : 'Não iniciado';
+  centro.innerHTML = `<span class="donut-pct">${resumo.porcentagem}%</span><span class="donut-status">${status}</span>`;
+}
+
+function atualizarDadosDoCard(categoria, resumo) {
+  const card = document.getElementById(`card-${categoria}`);
+  if (!card) return;
+
+  desenharAnel(categoria, resumo);
+
+  const concluidasEl = card.querySelector('[data-stat="concluidas"]');
+  if (concluidasEl) concluidasEl.textContent = String(resumo.concluidas);
+
+  const totalEl = card.querySelector('[data-stat="total"]');
+  if (totalEl) totalEl.textContent = String(resumo.total);
+
+  const recordeEl = card.querySelector('[data-stat="recorde"]');
+  if (recordeEl) recordeEl.textContent = formatarTempo(resumo.recorde);
+
+  const meta = card.querySelector('.meta-info');
+  if (meta) {
+    const legenda = meta.dataset.legenda || '';
+    meta.textContent = legenda ? `${resumo.total} Questões · ${legenda}` : `${resumo.total} Questões`;
+  }
+}
+
+function desenharEstrelas(quantidade) {
+  const container = document.getElementById('starsRow');
+  if (!container) return;
+
+  const total = CATEGORIAS_DA_PROGRESSAO.length;
+  if (container.children.length !== total) {
+    container.innerHTML = '';
+    for (let indice = 0; indice < total; indice += 1) {
+      const estrela = document.createElement('span');
+      estrela.className = 'star';
+      estrela.innerHTML = '<i class="fa-solid fa-star"></i>';
+      container.appendChild(estrela);
+    }
+  }
+
+  Array.from(container.children).forEach((estrela, indice) => {
+    estrela.classList.toggle('preenchida', indice < quantidade);
   });
+}
+
+function mensagemDeProgresso(concluidos, total) {
+  if (concluidos === 0) return 'Vamos começar? Escolha uma categoria abaixo!';
+  if (concluidos < total / 2) {
+    return `Bom começo! Você já concluiu ${concluidos} quiz${concluidos > 1 ? 'zes' : ''}, continue praticando.`;
+  }
+  if (concluidos < total - 1) return 'Você está indo muito bem, continue assim!';
+  if (concluidos < total) return `Quase lá! Falta só mais ${total - concluidos} para concluir tudo.`;
+  return 'Parabéns! Você concluiu todos os quizzes! 🎉';
 }
 
 function atualizarProgresso() {
   const concluidos = obterQuizzesConcluidos();
+  const total = CATEGORIAS_DA_PROGRESSAO.length;
 
-  CATEGORIAS_DA_PROGRESSAO.forEach((cat) => {
-    const card = document.getElementById(`card-${cat}`);
-    if (!card) return;
-    card.classList.toggle('completed', concluidos.includes(cat));
+  CATEGORIAS_DA_PROGRESSAO.forEach((categoria) => {
+    const resumo = resumoDaCategoria(categoria);
+    const card = document.getElementById(`card-${categoria}`);
+    if (card) card.classList.toggle('completed', resumo.concluido);
+    atualizarDadosDoCard(categoria, resumo);
   });
 
-  const total = CATEGORIAS_DA_PROGRESSAO.length;
   const porcentagem = total ? Math.round((concluidos.length / total) * 100) : 0;
 
   const textoEl = document.getElementById('progressText');
   if (textoEl) textoEl.textContent = `${concluidos.length} / ${total} Concluídos (${porcentagem}%)`;
 
-  const barraEl = document.getElementById('progressBar');
-  if (barraEl) barraEl.style.width = `${porcentagem}%`;
-
   const mensagemEl = document.getElementById('progressMessage');
-  if (mensagemEl) {
-    const numero = concluidos.length;
-    let texto;
+  if (mensagemEl) mensagemEl.textContent = mensagemDeProgresso(concluidos.length, total);
 
-    if (numero === 0) {
-      texto = 'Vamos começar? Escolha uma categoria abaixo!';
-    } else if (numero < total / 2) {
-      texto = `Bom começo! Você já concluiu ${numero} quiz${numero > 1 ? 'zes' : ''}, continue praticando.`;
-    } else if (numero < total - 1) {
-      texto = 'Você está indo muito bem, continue assim!';
-    } else if (numero < total) {
-      texto = `Quase lá! Falta só mais ${total - numero} para concluir tudo.`;
-    } else {
-      texto = 'Parabéns! Você concluiu todos os quizzes! 🎉';
-    }
+  desenharEstrelas(concluidos.length);
+}
 
-    mensagemEl.textContent = texto;
-  }
+function registrarProgressoParcial(categoria, concluidas, total) {
+  if (!progressoDisponivel() || typeof window.Progresso.registrarPontuacao !== 'function') return;
+
+  const registro = lerPontuacao(categoria);
+  const salvo = Number(registro.melhor_progresso);
+  const melhor = Number.isFinite(salvo) ? Math.max(salvo, concluidas) : concluidas;
+
+  window.Progresso.registrarPontuacao(categoria, {
+    melhor_progresso: melhor,
+    total_questoes: total
+  });
+}
+
+function registrarQuizConcluido(categoria, totalDeQuestoes) {
+  if (!progressoDisponivel()) return;
+
+  window.Progresso.concluirQuiz(categoria);
+
+  const registro = lerPontuacao(categoria);
+  const duracao = Math.max(1, Math.round((Date.now() - inicioDaExecucao) / 1000));
+  const recordeAnterior = Number(registro.melhor_tempo);
+  const melhorTempo =
+    Number.isFinite(recordeAnterior) && recordeAnterior > 0
+      ? Math.min(recordeAnterior, duracao)
+      : duracao;
+
+  window.Progresso.registrarPontuacao(categoria, {
+    ultima_pontuacao: totalDeQuestoes,
+    total_questoes: totalDeQuestoes,
+    melhor_progresso: totalDeQuestoes,
+    ultimo_tempo: duracao,
+    melhor_tempo: melhorTempo,
+    ultima_conclusao: new Date().toISOString()
+  });
 }
 
 function iniciarQuiz(categoria) {
   categoriaAtual = categoria;
   perguntasAtivas = embaralhar(termosDaCategoria(categoria));
   perguntaAtual = 0;
+  inicioDaExecucao = Date.now();
 
   const selecao = document.getElementById('selectionScreen');
   const tela = document.getElementById('quizScreen');
@@ -132,6 +252,7 @@ function voltarParaSelecao() {
 
   pararVideoDaPergunta();
   atualizarProgresso();
+  atualizarEstadoDoCarrossel();
 }
 
 function iniciarCronometro() {
@@ -213,11 +334,17 @@ function nomesDasOpcoes(pergunta) {
 
 function carregarPergunta(indice) {
   if (indice >= perguntasAtivas.length) {
-    registrarQuizConcluido(categoriaAtual, perguntasAtivas.length);
-    alert(`Parabéns! Você concluiu o Quiz de ${categoriaAtual} com ${perguntasAtivas.length} questões sem erros!`);
+    const categoriaConcluida = categoriaAtual;
+    const totalDeQuestoes = perguntasAtivas.length;
+
+    registrarQuizConcluido(categoriaConcluida, totalDeQuestoes);
     voltarParaSelecao();
+    alert(`Parabéns! Você concluiu o Quiz de ${categoriaConcluida} com ${totalDeQuestoes} questões sem erros!`);
     return;
   }
+
+  registrarProgressoParcial(categoriaAtual, indice, perguntasAtivas.length);
+  atualizarProgresso();
 
   const banner = document.getElementById('feedbackBanner');
   if (banner) banner.style.display = 'none';
@@ -248,7 +375,9 @@ function carregarPergunta(indice) {
     imagem.className = 'option-img-thumb';
     imagem.src = opcao.imagem;
     imagem.alt = opcao.termo;
-    imagem.addEventListener('error', function () { this.src = obterImagemPadrao(); });
+    imagem.addEventListener('error', function () {
+      this.src = obterImagemPadrao();
+    });
 
     const texto = document.createElement('span');
     texto.className = 'option-term-text';
@@ -273,7 +402,9 @@ function marcarCorreto(card, rotulo) {
 
 function verificarResposta(respostaEscolhida, respostaCorreta, cardClicado) {
   const todosOsCards = document.querySelectorAll('.option-btn-card');
-  todosOsCards.forEach((card) => { card.disabled = true; });
+  todosOsCards.forEach((card) => {
+    card.disabled = true;
+  });
 
   clearInterval(cronometroIntervalo);
   cronometroIntervalo = null;
@@ -319,7 +450,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     await window.Progresso.carregar();
   }
 
-  atualizarContadoresDasCategorias();
   atualizarProgresso();
   atualizarEstadoDoCarrossel();
 

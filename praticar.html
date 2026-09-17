@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T.I Libras - Quiz Prático</title>
-  <link rel="stylesheet" href="css/style.css?v=50">
-  <link rel="stylesheet" href="css/praticar.css?v=50">
+  <link rel="stylesheet" href="css/style.css?v=51">
+  <link rel="stylesheet" href="css/praticar.css?v=51">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,16 +15,14 @@
 <body>
   <app-header></app-header>
 
-  <div class="quiz-container-box">
+  <main class="quiz-container-box">
     <div id="selectionScreen">
       <div class="progress-section">
         <div class="progress-info">
           <h4><i class="fa-solid fa-chart-simple"></i> Progresso nos Quizes</h4>
           <span class="progress-pct" id="progressText">0 / 6 Concluídos (0%)</span>
         </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="progressBar"></div>
-        </div>
+        <div class="stars-row" id="starsRow" aria-label="Estrelas de conquista por categoria"></div>
         <p class="progress-message" id="progressMessage">Vamos começar? Escolha uma categoria abaixo!</p>
       </div>
 
@@ -41,101 +39,185 @@
         </div>
 
         <div class="selection-grid" id="selectionGrid">
-          <div class="category-card cat-hardware" id="card-Hardware">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
-            <div>
+          <article class="category-card cat-hardware" id="card-Hardware">
+            <div class="card-head">
               <span class="badge-icon"><i class="fa-solid fa-desktop"></i></span>
-              <h3>Hardware</h3>
-              <p class="desc-text">Aprenda e fixe os sinais dos componentes físicos de computadores, periféricos e peças internas.</p>
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             </div>
-            <div>
-              <div class="meta-info" data-meta="Hardware">0 Questões · Peças e Componentes</div>
-              <div class="card-actions">
-                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Hardware')">Começar</button>
-                <a href="sinalario.html?cat=Hardware" class="btn-card-consult">Consultar</a>
+            <h3>Hardware</h3>
+            <p class="desc-text">Aprenda e fixe os sinais dos componentes físicos de computadores, periféricos e peças internas.</p>
+            <div class="card-progress">
+              <div class="donut" data-donut="Hardware">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
               </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
+                <li class="meta-info" data-meta="Hardware" data-legenda="Peças e Componentes">0 Questões · Peças e Componentes</li>
+              </ul>
             </div>
-          </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Hardware')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Hardware" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
 
-          <div class="category-card cat-software" id="card-Software">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
-            <div>
+          <article class="category-card cat-software" id="card-Software">
+            <div class="card-head">
               <span class="badge-icon"><i class="fa-solid fa-compact-disc"></i></span>
-              <h3>Software</h3>
-              <p class="desc-text">Testes com conceitos de sistemas operacionais, aplicativos de escritório e programas essenciais.</p>
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             </div>
-            <div>
-              <div class="meta-info" data-meta="Software">0 Questões · Sistemas e Apps</div>
-              <div class="card-actions">
-                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Software')">Começar</button>
-                <a href="sinalario.html?cat=Software" class="btn-card-consult">Consultar</a>
+            <h3>Software</h3>
+            <p class="desc-text">Testes com conceitos de sistemas operacionais, aplicativos de escritório e programas essenciais.</p>
+            <div class="card-progress">
+              <div class="donut" data-donut="Software">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
               </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
+                <li class="meta-info" data-meta="Software" data-legenda="Sistemas e Apps">0 Questões · Sistemas e Apps</li>
+              </ul>
             </div>
-          </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Software')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Software" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
 
-          <div class="category-card cat-programacao" id="card-Programação">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
-            <div>
+          <article class="category-card cat-programacao" id="card-Programação">
+            <div class="card-head">
               <span class="badge-icon"><i class="fa-solid fa-laptop-code"></i></span>
-              <h3>Programação</h3>
-              <p class="desc-text">Pratique a sinalização de algoritmos, linguagens de programação, variáveis e estruturas de código.</p>
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             </div>
-            <div>
-              <div class="meta-info" data-meta="Programação">0 Questões · Código e Algoritmos</div>
-              <div class="card-actions">
-                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Programação')">Começar</button>
-                <a href="sinalario.html?cat=Programacao" class="btn-card-consult">Consultar</a>
+            <h3>Programação</h3>
+            <p class="desc-text">Pratique a sinalização de algoritmos, linguagens de programação, variáveis e estruturas de código.</p>
+            <div class="card-progress">
+              <div class="donut" data-donut="Programação">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
               </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
+                <li class="meta-info" data-meta="Programação" data-legenda="Código e Algoritmos">0 Questões · Código e Algoritmos</li>
+              </ul>
             </div>
-          </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Programação')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Programacao" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
 
-          <div class="category-card cat-eletricidade" id="card-Eletricidade">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
-            <div>
+          <article class="category-card cat-eletricidade" id="card-Eletricidade">
+            <div class="card-head">
               <span class="badge-icon"><i class="fa-solid fa-plug"></i></span>
-              <h3>Eletricidade</h3>
-              <p class="desc-text">Conceitos fundamentais de circuitos, tensão, ferramentas elétricas e grandezas físicas em Libras.</p>
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             </div>
-            <div>
-              <div class="meta-info" data-meta="Eletricidade">0 Questões · Circuitos Elétricos</div>
-              <div class="card-actions">
-                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Eletricidade')">Começar</button>
-                <a href="sinalario.html?cat=Eletricidade" class="btn-card-consult">Consultar</a>
+            <h3>Eletricidade</h3>
+            <p class="desc-text">Conceitos fundamentais de circuitos, tensão, ferramentas elétricas e grandezas físicas em Libras.</p>
+            <div class="card-progress">
+              <div class="donut" data-donut="Eletricidade">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
               </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
+                <li class="meta-info" data-meta="Eletricidade" data-legenda="Circuitos Elétricos">0 Questões · Circuitos Elétricos</li>
+              </ul>
             </div>
-          </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Eletricidade')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Eletricidade" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
 
-          <div class="category-card cat-redes" id="card-Redes">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
-            <div>
+          <article class="category-card cat-redes" id="card-Redes">
+            <div class="card-head">
               <span class="badge-icon"><i class="fa-solid fa-tower-broadcast"></i></span>
-              <h3>Redes</h3>
-              <p class="desc-text">Termos relacionados à internet, navegadores, conexões, links e segurança digital.</p>
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             </div>
-            <div>
-              <div class="meta-info" data-meta="Redes">0 Questões · Internet e Conexões</div>
-              <div class="card-actions">
-                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Redes')">Começar</button>
-                <a href="sinalario.html?cat=Redes" class="btn-card-consult">Consultar</a>
+            <h3>Redes</h3>
+            <p class="desc-text">Termos relacionados à internet, navegadores, conexões, links e segurança digital.</p>
+            <div class="card-progress">
+              <div class="donut" data-donut="Redes">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
               </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
+                <li class="meta-info" data-meta="Redes" data-legenda="Internet e Conexões">0 Questões · Internet e Conexões</li>
+              </ul>
             </div>
-          </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Redes')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Redes" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
 
-          <div class="category-card cat-todos" id="card-Todos">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
-            <div>
+          <article class="category-card cat-todos" id="card-Todos">
+            <div class="card-head">
               <span class="badge-icon"><i class="fa-solid fa-trophy"></i></span>
-              <h3>Simulado Geral</h3>
-              <p class="desc-text">Desafio completo reunindo todas as 5 categorias misturadas aleatoriamente em um só teste.</p>
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             </div>
-            <div>
-              <div class="meta-info" data-meta="Todos">0 Questões · Todas as Áreas</div>
-              <div class="card-actions">
-                <button class="btn-card-start" type="button" onclick="iniciarQuiz('Todos')">Começar</button>
-                <a href="sinalario.html" class="btn-card-consult">Consultar</a>
+            <h3>Simulado Geral</h3>
+            <p class="desc-text">Desafio completo reunindo todas as 5 categorias misturadas aleatoriamente em um só teste.</p>
+            <div class="card-progress">
+              <div class="donut" data-donut="Todos">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
               </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-stopwatch"></i> <span>Recorde: <strong data-stat="recorde">--:--</strong></span></li>
+                <li class="meta-info" data-meta="Todos" data-legenda="Todas as Áreas">0 Questões · Todas as Áreas</li>
+              </ul>
             </div>
-          </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Todos')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html" class="btn-card-consult"><i class="fa-solid fa-book-open"></i> Consultar</a>
+            </div>
+          </article>
         </div>
       </div>
     </div>
@@ -174,12 +256,12 @@
         <i class="fa-solid fa-circle-xmark"></i> Resposta Incorreta ou Tempo Esgotado! Reiniciando o quiz...
       </div>
     </div>
-  </div>
+  </main>
 
   <app-footer></app-footer>
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/praticar.js?v=47"></script>
+  <script src="js/praticar.js?v=51"></script>
 </body>
 </html>

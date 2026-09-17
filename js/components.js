@@ -27,7 +27,7 @@ class AppHeaderHome extends HTMLElement {
     this.innerHTML = `
       <header class="header">
         <a href="index.html" class="logo" title="Ir para a página inicial">
-          <img src="img/logo.png" alt="T.I. Libras Logo" class="brand-logo">
+          <img src="assets/imagens/logo.png" alt="T.I. Libras Logo" class="brand-logo">
           <span class="logo-text">T.I Libras</span>
         </a>
         <div class="header-actions">
@@ -64,7 +64,7 @@ class AppHeader extends HTMLElement {
     this.innerHTML = `
       <header class="header">
         <a href="index.html" class="logo" title="Ir para a página inicial">
-          <img src="img/logo.png" alt="T.I. Libras Logo" class="brand-logo">
+          <img src="assets/imagens/logo.png" alt="T.I. Libras Logo" class="brand-logo">
           <span class="logo-text">T.I Libras</span>
         </a>
         <nav class="nav-links">
@@ -124,7 +124,7 @@ class AppFooter extends HTMLElement {
       <footer class="footer">
         <div class="footer-top">
           <div class="footer-brand">
-            <img src="img/logo.png" alt="T.I. Libras" class="brand-logo">
+            <img src="assets/imagens/logo.png" alt="T.I. Libras" class="brand-logo">
             <div class="footer-brand-text">
               <strong>T.I Libras</strong>
               <span>Tecnologia acessível em Libras</span>
