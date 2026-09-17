@@ -4,15 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>T.I Libras - Sinalário</title>
-<!-- Ordem: a biblioteca primeiro, os CSS do projeto depois. Assim as regras do
-     projeto vencem as da biblioteca pela ordem do <head>, sem !important. O
-     botão central do Plyr não é criado — 'play-large' está fora da lista de
-     controls do sinalario.js — e, como rede, o sinalario.js apaga o nó do DOM
-     caso ele reapareça. -->
-<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+<!-- Player 100% nativo: a página não usa nenhuma biblioteca de player. O único
+     script de terceiros é a YouTube Iframe Player API oficial, carregada de
+     forma assíncrona — ela chama window.onYouTubeIframeAPIReady (definido em
+     js/sinalario.js) quando o módulo do player fica disponível. -->
+<script src="https://www.youtube.com/iframe_api"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="css/style.css?v=48">
-<link rel="stylesheet" href="css/sinalario.css?v=46">
+<link rel="stylesheet" href="css/style.css?v=49">
+<link rel="stylesheet" href="css/sinalario.css?v=47">
 <script src="js/components.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
@@ -97,12 +96,65 @@ title="Filtrar por área">
 <span class="icon-circle lilas"><i class="fa-solid fa-circle-play"></i></span>
 <h3 class="info-card-title">Vídeo do sinal</h3>
 </div>
+
+<!-- Superfície de vídeo: a div #player é só o ponto de montagem — a API do
+     YouTube a substitui pelo iframe do embed. O wrapper inteiro fica com
+     pointer-events: none (ver css/sinalario.css), então nenhum clique, hover
+     ou arrasto chega ao player nativo: sem overlays, sem barra cinza, sem
+     botão central do Google. O aviso cobre o embed quando o termo ainda não
+     tem vídeo cadastrado. -->
 <div class="video-wrapper-yt" id="player-container">
+<div id="player" data-video-id="x2uwlO43nas"></div>
+<div class="video-indisponivel" id="avisoVideoIndisponivel">
+<i class="fa-solid fa-video-slash"></i>
+<span>Vídeo do sinal em breve</span>
+</div>
+</div>
+
+<!-- Barra roxa de controles: única superfície de controle do vídeo, 100%
+     ligada aos métodos nativos da API do YouTube (js/sinalario.js) -->
+<div class="barra-sinalario" id="barraSinalario">
+<button
+type="button"
+class="barra-sinalario__botao"
+id="btnPlayPause"
+aria-label="Pausar sinal"
+title="Reproduzir / Pausar">
+<i class="fa-solid fa-pause"></i>
+</button>
+
+<button
+type="button"
+class="barra-sinalario__botao barra-sinalario__botao--texto"
+id="btnRewind"
+aria-label="Voltar 5 segundos"
+title="Voltar 5 segundos">
+<i class="fa-solid fa-rotate-left"></i>
+<span>5s</span>
+</button>
+
 <div
-id="player"
-data-plyr-provider="youtube"
-data-plyr-embed-id="x2uwlO43nas"
-></div>
+class="barra-sinalario__progresso"
+id="barraProgresso"
+role="slider"
+tabindex="0"
+aria-label="Progresso do vídeo"
+aria-valuemin="0"
+aria-valuemax="100"
+aria-valuenow="0">
+<div class="barra-sinalario__trilha">
+<div class="barra-sinalario__preenchido" id="progressoPreenchido"></div>
+</div>
+</div>
+
+<span class="barra-sinalario__tempo" id="tempoSinal">0:00 / 0:00</span>
+
+<button
+type="button"
+class="barra-sinalario__botao barra-sinalario__botao--texto"
+id="btnVelocidade"
+aria-label="Velocidade de reprodução"
+title="Velocidade de reprodução">1x</button>
 </div>
 </div>
 <section class="definicao-card">
@@ -151,10 +203,10 @@ data-plyr-embed-id="x2uwlO43nas"
 
   <app-footer></app-footer>
 
-  <!-- Plyr (JS) antes do sinalario.js: a página monta o player usando a API -->
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <!-- js/sinalario.js define window.onYouTubeIframeAPIReady e faz toda a ponte
+       entre a barra roxa e a API nativa do YouTube -->
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/sinalario.js?v=45"></script>
+  <script src="js/sinalario.js?v=46"></script>
 </body>
 </html>

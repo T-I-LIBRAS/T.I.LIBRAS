@@ -375,63 +375,7 @@ app-footer {
   }
 }
 
-/* -------------- Plyr · cena 100% limpa: nada sobre a imagem -----------------
-   A tela do vídeo mostra APENAS a intérprete e a barra roxa inferior. Nenhuma
-   regra daqui usa !important — a vitória sobre o plyr.css vem de especificidade
-   e da ordem dos arquivos no <head> (este arquivo entra depois da biblioteca).
-
-   1) BOTÃO CENTRAL — a remoção de verdade acontece antes do CSS: o Plyr tem um
-      ÚNICO ponto de criação do .plyr__control--overlaid, o bloco
-      `if (this.config.controls.includes('play-large'))` de Controls.create(),
-      e a lista de controls do sinalario.js não inclui 'play-large'. O nó,
-      portanto, não nasce no DOM; o sinalario.js ainda o apaga caso reapareça.
-      A regra abaixo é a última rede de segurança e vence pelo PESO, não por
-      !important:
-        · biblioteca → .plyr--full-ui.plyr--video .plyr__control--overlaid
-          (3 classes / 0,3,0) { display: block }
-        · projeto    → .plyr.plyr--full-ui.plyr--video .plyr__control--overlaid
-          (4 classes / 0,4,0) { display: none }
-      Uma classe a mais garante o display: none em qualquer estado do player
-      (playing, paused, seeking) e sem depender da ordem dos arquivos.
-
-   2) CONTROLES SOLTOS: a barra roxa inferior (.plyr__controls) é o único lugar
-      legítimo para .plyr__controls__item e .plyr__control. Os seletores de
-      filho direto pegam somente os que apareçam FORA dela; os itens da barra —
-      play, voltar 5s, progresso, tempo e velocidade — seguem intactos porque
-      são filhos do .plyr__controls, não do container.
-
-   3) BARRA ROXA: o plyr.css já ancora a barra no rodapé
-      (.plyr--video .plyr__controls é absoluta, com bottom/left/right em 0). As
-      linhas abaixo repetem a âncora como rede para o caso de o tema da
-      biblioteca não carregar: mesmo peso da regra da biblioteca (0,2,0) e
-      arquivo posterior no <head>, então o cascade resolve por ordem — de novo
-      sem !important.
-
-   O que nenhum seletor alcança é o ícone que o player do YouTube desenha
-   DENTRO do iframe (estado "cued" ou fim de vídeo): ele não pertence a este
-   documento. Quem o mantém fora de cena é o loop sem estado de fim montado no
-   sinalario.js, que reinicia o sinal por currentTime um instante antes do
-   último quadro. */
-.plyr {
-  position: relative; /* referência da barra roxa ancorada no rodapé */
-}
-
-/* Camada central do Plyr: invisível em todos os estados, sem !important */
-.plyr.plyr--full-ui.plyr--video .plyr__control--overlaid {
-  display: none;
-}
-
-/* Controles soltos fora da barra roxa (filhos diretos do container) */
-.plyr > .plyr__controls__item,
-.plyr > .plyr__control {
-  display: none;
-}
-
-/* A barra roxa é a única superfície de controle, sempre no rodapé */
-.plyr .plyr__controls {
-  position: absolute;
-  top: auto;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
+/* O estilo do player do Sinalário (embed nativo do YouTube + barra roxa de
+   controles) vive em css/sinalario.css, junto do layout daquela página. Aqui
+   não existe mais nenhuma regra de biblioteca de player: o projeto não usa
+   Plyr nem nenhum outro wrapper sobre o embed. */

@@ -84,6 +84,13 @@ function extrairIdDoVideo(entrada) {
   return resultado ? resultado[1] : entrada.trim();
 }
 
+/* Um id do YouTube tem sempre 11 caracteres de [A-Za-z0-9_-]. O banco traz
+   "SEU_ID_AQUI" nos termos ainda sem vídeo: sem esta checagem, loadVideoById
+   receberia um id inexistente e o embed mostraria o letreiro cinza de erro */
+function idDeVideoValido(id) {
+  return typeof id === 'string' && /^[\w-]{11}$/.test(id);
+}
+
 /* ------------------- Progresso do usuário (Supabase) ------------------- */
 
 function progressoDisponivel() {
@@ -115,328 +122,283 @@ function marcarComoVisto() {
   if (window.Progresso.adicionarSinalVisto(visto.termo)) renderizarLista();
 }
 
-/* ------------------------------ Player Plyr ------------------------------ */
+/* ==========================================================================
+   PLAYER · YOUTUBE IFRAME PLAYER API OFICIAL (sem nenhuma biblioteca)
 
-/* O #player no sinalario.html é só uma div receptora: o Plyr cria o embed do
-   YouTube inteiro por conta própria (data-plyr-provider / data-plyr-embed-id,
-   os atributos oficiais da biblioteca) e monta a interface dele sobre esse
-   embed. Como nenhum <iframe> é escrito à mão no HTML, não existem dois
-   players na tela nem a interface nativa do YouTube (título, foto do canal,
-   botões de compartilhar) aparecendo por baixo.
+   O Plyr saiu do projeto por completo: não existe instância, script, CDN,
+   folha de estilo, MutationObserver nem hack da biblioteca antiga. O embed é
+   criado pela API oficial (script no <head> do sinalario.html) e a interface
+   é 100% do projeto — a barra roxa (.barra-sinalario, #6C5CE7), montada no
+   HTML e ligada aos métodos nativos logo abaixo.
 
-   Ajustes pensados para o estudo da Libras:
-   · 0.25x a 1x no menu de velocidade (configurações);
-   · seekTime: 5 → botão e setas do teclado voltam 5 segundos;
-   · loop ativo → o sinal repete sozinho, sem parar no fim;
-   · autoplay + muted → o sinal começa sozinho (o navegador só libera o
-     autoplay com o som desligado, e o conteúdo é 100% visual);
-   · storage desligado → o player sobe sempre no estado definido aqui, sem
-     restaurar volume/mudo de visitas antigas e quebrar o autoplay;
-   · youtube → parâmetros repassados ao embed que o Plyr monta, e são eles que
-     forçam a ocultação da interface do YouTube. */
-const player = new Plyr('#player', {
-  /* Lista explícita do que o Plyr renderiza: 'play-large' NÃO entra aqui, e é
-     essa ausência que resolve o botão central. No plyr.js há um único ponto
-     que cria o .plyr__control--overlaid — o bloco
-     `if (this.config.controls.includes('play-large'))` dentro do create(),
-     que monta o <button> e o insere no container antes do .plyr__controls.
-     Fora da lista o botão nem é renderizado — e, como garantia extra, o nó é
-     apagado do DOM por removerBotaoCentral() (logo abaixo) e mantido invisível
-     pela regra sem !important do style.css. A barra roxa inferior (play, voltar
-     5s, progresso, tempo e velocidade) segue como o único controle do vídeo. */
-  controls: ['play', 'rewind', 'progress', 'current-time', 'settings'],
-  settings: ['speed'],
-  speed: { selected: 1, options: [0.25, 0.5, 0.75, 1] }, // 0.25x para estudo
-  seekTime: 5,              // botão de retornar 5 segundos
-  /* O loop é feito à mão, fora do Plyr (ver o tique de 'timeupdate' e o
-     handler de 'ended' mais abaixo). O loop da PRÓPRIA biblioteca fica
-     desligado de propósito: no provider do YouTube ele chama stopVideo() antes
-     de playVideo(), e o stopVideo() joga o embed no estado "cued" — que é
-     exatamente quando o YouTube desenha o botão redondo gigante no centro da
-     imagem, por cima do peito/mãos da intérprete. O nosso loop só usa
-     currentTime (seekTo), então o embed nunca troca de estado. */
-  loop: { active: false },
-  autoplay: true,
-  muted: true,              // mudo por padrão (indispensável para o autoplay)
-  hl: 'pt-BR',              // idioma da interface do embed (playerVars hl)
-  /* O clique na imagem não pausa. Com o Plyr fora do caminho, o clique não
-     dispara o pause do próprio iframe — e é justamente o pause que faz o
-     YouTube desenhar o botão gigante no centro da imagem. O play/pause segue
-     disponível na barra roxa inferior e pela barra de espaço */
-  clickToPlay: false,
-  storage: { enabled: false },
-  /* Parâmetros nativos do player do YouTube. No Plyr 3.7.8 o provider monta a
-     URL do embed assim (código da própria biblioteca, no arquivo plyr.js):
+   O que mantém o centro da tela limpo em TODAS as ações:
 
-       playerVars: { ...{autoplay, hl, controls, disablekb, playsinline,
-                         cc_load_policy, cc_lang_pref, widget_referrer}, ...youtube }
+   1) playerVars travam a interface do Google (controls: 0, disablekb: 1,
+      modestbranding: 1, rel: 0, playsinline: 1, fs: 0, cc_load_policy: 0,
+      iv_load_policy: 3). Sobraria a faixa de título do hover — e ela nunca
+      aparece porque:
 
-     Ou seja: TODAS as chaves deste objeto viram parâmetros do iframe e as do
-     projeto entram por último, vencendo as da biblioteca. Por isso os nomes
-     nativos ficam aqui no nível de cima — é o formato que o Plyr repassa ao
-     embed. O bloco `playerVars` mais abaixo é o mesmo pacote escrito como a
-     API do YouTube o chama, e é achatado para o nível de cima por
-     normalizarPlayerVarsDoYoutube(), antes de o iframe existir: um objeto
-     aninhado viraria o parâmetro inútil `playerVars=[object Object]`.
+   2) o wrapper do vídeo tem pointer-events: none (css/sinalario.css): nenhum
+      clique, hover ou arrasto alcança o iframe, então nenhum overlay nativo
+      é ativado — nem a barra cinza, nem o título, nem o botão central;
 
-     Cada chave existe para tirar uma camada nativa de cima da imagem — o
-     iframe deve sobrar como superfície de vídeo puro. O que a API do YouTube
-     não desliga por parâmetro nenhum é a barra de título que aparece ao passar
-     o mouse (com título, canal e "assistir no YouTube"): endereço dela é
-     dentro do iframe, e `showinfo` está obsoleto justamente por isso. */
-  youtube: {
-    noCookie: true,          // youtube-nocookie.com: sem cookies de rastreio
-    customControls: true,    // barra roxa do projeto no lugar da barra nativa
-    mute: 1,                 // o embed NASCE mudo: é o que o YouTube exige para
-                             // liberar o autoplay na origem. Sem isto o Plyr só
-                             // muta depois do 'ready', e o YouTube, recusando o
-                             // autoplay, deixa o próprio botão de play no centro
-                             // (o placeholder cinza) em cima da intérprete
-    rel: 0,                  // sem sugestões de outros vídeos no fim
-    showinfo: 0,             // sem título/canal no topo do embed
-    iv_load_policy: 3,       // sem cards e anotações sobre a imagem
-    modestbranding: 1,       // marca d'água discreta
-    cc_load_policy: 0,       // legendas nunca desenhadas sobre a intérprete
-    controls: 0,             // sem a barra cinza nativa do YouTube
-    disablekb: 1,            // sem os atalhos de teclado do próprio YouTube
-    fs: 0,                   // sem o botão de tela cheia do YouTube
-    playsinline: 1,          // embutido, sem tela cheia automática no iOS
-    /* O mesmo pacote na nomenclatura oficial da API do YouTube; é achatado
-       na criação do player, logo abaixo, porque o Plyr quer as chaves soltas.
-       Em caso de chave repetida, o valor daqui vence o do nível de cima. */
-    playerVars: {
-      controls: 0,
-      disablekb: 1,
-      fs: 0,
-      rel: 0,
-      cc_load_policy: 0
-    }
-  },
-  /* Rótulos em português: o Plyr só traz o inglês embutido */
-  i18n: {
-    restart: 'Reiniciar',
-    rewind: 'Voltar {seektime}s',
-    play: 'Reproduzir',
-    pause: 'Pausar',
-    seek: 'Buscar',
-    seekLabel: '{currentTime} de {duration}',
-    played: 'Reproduzido',
-    buffered: 'Carregado',
-    currentTime: 'Tempo atual',
-    duration: 'Duração',
-    volume: 'Volume',
-    mute: 'Mudo',
-    unmute: 'Com som',
-    enableCaptions: 'Ativar legendas',
-    disableCaptions: 'Desativar legendas',
-    settings: 'Configurações',
-    speed: 'Velocidade',
-    normal: 'Normal',
-    loop: 'Repetir',
-    start: 'Início',
-    end: 'Fim',
-    all: 'Tudo',
-    reset: 'Redefinir',
-    disabled: 'Desativado',
-    enabled: 'Ativado',
-    menuBack: 'Voltar ao menu anterior',
-    frameTitle: 'Player de {title}'
-  }
-});
+   3) o botão central redondo do YouTube só nasce nos estados PAUSED (2) e
+      CUED (5), desenhados DENTRO do iframe (nenhum seletor desta página os
+      alcança). Por isso o "pause" da barra roxa é um CONGELAMENTO:
+      setPlaybackRate(0) para a imagem e o tempo com o embed seguindo em
+      PLAYING — nenhum dos estados proibidos é atingido. Se o embed recusar a
+      taxa 0, o quadro passa a ser segurado por seekTo (reserva), sempre em
+      PLAYING. pauseVideo() não é chamado em nenhum caminho — é exatamente o
+      PAUSED que ele cria o estado que desenha o botão central;
 
-/* Traduz a nomenclatura da API do YouTube (playerVars) para a que o Plyr
-   repassa ao embed, e deixa no iframe apenas parâmetros primitivos. Roda de
-   forma síncrona, logo depois do `new Plyr(...)`: o provider lê
-   `config.youtube` só na hora de montar a URL, e essa hora é sempre posterior
-   a este script — o embed nasce quando a API do YouTube avisa que carregou. */
-function normalizarPlayerVarsDoYoutube() {
-  const config = player.config && player.config.youtube;
-  if (!config || !config.playerVars || typeof config.playerVars !== 'object') return;
+   4) o loop é feito à mão: ao chegar em duration - 0.15s o vídeo volta com
+      seekTo(0, true), então o embed nunca entra em ENDED — o estado que
+      desenha a sobreposição de fim de vídeo sobre o último quadro, em cima
+      das mãos da intérprete.
+   ========================================================================== */
 
-  player.config.youtube = Object.assign({}, config, config.playerVars);
-  delete player.config.youtube.playerVars;
-}
+const ESTADO_DO_YOUTUBE = {
+  NAO_INICIADO: -1,
+  FINALIZADO: 0,
+  REPRODUZINDO: 1,
+  PAUSADO: 2,
+  BUFFERIZANDO: 3,
+  EM_ESPERA: 5            // "cued": o outro estado que desenha o botão central
+};
 
-normalizarPlayerVarsDoYoutube();
+const VELOCIDADES = [0.25, 0.5, 0.75, 1];  // 0.25x para o estudo da Libras
+const ANTECEDENCIA_DO_LOOP = 0.15;         // s antes do último quadro
+const INTERVALO_DA_BARRA = 50;             // ms: tique do progresso e do loop
+const MINIMO_ENTRE_REINICIOS = 250;        // ms: impede dois seeks no mesmo ciclo
+const INTERVALO_DA_RESERVA = 150;          // ms entre uma segurada de quadro e outra
+const CONFERENCIA_DA_TAXA = 300;           // ms para o embed confirmar a taxa 0
+const CODIGOS_DE_VIDEO_INDISPONIVEL = [2, 5, 100, 101, 150];
 
-/* ---------------- Cena limpa: nada de controle sobre a imagem ---------------
-   O botão central do Plyr (.plyr__control--overlaid) tem UM único ponto de
-   criação na biblioteca: o bloco `if (this.config.controls.includes
-   ('play-large'))` de Controls.create(), que monta o <button> e o insere
-   direto no container, antes do .plyr__controls. Como 'play-large' está fora
-   da lista de controls acima, o nó não nasce no DOM — e é essa a remoção
-   definitiva: nenhum botão é criado, nada precisa ser escondido nem apagado.
+let player = null;              // instância YT.Player: fonte única do vídeo
+let playerPronto = false;
+let videoIdAtual = '';
+let videoIdPendente = null;     // null = nada pendente
+let videoIndisponivel = false;  // termo sem vídeo cadastrado (aviso na tela)
+let sinalCongelado = false;
+let velocidadeDoSinal = 1;      // velocidade da barra, guardada para o play
+let instanteDoSinal = 0;        // quadro segurado no modo de reserva
+let reservaDoQuadro = null;
+let conferenciaDaTaxa = null;
+let ultimoReinicioDoLoop = 0;
+let ultimoEstadoDoEmbed = null;
+let arrastandoProgresso = false;
+let tiqueDaBarra = null;
 
-   As duas camadas seguintes são redes de segurança, na ordem em que agem:
+/* Diagnóstico de validação, sem ruído no console: no DevTools do navegador,
+   `loopDoSinalario.reinicios` mostra quantas vezes o ciclo voltou ao segundo 0
+   e `loopDoSinalario.resgates` quantas dessas vezes o embed teve de ser
+   arrancado de um estado proibido (ENDED/CUED). `resgates` zerado é o atestado
+   de que o loop nunca deixou a mídia sair de PLAYING — ou seja, nenhum botão
+   central teve chance de ser desenhado. */
+const diagnosticoDoLoop = { reinicios: 0, resgates: 0 };
+window.loopDoSinalario = diagnosticoDoLoop;
 
-   1) removerBotaoCentral() apaga o nó do DOM se alguma versão futura da
-      biblioteca (ou uma config alterada) voltar a criá-lo. Roda na montagem, a
-      cada mutação do container — o Plyr destrói e remonta o embed inteiro a
-      cada troca de termo — e a cada troca de estado do player (ready, playing,
-      pause, ended, seeked, loadstart), que é quando a interface é reconstruída;
+/* Elementos da barra roxa, cacheados uma única vez: o tique roda a cada 50ms e
+   não pode varrer o DOM a cada leitura */
+const barraRoxa = {
+  botaoPlay: null,
+  botaoRetroceder: null,
+  botaoVelocidade: null,
+  progresso: null,
+  preenchido: null,
+  tempo: null,
+  aviso: null
+};
 
-   2) a regra .plyr__control--overlaid do style.css, SEM !important e com peso
-      maior que a da biblioteca, mantém a camada invisível mesmo no intervalo
-      entre uma inserção e a remoção (garantia visual, de custo zero).
-
-   A barra roxa inferior (.plyr__controls) e seus itens (play, voltar 5s,
-   progresso, tempo e velocidade) não são alcançados por nada daqui: o expurgo
-   mira apenas o botão central, nunca os filhos da barra.
-
-   A sobreposição que o PRÓPRIO player do YouTube desenha DENTRO do iframe não
-   pertence a este documento — nenhum seletor ou JS da página a alcança. Quem a
-   mantém fora de cena são as duas peças deste arquivo:
-   · o loop sem estado de fim, logo abaixo, que reinicia o sinal por seekTo(0)
-     um instante antes do último quadro, em duas camadas ('timeupdate' + vigia);
-   · o congelamento por setPlaybackRate(0) da seção "Congelar o sinal" (mata o
-     desenho de pausa: o embed nunca chega a PAUSED).
-
-   Sobre o nó alvo: o #player do HTML é só a div receptora do embed. Quando a
-   API do YouTube fica pronta, o provider do Plyr a troca por uma div nova
-   (media = replaceElement(div, media)) e o nó que sobrevive é o container que
-   recebe a classe .plyr — daí containerDoPlayer, e nunca #player. */
-function removerBotaoCentral() {
-  if (!containerDoPlayer) return;
-
-  containerDoPlayer.querySelectorAll('.plyr__control--overlaid').forEach((no) => no.remove());
-}
-
-/* Garantia extra: se 'play-large' voltar à lista de controls numa edição
-   futura, ele é descartado antes de qualquer remontagem da interface. */
-if (player.config && Array.isArray(player.config.controls)) {
-  player.config.controls = player.config.controls.filter(
-    (controle) => controle !== 'play-large'
+function playerEstaUtil() {
+  return !!(
+    player &&
+    typeof player.getCurrentTime === 'function' &&
+    typeof player.getDuration === 'function' &&
+    typeof player.seekTo === 'function' &&
+    typeof player.getPlayerState === 'function'
   );
 }
 
-/* O nó vivo do player (ver o comentário acima): é ele que continua no
-   documento a cada troca de termo, quando o #player já foi substituído */
-const containerDoPlayer = player.elements ? player.elements.container : null;
+/* -------------------- Montagem pela API oficial -------------------- */
 
-removerBotaoCentral();
+function primeiroIdValido(...candidatos) {
+  return candidatos.map(extrairIdDoVideo).find(idDeVideoValido) || '';
+}
 
-if (window.MutationObserver && containerDoPlayer) {
-  const observadorDoBotaoCentral = new MutationObserver(removerBotaoCentral);
-  observadorDoBotaoCentral.observe(containerDoPlayer, {
-    childList: true,
-    subtree: true
+function criarPlayerDoYoutube() {
+  if (player || !window.YT || typeof window.YT.Player !== 'function') return;
+
+  const alvo = document.getElementById('player');
+  if (!alvo) return;
+
+  /* Vídeo inicial: o data-video-id do HTML ou, se ele não for um id válido, o
+     primeiro termo do banco que tenha vídeo */
+  videoIdAtual = primeiroIdValido(
+    alvo.dataset ? alvo.dataset.videoId : '',
+    ...dados.map((item) => item.youtubeId)
+  );
+
+  if (!videoIdAtual) {
+    videoIndisponivel = true;
+    mostrarVideoIndisponivel(true);
+    atualizarControlesHabilitados();
+    return;
+  }
+
+  /* A API substitui a div #player pelo iframe do embed. Nenhum <iframe> é
+     escrito à mão no HTML: nunca existem dois players na tela, nem a moldura
+     nativa do YouTube por baixo. */
+  player = new YT.Player('player', {
+    videoId: videoIdAtual,
+    playerVars: {
+      controls: 0,         // sem a barra cinza nativa do YouTube
+      disablekb: 1,        // sem os atalhos de teclado do próprio YouTube
+      modestbranding: 1,   // marca d'água discreta
+      rel: 0,              // sem sugestões de outros vídeos no fim
+      playsinline: 1,      // embutido, sem tela cheia automática no iOS
+      fs: 0,               // sem o botão de tela cheia do YouTube
+      cc_load_policy: 0,   // legendas nunca desenhadas sobre a intérprete
+      iv_load_policy: 3,   // sem cards e anotações sobre a imagem
+      autoplay: 1,         // o sinal começa sozinho...
+      mute: 1,             // ...e nasce mudo: é a exigência do YouTube para
+                           // liberar o autoplay (o conteúdo é 100% visual)
+      hl: 'pt-BR',         // idioma da interface do embed
+      origin: window.location.origin
+    },
+    events: {
+      onReady: aoFicarPronto,
+      onStateChange: aoMudarEstado,
+      onError: aoDarErro
+    }
   });
 }
 
-/* Cada troca de estado do player é um ponto onde a camada central poderia ser
-   recriada, então o expurgo também roda nesses eventos — não só nas mutações
-   do DOM observadas acima */
-['ready', 'playing', 'pause', 'ended', 'seeked', 'loadstart'].forEach((evento) => {
-  player.on(evento, removerBotaoCentral);
-});
+/* A API oficial avisa por esta função global quando o módulo do player fica
+   disponível. O fallback no fim do arquivo cobre o caso oposto (API que
+   termina de carregar antes deste script). */
+window.onYouTubeIframeAPIReady = function () {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', criarPlayerDoYoutube, { once: true });
+  } else {
+    criarPlayerDoYoutube();
+  }
+};
 
-/* Estado da troca de vídeo. O provider do YouTube sobe de forma assíncrona:
-   até o Plyr disparar 'ready' ainda não existe player para receber o vídeo,
-   então o termo escolhido fica guardado e entra assim que ele fica pronto. */
-let playerPronto = false;
-let videoIdPendente = '';
+function aoFicarPronto() {
+  playerPronto = true;
 
-/* Id entregue ao Plyr por último. Em modo embed o getter player.source devolve
-   media.currentSrc — que no YouTube não existe —, então a fonte da verdade é
-   este marcador: com ele o mesmo termo nunca é recarregado à toa, nem no
-   primeiro carregamento (o id inicial vem do data-plyr-embed-id do HTML). */
-const elementoDoPlayer = document.getElementById('player');
-let videoIdAtual = extrairIdDoVideo(
-  elementoDoPlayer ? elementoDoPlayer.dataset.plyrEmbedId : ''
-);
+  if (playerEstaUtil()) player.setPlaybackRate(velocidadeDoSinal);
 
-/* Troca o vídeo exibido: o Plyr remonta o embed do YouTube inteiro por baixo,
-   então nunca existe manipulação manual de src no HTML */
-function carregarVideo(idYouTube) {
+  atualizarRotuloDaVelocidade();
+  atualizarDuracaoDaBarra();
+  atualizarIconeDoPlay();
+  aplicarVideoPendente();
+  iniciarTiqueDaBarra();
+}
+
+function aoDarErro(evento) {
+  if (CODIGOS_DE_VIDEO_INDISPONIVEL.includes(Number(evento.data))) {
+    videoIdAtual = '';
+    videoIndisponivel = true;
+    mostrarVideoIndisponivel(true);
+    atualizarControlesHabilitados();
+  }
+}
+
+function mostrarVideoIndisponivel(mostrar) {
+  if (barraRoxa.aviso) barraRoxa.aviso.classList.toggle('esta-visivel', !!mostrar);
+}
+
+/* Sem vídeo cadastrado, os controles ficam inertes: nenhum botão da barra roxa
+   vira comando sobre o embed que ainda está atrás do aviso */
+function atualizarControlesHabilitados() {
+  const habilitado = !videoIndisponivel;
+
+  [barraRoxa.botaoPlay, barraRoxa.botaoRetroceder, barraRoxa.botaoVelocidade]
+    .forEach((botao) => {
+      if (botao) botao.disabled = !habilitado;
+    });
+
+  if (barraRoxa.progresso) {
+    barraRoxa.progresso.classList.toggle('esta-desabilitado', !habilitado);
+    barraRoxa.progresso.setAttribute('aria-disabled', habilitado ? 'false' : 'true');
+  }
+}
+
+/* -------------------- Troca de termo / de vídeo -------------------- */
+
+/* Troca o vídeo exibido reaproveitando o mesmo embed (loadVideoById): nunca há
+   manipulação manual de src e nunca existem dois players no documento */
+function trocarVideo(idYouTube) {
   const id = extrairIdDoVideo(idYouTube);
-  if (!id || id === videoIdAtual) return;
+
+  /* Termo ainda sem vídeo cadastrado: o aviso cobre a área em vez de deixar o
+     erro do YouTube aparecer no meio da tela. O sinal anterior sai de cena sem
+     nenhum stopVideo() — a taxa 0 para a imagem mantendo o embed em PLAYING,
+     que é o único estado do YouTube que não desenha o botão central */
+  if (!idDeVideoValido(id)) {
+    videoIdAtual = '';
+    videoIdPendente = null;
+    videoIndisponivel = true;
+    sinalCongelado = false;
+    pararReservaDoQuadro();
+    clearTimeout(conferenciaDaTaxa);
+
+    if (playerEstaUtil()) player.setPlaybackRate(0);
+
+    mostrarVideoIndisponivel(true);
+    atualizarControlesHabilitados();
+    atualizarBarraDeProgresso(0, 0);
+    atualizarIconeDoPlay();
+    return;
+  }
+
+  videoIndisponivel = false;
+  mostrarVideoIndisponivel(false);
+  atualizarControlesHabilitados();
+
+  if (id === videoIdAtual) return;
 
   videoIdAtual = id;
 
-  /* O termo novo entra tocando (autoplay + loop), então o congelamento do
-     termo anterior não atravessa a troca — ver "Congelar o sinal" */
+  /* O termo novo entra tocando do zero, então o congelamento do termo anterior
+     não atravessa a troca — e a velocidade volta para a escolhida na barra,
+     inclusive quando o termo anterior era o aviso "em breve" (taxa 0) */
   reiniciarCongelamento();
+  ultimoReinicioDoLoop = 0;
+  ultimoEstadoDoEmbed = null;
 
-  player.source = {
-    type: 'video',
-    sources: [{ src: id, provider: 'youtube' }]
-  };
+  if (playerEstaUtil()) player.setPlaybackRate(velocidadeDoSinal || 1);
+  player.loadVideoById(id);
+
+  atualizarDuracaoDaBarra();
+  atualizarIconeDoPlay();
 }
 
 function aplicarVideoPendente() {
-  if (!playerPronto || !videoIdPendente) return;
+  if (!playerPronto || videoIdPendente === null) return;
 
   const id = videoIdPendente;
-  videoIdPendente = '';
-  carregarVideo(id);
+  videoIdPendente = null;
+  trocarVideo(id);
 }
 
-/* Ao trocar de termo na lista: aponta o Plyr para o vídeo do sinal */
+/* Chamada a cada troca de termo: guarda o id escolhido e aplica assim que o
+   player estiver pronto (o embed sobe de forma assíncrona) */
 function atualizarVideo(idYouTube) {
-  const id = extrairIdDoVideo(idYouTube);
-  if (!id) return;
-
-  videoIdPendente = id;
+  videoIdPendente = extrairIdDoVideo(idYouTube);
   aplicarVideoPendente();
 }
 
-player.on('ready', () => {
-  playerPronto = true;
-  aplicarVideoPendente();
-});
-
-/* Mudo: nenhuma chamada de volume/mudo fica por aqui. O Plyr reaplica o
-   config.muted (muted: true acima) dentro do build da interface, que o provider
-   do YouTube dispara ~50ms depois do 'ready' — inclusive a cada remontagem
-   feita pela troca de termo. Além disso a barra roxa do projeto não tem volume
-   nem mudo, então nada pode desmutar o sinal. Cada chamada extra a mute()/
-   setVolume() é uma troca de estado a menos no embed, e é justamente uma troca
-   de estado que faz o YouTube desenhar ícones por cima da intérprete. */
-
-/* Tique do player (no YouTube o Plyr dispara 'timeupdate' a cada 50ms).
-   Duas responsabilidades:
-
-   1) CONTAGEM de "termo visto" — rede de segurança: quando o reinício
-      antecipado abaixo acontece, o embed nunca dispara 'ended', então este
-      tique fecha a contagem ao alcançar o final;
-   2) LOOP SEM ESTADO DE FIM — reinicia o sinal um instante ANTES do último
-      quadro. O embed nunca chega ao estado "ended", que é justamente quando o
-      YouTube desenha a sobreposição de fim de vídeo (retroceder/avançar,
-      replay) por cima do último quadro, em cima do peito/mãos da intérprete.
-
-   O reinício é feito por seekTo(0, true) no PRÓPRIO embed (player.embed, a
-   instância YT.Player que o Plyr guarda), e não pelo setter player.currentTime
-   nem por player.play(): o seekTo durante a reprodução mantém o embed em
-   PLAYING, e é trocar o estado do embed (PAUSED, ENDED, CUED) que faz o ícone
-   central nascer. Como os sinais deste sinalário são curtos, o fim de vídeo do
-   YouTube é interno e instantâneo: por isso o pedido de loop sai em DUAS
-   camadas — o tique de 'timeupdate' (50ms) e um vigia de 25ms lendo o embed.
-   Ambas usam a mesma margem ANTECEDENCIA_DO_LOOP: o seekTo chega antes de o
-   vídeo alcançar a duração total, então o estado ENDED nunca é atingido. */
-
-const ANTECEDENCIA_DO_LOOP = 0.2;        // segundos antes do último quadro
-const INTERVALO_DO_VIGIA_DO_LOOP = 25;   // ms entre duas leituras do embed
-const MINIMO_ENTRE_REINICIOS = 250;      // ms: impede dois seeks no mesmo ciclo
-
-let ultimoReinicioDoLoop = 0;
-let ultimoEstadoDoEmbed = null;
-
-/* Diagnóstico de validação, sem nenhum ruído no console: no DevTools do
-   navegador, `loopDoSinalario.reinicios` mostra quantas vezes o ciclo voltou ao
-   segundo 0 e `loopDoSinalario.resgates` quantas dessas vezes o embed teve de
-   ser arrancado de um estado proibido (ENDED/CUED). `resgates` zerado é o
-   atestado de que o loop nunca deixou a mídia sair de PLAYING — ou seja, nenhum
-   ícone central teve chance de ser desenhado. */
-const diagnosticoDoLoop = { reinicios: 0, resgates: 0 };
-window.loopDoSinalario = diagnosticoDoLoop;
+/* -------------------- Loop suave (sem estado ENDED) -------------------- */
 
 /* Reinicia o ciclo no segundo 0 mantendo a mídia em execução: seekTo() não
    alterna o embed para PAUSED, ENDED nem CUED — a reprodução simplesmente
    continua do ponto zero. O playVideo() entra só como recuperação, para o caso
    de o embed ter escapado para um desses estados antes desta chamada. */
 function reiniciarCicloDoSinal() {
-  const embed = embedDoYoutube();
-  if (!embed || sinalCongelado) return false;   // congelado: o quadro é do usuário
+  if (!playerEstaUtil() || sinalCongelado || videoIndisponivel) return false;
 
   const agora = Date.now();
   if (agora - ultimoReinicioDoLoop < MINIMO_ENTRE_REINICIOS) return false;
@@ -444,164 +406,20 @@ function reiniciarCicloDoSinal() {
   ultimoReinicioDoLoop = agora;
   diagnosticoDoLoop.reinicios += 1;
 
-  embed.seekTo(0, true);
+  player.seekTo(0, true);
 
-  /* Saída de ENDED (0) e CUED (5) sem passar pelo stopVideo(): é a única
+  /* Saída de ENDED (0) e CUED (5) sem passar por stopVideo(): é a única
      transição possível para PLAYING que não desenha o botão central */
-  if (Number(embed.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
-    embed.playVideo();
+  if (Number(player.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
+    player.playVideo();
     diagnosticoDoLoop.resgates += 1;
   }
 
-  /* O fim de vídeo deixaria o ícone da barra roxa em "reproduzir"; como o sinal
-     nunca parou de tocar, o ícone certo é "pausar" — sem nenhum pauseVideo() */
-  avisarBarraRoxa(false);
-
+  atualizarIconeDoPlay();
   return true;
 }
 
-/* Camada 1 — o tique pedido: 'timeupdate' do player. Fecha a contagem do termo
-   visto e pede o reinício quando o instante entra na margem do fim. */
-player.on('timeupdate', () => {
-  if (!player.duration) return;
-
-  if (
-    visto && visto.termo && !visto.videoTerminou &&
-    player.currentTime >= player.duration - 1
-  ) {
-    visto.videoTerminou = true;
-    marcarComoVisto();
-  }
-
-  if (sinalCongelado) return;
-
-  if (player.currentTime >= player.duration - ANTECEDENCIA_DO_LOOP) {
-    reiniciarCicloDoSinal();
-  }
-});
-
-/* Camada 2 — vigia de alta frequência. O tique do Plyr chega a cada ~50ms e o
-   fim de vídeo do YouTube é instantâneo: entre dois tiques o embed pode cruzar
-   a linha de chegada e pintar a sobreposição. Este vigia lê duração, instante e
-   estado direto do embed a cada 25ms, com a mesma margem, e ainda resgata o
-   embed dos estados proibidos — ENDED (0) e CUED (5) — assim que aparecem. */
-let vigiaDoLoop = null;
-
-function iniciarVigiaDoLoop() {
-  if (vigiaDoLoop) return;
-
-  vigiaDoLoop = setInterval(() => {
-    const embed = embedDoYoutube();
-    if (!embed || sinalCongelado) return;
-
-    const duracao = Number(embed.getDuration());
-    if (!duracao) return;
-
-    const instante = Number(embed.getCurrentTime());
-    const estado = Number(embed.getPlayerState());
-    const estadoAnterior = ultimoEstadoDoEmbed;
-    ultimoEstadoDoEmbed = estado;
-
-    /* CUED só é recuperado se o sinal JÁ vinha tocando: no carregamento inicial
-       esse estado é normal (o autoplay está a caminho) e insistir ali viraria
-       uma enxurrada de playVideo a cada tique */
-    const perdido = estado === ESTADO_DO_YOUTUBE.FINALIZADO ||
-      (estado === ESTADO_DO_YOUTUBE.EM_ESPERA &&
-        estadoAnterior === ESTADO_DO_YOUTUBE.REPRODUZINDO);
-
-    if (perdido || instante >= duracao - ANTECEDENCIA_DO_LOOP) {
-      reiniciarCicloDoSinal();
-    }
-  }, INTERVALO_DO_VIGIA_DO_LOOP);
-}
-
-iniciarVigiaDoLoop();
-
-player.on('ended', () => {
-  if (visto && visto.termo) {
-    visto.videoTerminou = true;
-    marcarComoVisto();
-  }
-
-  /* Rede de segurança (ver as duas camadas acima): se algum quadro escapar e o
-     embed chegar ao fim, o sinal volta ao início e segue tocando — sempre por
-     seekTo/playVideo, nunca por stopVideo(), que é o que joga o embed no estado
-     "cued" e desenha o botão central. A janela mínima entre reinícios é zerada
-     aqui porque este é o instante exato em que a sobreposição nasce. */
-  ultimoReinicioDoLoop = 0;
-  reiniciarCicloDoSinal();
-});
-
-/* ============ Congelar o sinal: pausar sem entrar no PAUSED ============
-
-   O botão gigante que aparece em cima da intérprete é desenhado pelo PRÓPRIO
-   player do YouTube DENTRO do iframe, e ele só surge em dois estados do embed:
-   PAUSED (2) e CUED (5) — este último é onde o stopVideo() deixa o vídeo.
-   Nenhum seletor nem JS desta página alcança aquele desenho, então a única
-   saída é o embed nunca entrar nesses dois estados.
-
-   Por isso o play/pause da barra roxa CONGELA o quadro em vez de pausar:
-
-   · player.embed é a instância YT.Player da API oficial do YouTube (o Plyr
-     guarda a instância ali e a refaz a cada troca de termo, daí embedDoYoutube());
-   · setPlaybackRate(0) para a imagem e o tempo, com o embed seguindo em
-     PLAYING — nenhum dos estados que pintam o botão;
-   · player.speed = 0 NÃO serve: o setter do Plyr limita a velocidade entre
-     minimumSpeed e maximumSpeed, e no provider do YouTube esses limites são o
-     menor e o maior item do menu ([0.25 ... 1]) — o 0 viraria 0.25;
-   · media.paused + o evento 'pause' (o mesmo par que o provider usa por dentro)
-     trocam o ícone da barra, sem nenhum pauseVideo().
-
-   Caminhos de pausa, todos cobertos:
-   · botão da barra e teclas espaço/k → player.togglePlay();
-   · chamadas diretas à API do Plyr → player.pause();
-   · o clique na imagem chega ao iframe e o YouTube pausa por conta própria —
-     o 'statechange' abaixo desfaz o PAUSED na hora, congelando o quadro;
-   · se o embed recusar a taxa 0 (o YouTube pode impor um piso de velocidade),
-     o quadro passa a ser segurado por currentTime, sempre em PLAYING.
-
-   player.togglePlay e player.pause são propriedades da instância criadas uma
-   única vez no construtor do Plyr, então as trocas sobrevivem às remontagens
-   do embed a cada troca de termo. */
-
-const ESTADO_DO_YOUTUBE = {
-  FINALIZADO: 0,
-  REPRODUZINDO: 1,
-  PAUSADO: 2,
-  EM_ESPERA: 5             // "cued": o outro estado que desenha o botão central
-};
-
-const INTERVALO_DA_RESERVA = 250;  // ms entre uma segurada do quadro e outra
-const CONFERENCIA_DA_TAXA = 300;   // ms para o embed confirmar a taxa 0
-
-let sinalCongelado = false;
-let velocidadeDoSinal = 1;         // velocidade do menu, guardada para o play
-let instanteDoSinal = 0;           // quadro segurado no modo de reserva
-let reservaDoQuadro = null;        // interval do modo de reserva
-let conferenciaDaTaxa = null;      // timeout da conferência da taxa 0
-
-function embedDoYoutube() {
-  return player.embed && typeof player.embed.setPlaybackRate === 'function'
-    ? player.embed
-    : null;
-}
-
-function taxaAtualDoEmbed() {
-  const embed = embedDoYoutube();
-  return embed ? Number(embed.getPlaybackRate()) : null;
-}
-
-/* O ícone do item play é decidido por media.paused (checkPlaying do Plyr).
-   Mexer nesse flag e disparar o mesmo evento que o provider dispara troca o
-   ícone da barra sem que o iframe receba um pauseVideo(). */
-function avisarBarraRoxa(pausado) {
-  if (!player.media || player.media.paused === pausado) return;
-
-  player.media.paused = pausado;
-  player.media.dispatchEvent(new CustomEvent(pausado ? 'pause' : 'play', {
-    detail: { plyr: player }
-  }));
-}
+/* -------------------- Congelar (pausa sem entrar em PAUSED) -------------------- */
 
 function pararReservaDoQuadro() {
   if (!reservaDoQuadro) return;
@@ -612,145 +430,393 @@ function pararReservaDoQuadro() {
 
 /* Reserva: segura o quadro por currentTime, mantendo o embed em PLAYING */
 function iniciarReservaDoQuadro() {
-  const embed = embedDoYoutube();
-  if (!embed || reservaDoQuadro) return;
+  if (!playerEstaUtil() || reservaDoQuadro) return;
 
-  instanteDoSinal = Number(embed.getCurrentTime());
+  instanteDoSinal = Number(player.getCurrentTime());
   reservaDoQuadro = setInterval(() => {
-    const atual = embedDoYoutube();
-    if (!sinalCongelado || !atual) {
+    if (!sinalCongelado || !playerEstaUtil()) {
       pararReservaDoQuadro();
       return;
     }
 
-    atual.seekTo(instanteDoSinal, true);
-    if (Number(atual.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
-      atual.playVideo();
+    player.seekTo(instanteDoSinal, true);
+    if (Number(player.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
+      player.playVideo();
     }
-    avisarBarraRoxa(true);
+    atualizarIconeDoPlay();
   }, INTERVALO_DA_RESERVA);
 }
 
-/* Aplica (ou reafirma) o congelamento no embed */
+/* Aplica (ou reafirma) o congelamento: taxa 0 com o embed em PLAYING */
 function aplicarCongelamento() {
-  const embed = embedDoYoutube();
-  if (!embed) return;
+  if (!playerEstaUtil()) return;
 
-  avisarBarraRoxa(true);
-  embed.setPlaybackRate(0);
+  player.setPlaybackRate(0);
 
   /* Estado proibido: sai dele sem largar o quadro */
-  if (Number(embed.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
-    embed.playVideo();
-    avisarBarraRoxa(true);   // a volta para PLAYING avisa o Plyr do contrário
+  if (Number(player.getPlayerState()) !== ESTADO_DO_YOUTUBE.REPRODUZINDO) {
+    player.playVideo();
   }
 
+  atualizarIconeDoPlay();
+
   /* O embed confirma a taxa só depois do ciclo de mensagens do iframe: se ele
-     recusar o 0, o quadro passa a ser segurado por currentTime */
+     recusar o 0, o quadro passa a ser segurado por currentTime, nunca por
+     pauseVideo() — que é justamente o estado que desenha o botão central */
   clearTimeout(conferenciaDaTaxa);
   conferenciaDaTaxa = setTimeout(() => {
-    if (!sinalCongelado) return;
+    if (!sinalCongelado || !playerEstaUtil()) return;
 
-    if (taxaAtualDoEmbed() === 0) pararReservaDoQuadro();
+    if (Number(player.getPlaybackRate()) === 0) pararReservaDoQuadro();
     else iniciarReservaDoQuadro();
   }, CONFERENCIA_DA_TAXA);
 }
 
 function congelarSinal() {
-  const embed = embedDoYoutube();
-  if (!embed) return;   // embed ainda carregando: não há quadro para congelar
+  if (!playerEstaUtil()) return;
 
+  velocidadeDoSinal = Number(player.getPlaybackRate()) || velocidadeDoSinal || 1;
+  instanteDoSinal = Number(player.getCurrentTime());
   sinalCongelado = true;
-  velocidadeDoSinal = taxaAtualDoEmbed() || player.config.speed.selected || 1;
-  instanteDoSinal = Number(embed.getCurrentTime());
+
   aplicarCongelamento();
 }
 
-function descongelarSinal() {
-  const embed = embedDoYoutube();
-
+function reproduzirSinal() {
   sinalCongelado = false;
   pararReservaDoQuadro();
   clearTimeout(conferenciaDaTaxa);
 
-  if (!embed) return;
+  if (!playerEstaUtil()) return;
 
-  embed.setPlaybackRate(velocidadeDoSinal || 1);
-  Promise.resolve(player.play()).catch(() => {});   // segue de onde parou
+  player.setPlaybackRate(velocidadeDoSinal || 1);
+  player.playVideo();
+  atualizarIconeDoPlay();
 }
 
-/* Troca de termo: o embed é remontado do zero e o termo novo já entra tocando
-   (autoplay + loop), então o congelamento não atravessa a troca */
+/* Troca de termo: o vídeo novo entra tocando do zero, então o congelamento do
+   termo anterior não atravessa a troca */
 function reiniciarCongelamento() {
   sinalCongelado = false;
   pararReservaDoQuadro();
   clearTimeout(conferenciaDaTaxa);
 }
 
-/* Os dois pontos de entrada do play/pause do Plyr congelam em vez de pausar */
-player.togglePlay = (forcar) => {
-  const deveReproduzir = typeof forcar === 'boolean' ? forcar : !player.playing;
-  if (deveReproduzir) descongelarSinal();
-  else congelarSinal();
-};
+/* -------------------- Eventos do embed -------------------- */
 
-player.pause = () => {
-  congelarSinal();
-};
+function aoMudarEstado(evento) {
+  if (videoIndisponivel) return;   // sem vídeo carregado não há estado a resgatar
 
-/* O iframe também pausa sozinho (clique na imagem, por exemplo): o estado
-   proibido é desfeito na hora. A biblioteca dispara 'statechange' no container
-   do player, com o código do estado do YouTube no detail. */
-if (containerDoPlayer) {
-  containerDoPlayer.addEventListener('statechange', (evento) => {
-    const codigo = evento.detail ? Number(evento.detail.code) : null;
+  const estado = Number(evento.data);
+  const estadoAnterior = ultimoEstadoDoEmbed;
+  ultimoEstadoDoEmbed = estado;
 
-    if (codigo === ESTADO_DO_YOUTUBE.PAUSADO) {
-      if (sinalCongelado) aplicarCongelamento();
-      else congelarSinal();
-      return;
-    }
+  /* PAUSED só pode ter vindo do próprio YouTube (atalho, perda de foco,
+     overlay nativo): o quadro é congelado na hora e o estado proibido é
+     desfeito — o botão central nunca fica desenhado */
+  if (estado === ESTADO_DO_YOUTUBE.PAUSADO) {
+    if (sinalCongelado) aplicarCongelamento();
+    else congelarSinal();
+    return;
+  }
 
-    if (
-      sinalCongelado &&
-      (codigo === ESTADO_DO_YOUTUBE.EM_ESPERA || codigo === ESTADO_DO_YOUTUBE.FINALIZADO)
-    ) {
+  if (estado === ESTADO_DO_YOUTUBE.FINALIZADO) {
+    if (sinalCongelado) {
       aplicarCongelamento();
       return;
     }
 
-    /* Fim de vídeo com o sinal solto: é neste instante que o YouTube acaba de
-       desenhar a sobreposição de fim (retroceder/avançar/replay) sobre o
-       último quadro, em cima do peito/mãos da intérprete. A resposta é o mesmo
-       reinício do loop, mas aqui SEM a janela mínima entre reinícios: este é o
-       evento exato do desenho, e o seekTo precisa sair no mesmo ciclo. */
-    if (!sinalCongelado && codigo === ESTADO_DO_YOUTUBE.FINALIZADO) {
-      ultimoReinicioDoLoop = 0;
-      reiniciarCicloDoSinal();
-    }
-  });
+    /* Este é o instante exato em que o YouTube acaba de desenhar a
+       sobreposição de fim sobre o último quadro: o reinício sai no mesmo ciclo,
+       sem a janela mínima entre reinícios */
+    ultimoReinicioDoLoop = 0;
+    reiniciarCicloDoSinal();
+    return;
+  }
+
+  if (estado === ESTADO_DO_YOUTUBE.REPRODUZINDO) {
+    /* playVideo() de recuperação durante o congelamento não pode descongelar */
+    if (sinalCongelado) aplicarCongelamento();
+    else atualizarIconeDoPlay();
+    return;
+  }
+
+  /* CUED só é resgatado se o sinal JÁ vinha tocando: no carregamento inicial
+     esse estado é normal (o autoplay está a caminho) e insistir ali viraria uma
+     enxurrada de playVideo */
+  if (
+    estado === ESTADO_DO_YOUTUBE.EM_ESPERA &&
+    estadoAnterior === ESTADO_DO_YOUTUBE.REPRODUZINDO &&
+    !sinalCongelado
+  ) {
+    ultimoReinicioDoLoop = 0;
+    reiniciarCicloDoSinal();
+  }
 }
 
-/* Com o sinal congelado, a volta para PLAYING (depois de um playVideo de
-   recuperação) não pode trocar o ícone da barra para "pausar" */
-['play', 'playing'].forEach((evento) => {
-  player.on(evento, () => {
-    if (sinalCongelado) avisarBarraRoxa(true);
-  });
-});
+/* Tique do player (a cada 50ms). Três responsabilidades:
 
-/* Trocar a velocidade com o sinal congelado não pode descongelar a imagem: o
-   menu escreve em media.playbackRate, então a taxa 0 é reaplicada e a nova
-   velocidade fica guardada para quando o play voltar */
-player.on('ratechange', () => {
-  if (!sinalCongelado) return;
+   1) BARRA ROXA: progresso e tempo por getCurrentTime() / getDuration();
+   2) CONTAGEM de "termo visto" — rede de segurança do segundo 10s: como o
+      reinício antecipado do loop acontece, o embed nunca dispara 'ended', e é
+      este tique que fecha a contagem ao alcançar o final;
+   3) LOOP SEM ESTADO DE FIM: reinicia o sinal um instante ANTES do último
+      quadro, então o embed nunca chega a ENDED e a sobreposição de fim de
+      vídeo não é desenhada. */
+function tiqueDoSinal() {
+  if (!playerEstaUtil()) return;
 
-  const taxa = taxaAtualDoEmbed();
-  if (taxa === 0 || taxa === null) return;
+  /* Termo sem vídeo: a barra fica zerada e nada do embed anterior é lido */
+  if (videoIndisponivel) {
+    arrastandoProgresso = false;
+    atualizarBarraDeProgresso(0, 0);
+    return;
+  }
 
-  velocidadeDoSinal = taxa;
-  aplicarCongelamento();
-});
+  const duracao = Number(player.getDuration()) || 0;
+  const instante = Number(player.getCurrentTime()) || 0;
+  const estado = Number(player.getPlayerState());
+
+  if (!arrastandoProgresso) atualizarBarraDeProgresso(instante, duracao);
+
+  if (
+    visto && visto.termo && !visto.videoTerminou &&
+    duracao > 0 && instante >= duracao - 1
+  ) {
+    visto.videoTerminou = true;
+    marcarComoVisto();
+  }
+
+  if (sinalCongelado) return;   // congelado: o quadro é do usuário
+
+  const estadoAnterior = ultimoEstadoDoEmbed;
+  ultimoEstadoDoEmbed = estado;
+
+  const perdido = estado === ESTADO_DO_YOUTUBE.FINALIZADO ||
+    (estado === ESTADO_DO_YOUTUBE.EM_ESPERA &&
+      estadoAnterior === ESTADO_DO_YOUTUBE.REPRODUZINDO);
+
+  if (duracao > 0 && (perdido || instante >= duracao - ANTECEDENCIA_DO_LOOP)) {
+    reiniciarCicloDoSinal();
+  }
+}
+
+function iniciarTiqueDaBarra() {
+  if (tiqueDaBarra) return;
+  tiqueDaBarra = setInterval(tiqueDoSinal, INTERVALO_DA_BARRA);
+}
+
+/* -------------------- Barra roxa (visual) -------------------- */
+
+function formatarTempo(segundos) {
+  const total = Math.max(0, Math.floor(Number(segundos) || 0));
+  const minutos = Math.floor(total / 60);
+  return `${minutos}:${String(total % 60).padStart(2, '0')}`;
+}
+
+function atualizarBarraDeProgresso(instante, duracao) {
+  const porcentagem = duracao > 0 ? Math.min(100, (instante / duracao) * 100) : 0;
+
+  if (barraRoxa.preenchido) {
+    barraRoxa.preenchido.style.width = `${porcentagem}%`;
+  }
+
+  if (barraRoxa.tempo) {
+    barraRoxa.tempo.textContent = `${formatarTempo(instante)} / ${formatarTempo(duracao)}`;
+  }
+
+  if (barraRoxa.progresso) {
+    barraRoxa.progresso.setAttribute('aria-valuenow', String(Math.round(porcentagem)));
+    barraRoxa.progresso.setAttribute(
+      'aria-valuetext',
+      `${formatarTempo(instante)} de ${formatarTempo(duracao)}`
+    );
+  }
+}
+
+function atualizarDuracaoDaBarra() {
+  if (!playerEstaUtil()) {
+    atualizarBarraDeProgresso(0, 0);
+    return;
+  }
+
+  atualizarBarraDeProgresso(
+    Number(player.getCurrentTime()) || 0,
+    Number(player.getDuration()) || 0
+  );
+}
+
+function atualizarIconeDoPlay() {
+  if (!barraRoxa.botaoPlay) return;
+
+  /* Congelado (ou sem vídeo) o ícone é o de reproduzir: nada está rodando */
+  const parado = sinalCongelado || videoIndisponivel;
+
+  barraRoxa.botaoPlay.innerHTML = parado
+    ? '<i class="fa-solid fa-play"></i>'
+    : '<i class="fa-solid fa-pause"></i>';
+
+  barraRoxa.botaoPlay.setAttribute('aria-label', parado ? 'Reproduzir sinal' : 'Pausar sinal');
+}
+
+function atualizarRotuloDaVelocidade() {
+  if (!barraRoxa.botaoVelocidade) return;
+
+  barraRoxa.botaoVelocidade.textContent = `${velocidadeDoSinal}x`;
+  barraRoxa.botaoVelocidade.setAttribute('aria-label', `Velocidade ${velocidadeDoSinal}x`);
+}
+
+/* -------------------- Barra roxa (ações nativas) -------------------- */
+
+/* Play/Pause: playVideo() para tocar; para parar, o congelamento por
+   setPlaybackRate(0) — visualmente idêntico a pauseVideo(), mas sem deixar o
+   embed em PAUSED (o estado em que o YouTube desenha o botão central) */
+function alternarPlayPauseDoSinal() {
+  if (videoIndisponivel) return;
+
+  if (sinalCongelado) reproduzirSinal();
+  else congelarSinal();
+}
+
+/* Rewind 5s: player.seekTo(player.getCurrentTime() - 5, true) */
+function retroceder5s() {
+  if (!playerEstaUtil() || videoIndisponivel) return;
+
+  const duracao = Number(player.getDuration()) || 0;
+  const alvo = Math.max(0, (Number(player.getCurrentTime()) || 0) - 5);
+
+  player.seekTo(alvo, true);
+  if (sinalCongelado) instanteDoSinal = alvo;   // a reserva segue do novo ponto
+
+  atualizarBarraDeProgresso(alvo, duracao);
+}
+
+/* Velocidade: alterna os valores da lista com setPlaybackRate() */
+function ciclarVelocidade() {
+  if (videoIndisponivel) return;
+
+  const indice = VELOCIDADES.indexOf(velocidadeDoSinal);
+  velocidadeDoSinal = VELOCIDADES[(indice + 1) % VELOCIDADES.length];
+
+  /* Congelado: a taxa 0 permanece na imagem e a nova velocidade fica guardada
+     para quando o play voltar */
+  if (!sinalCongelado && playerEstaUtil()) player.setPlaybackRate(velocidadeDoSinal);
+
+  atualizarRotuloDaVelocidade();
+}
+
+/* Progresso: converte a fração clicada/arrastada em posição do vídeo */
+function irParaPosicao(fracao) {
+  if (!playerEstaUtil() || videoIndisponivel) return;
+
+  const duracao = Number(player.getDuration()) || 0;
+  if (!duracao) return;
+
+  const alvo = Math.min(Math.max(fracao, 0), 1) * duracao;
+
+  player.seekTo(alvo, true);
+  if (sinalCongelado) instanteDoSinal = alvo;
+
+  atualizarBarraDeProgresso(alvo, duracao);
+}
+
+/* -------------------- Ligação da barra roxa -------------------- */
+
+function conectarBarraRoxa() {
+  barraRoxa.botaoPlay = document.getElementById('btnPlayPause');
+  barraRoxa.botaoRetroceder = document.getElementById('btnRewind');
+  barraRoxa.botaoVelocidade = document.getElementById('btnVelocidade');
+  barraRoxa.progresso = document.getElementById('barraProgresso');
+  barraRoxa.preenchido = document.getElementById('progressoPreenchido');
+  barraRoxa.tempo = document.getElementById('tempoSinal');
+  barraRoxa.aviso = document.getElementById('avisoVideoIndisponivel');
+
+  if (barraRoxa.botaoPlay) {
+    barraRoxa.botaoPlay.addEventListener('click', alternarPlayPauseDoSinal);
+  }
+
+  if (barraRoxa.botaoRetroceder) {
+    barraRoxa.botaoRetroceder.addEventListener('click', retroceder5s);
+  }
+
+  if (barraRoxa.botaoVelocidade) {
+    barraRoxa.botaoVelocidade.addEventListener('click', ciclarVelocidade);
+  }
+
+  if (barraRoxa.progresso) {
+    const fracaoDoPonto = (evento) => {
+      const caixa = barraRoxa.progresso.getBoundingClientRect();
+      return caixa.width ? (evento.clientX - caixa.left) / caixa.width : 0;
+    };
+
+    barraRoxa.progresso.addEventListener('pointerdown', (evento) => {
+      arrastandoProgresso = true;
+      if (barraRoxa.progresso.setPointerCapture) {
+        barraRoxa.progresso.setPointerCapture(evento.pointerId);
+      }
+      irParaPosicao(fracaoDoPonto(evento));
+    });
+
+    barraRoxa.progresso.addEventListener('pointermove', (evento) => {
+      if (!arrastandoProgresso) return;
+      irParaPosicao(fracaoDoPonto(evento));
+    });
+
+    const soltar = (evento) => {
+      arrastandoProgresso = false;
+
+      if (
+        barraRoxa.progresso.releasePointerCapture &&
+        barraRoxa.progresso.hasPointerCapture &&
+        barraRoxa.progresso.hasPointerCapture(evento.pointerId)
+      ) {
+        barraRoxa.progresso.releasePointerCapture(evento.pointerId);
+      }
+    };
+
+    barraRoxa.progresso.addEventListener('pointerup', soltar);
+    barraRoxa.progresso.addEventListener('pointercancel', soltar);
+
+    /* Acessibilidade por teclado: setas andam 5s, Home/End vão aos extremos */
+    barraRoxa.progresso.addEventListener('keydown', (evento) => {
+      if (!playerEstaUtil()) return;
+
+      const duracao = Number(player.getDuration()) || 0;
+      if (!duracao) return;
+
+      const instante = Number(player.getCurrentTime()) || 0;
+      let alvo = null;
+
+      if (evento.key === 'ArrowRight') alvo = instante + 5;
+      else if (evento.key === 'ArrowLeft') alvo = instante - 5;
+      else if (evento.key === 'Home') alvo = 0;
+      else if (evento.key === 'End') alvo = duracao - ANTECEDENCIA_DO_LOOP;
+
+      if (alvo === null) return;
+
+      evento.preventDefault();
+      player.seekTo(Math.min(Math.max(alvo, 0), duracao), true);
+      if (sinalCongelado) instanteDoSinal = alvo;
+      atualizarBarraDeProgresso(alvo, duracao);
+    });
+  }
+
+  atualizarRotuloDaVelocidade();
+  atualizarControlesHabilitados();
+  atualizarIconeDoPlay();
+}
+
+conectarBarraRoxa();
+
+/* Fallback: se a API do YouTube terminou de carregar antes deste arquivo, o
+   callback global já foi perdido — aqui o player é montado direto. As duas
+   portas são idempotentes (criarPlayerDoYoutube sai na hora se já houver
+   player), então nunca existe mais de um embed no documento. */
+if (window.YT && typeof window.YT.Player === 'function') {
+  criarPlayerDoYoutube();
+}
+
+/* ------------------------------ Listas e telas ------------------------------ */
 
 function alternarFavorito(nomeDoTermo) {
   if (!progressoDisponivel()) return;
@@ -767,8 +833,8 @@ function filtrarDados() {
       : categoriaSelecionada === 'favoritos'
         ? favoritos.includes(item.term)
         : normalizar(item.cat) === categoriaSelecionada;
-    const bateBusca = item.term.toLowerCase().includes(busca.toLowerCase());
-    return bateCategoria && bateBusca;
+    const buscaBate = item.term.toLowerCase().includes(busca.toLowerCase());
+    return bateCategoria && buscaBate;
   });
 }
 
@@ -870,9 +936,9 @@ function exibirTermoAtual() {
     imagemEl.src = `img/${slug}.png`;
   }
 
-  if (termoAtual.youtubeId) {
-    atualizarVideo(termoAtual.youtubeId);
-  }
+  /* Sempre chamado: termos sem vídeo cadastrado caem no aviso "em breve" e o
+     vídeo do termo anterior sai de cena por completo */
+  atualizarVideo(termoAtual.youtubeId);
 
   const botaoFavorito = document.getElementById('btnMainFav');
   if (botaoFavorito) {
@@ -886,6 +952,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (progressoDisponivel()) {
     await window.Progresso.carregar();
   }
+
+  /* Rede de segurança do carregamento da API (ver o fallback acima) */
+  criarPlayerDoYoutube();
 
   document.getElementById('searchInput').addEventListener('input', (evento) => {
     busca = evento.target.value;

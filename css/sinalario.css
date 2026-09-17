@@ -24,11 +24,13 @@
        (só padding, sem flex-grow)
      · Coluna 3: 350px de largura com cards agrupados por gap uniforme e a
        moldura da imagem em 272px fechando o topo
-     · Player: o HTML traz só a div receptora #player e é o Plyr.js (CDN no
-       sinalario.html) que cria o embed do YouTube e assume a interface, então
-       a barra nativa, o título e a foto do canal do YouTube nunca aparecem.
-       Nenhum deslocamento de CSS (margin-top negativo / translateY / corte de
-       posição) é usado
+     · Player: o HTML traz só a div receptora #player e é a YouTube Iframe
+       Player API oficial (script no sinalario.html, sem nenhuma biblioteca
+       intermediária) que cria o embed e recebe os comandos. O wrapper fica
+       com pointer-events: none, então nenhum clique, hover ou arrasto alcança
+       o embed: a interface nativa do YouTube (título, "Assistir no YouTube" e
+       o botão central redondo) não tem como ser ativada. Nenhum deslocamento
+       de CSS (margin-top negativo / translateY / corte de posição) é usado
    Princípios: sem sombras, sem !important, tokens de cor de style.css.
    ========================================================================= */
 
@@ -526,73 +528,180 @@
   box-sizing: border-box;
 }
 
-/* Player Plyr: o wrapper só limita a régua de largura (os mesmos 680px de
-   antes) e centraliza o player. Nenhuma proporção, corte ou deslocamento é
-   imposto aqui — quem define a moldura 16:9 é o .plyr no tema logo abaixo,
-   então a imagem do YouTube aparece inteira, sem zoom e sem faixa preta. */
+/* Player nativo do YouTube: o wrapper limita a régua de largura (os mesmos
+   680px de antes) e centraliza o player. O `pointer-events: none` isola 100%
+   da superfície do embed: como nenhum clique, hover ou arrasto chega ao
+   iframe, a interface do Google (título, "Assistir no YouTube", botão central
+   redondo, barra cinza) não tem como ser ativada. Quem controla o vídeo é
+   exclusivamente a barra roxa logo abaixo. */
 .video-wrapper-yt {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
+  pointer-events: none;
 }
 
-/* ------------------------ Plyr · tema do projeto ------------------------ */
-
-/* Paleta oficial aplicada aos controles nativos do Plyr: roxo principal da
-   aplicação nas trilhas/botões e branco nos ícones sobre o vídeo */
-:root {
-  --plyr-color-main: #6C5CE7; /* Roxo principal da aplicação */
-  --plyr-video-control-color: #ffffff;
-}
-
-/* Limpeza do container do Plyr: apenas o raio de 12px que alinha o player aos
-   demais cards e o overflow que apara o embed dentro desses cantos. Nenhuma
-   sombra, borda duplicada ou moldura extra é declarada aqui — quem desenha o
-   vídeo é o embed que o Plyr cria. A proporção segue no container para o
-   espaço já nascer reservado (sem salto de layout quando o embed monta). */
-.plyr {
+/* Filho direto do wrapper: é a div #player antes de a API montar o embed e o
+   iframe depois que ela o substitui. A mesma moldura 16:9, o mesmo raio e o
+   mesmo fundo preto valem para os dois estados, então não há salto de layout
+   quando o player nasce. */
+.video-wrapper-yt > :not(.video-indisponivel) {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
   border-radius: var(--sl-raio-sm);
   overflow: hidden;
-  aspect-ratio: 16 / 9;
+  background-color: #000000;
 }
 
-/* Moldura 16:9 no próprio embed do YouTube: o .plyr--youtube fica no container
-   (#player) e o .plyr__video-embed na moldura interna que a biblioteca cria
-   dentro dele, então o seletor descendente casa. Como a proporção é
-   respeitada, a imagem aparece inteira — sem zoom, corte ou faixa preta */
-.plyr--youtube .plyr__video-embed {
-  aspect-ratio: 16 / 9;
+/* O iframe também se protege por conta própria: nunca captura o ponteiro nem
+   é selecionado/arrastado pelo mouse */
+.video-wrapper-yt iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
 }
 
-/* Bloqueio da camada nativa do YouTube. O Plyr já manda controls: 0 no
-   playerVars, mas o YouTube continua sobrepondo título, "Assistir no YouTube"
-   e botões de compartilhar sobre a imagem ao passar o mouse (showinfo e
-   modestbranding foram descontinuados e hoje são ignorados). A saída é empurrar
-   essa faixa para fora da janela visível: o iframe vira 200% de altura e sobe
-   50%, e o YouTube — que centraliza o vídeo 16:9 dentro do iframe — desenha a
-   imagem exatamente na metade que aparece, de forma inteira e sem corte,
-   enquanto a faixa nativa nasce acima do que se vê.
-   Sem !important: o plyr.css posiciona esse mesmo seletor (.plyr__video-embed
-   iframe, peso 0,1,1) e este arquivo entra depois no <head>, então a vitória no
-   cascade é por ordem. */
-.plyr__video-embed iframe {
-  top: -50%;
-  height: 200%;
+/* Termo ainda sem vídeo cadastrado: o aviso cobre o embed em vez de deixar o
+   letreiro cinza de erro do YouTube aparecer no meio da tela */
+.video-indisponivel {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: var(--sl-raio-sm);
+  background-color: #14142b;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
 }
 
-/* Botão central: nenhum estilo aqui. A remoção vem antes do CSS — a lista de
-   controls do sinalario.js não inclui 'play-large', que é o único gatilho de
-   criação do .plyr__control--overlaid na biblioteca. Como redes, o próprio
-   sinalario.js apaga o nó do DOM (removerBotaoCentral) e o style.css mantém a
-   camada invisível por especificidade, sem !important. O botão redondo que o
-   YouTube desenha dentro do iframe (camada nativa tratada logo acima) não é
-   alcançável por seletor nenhum desta página: quem o mantém fora de cena é o
-   loop sem estado de fim do sinalario.js, que reinicia o sinal por currentTime
-   um instante antes do último quadro. Nada mais neste arquivo mexe nos
-   controles — a barra roxa, as velocidades e a troca de termos seguem
-   intactas. */
+.video-indisponivel.esta-visivel {
+  display: flex;
+}
+
+.video-indisponivel i {
+  font-size: 1.6rem;
+  opacity: 0.8;
+}
+
+/* -------------------- Barra roxa de controles (custom) --------------------
+   Única superfície de controle do vídeo: roxo principal da aplicação
+   (#6C5CE7) no fundo, branco nos ícones e no preenchimento do progresso.
+   Cada botão chama direto os métodos nativos da API do YouTube (playVideo,
+   seekTo, setPlaybackRate) em js/sinalario.js — nenhuma biblioteca de player
+   no meio do caminho. */
+.barra-sinalario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: var(--sl-raio-sm);
+  background-color: #6C5CE7; /* Roxo principal da aplicação */
+  color: #ffffff;
+}
+
+.barra-sinalario__botao {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 42px;
+  height: 40px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transicao);
+}
+
+.barra-sinalario__botao:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.barra-sinalario__botao:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Termo sem vídeo cadastrado: a barra continua visível, porém inerte (o aviso
+   "em breve" cobre a área do player) */
+.barra-sinalario__botao:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.barra-sinalario__botao:disabled:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Rótulos curtos ("5s" e "1x") um degrau menores que o ícone */
+.barra-sinalario__botao--texto span {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progresso: a área clicável é bem mais alta que a trilha, para dar um alvo
+   generoso no mouse e no toque */
+.barra-sinalario__progresso {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 90px;
+  height: 40px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.barra-sinalario__progresso:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.barra-sinalario__progresso.esta-desabilitado {
+  cursor: default;
+}
+
+.barra-sinalario__trilha {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.32);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.barra-sinalario__preenchido {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background-color: #ffffff;
+}
+
+.barra-sinalario__tempo {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px
