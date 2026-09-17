@@ -580,17 +580,14 @@
   height: 200% !important;
 }
 
-/* Botão central: este arquivo não esconde nada aqui, e nenhum CSS desta página
-   consegue esconder o botão gigante do YouTube — ele é desenhado pelo player
-   dentro do iframe (camada nativa tratada logo acima), fora do alcance dos
-   seletores do documento. Do lado do Plyr, o .plyr__control--overlaid só é
-   criado quando 'play-large' entra na lista de controls do sinalario.js, e
-   esta página não usa 'play-large': o elemento não existe no DOM. A regra que
-   cobre o caso de ele voltar a existir fica no style.css global, na seção
-   "Plyr · esconde o botão central", já com peso 0,3,0 (empata com a regra da
-   biblioteca e vence pela ordem dos arquivos), sem !important. Nada mais neste
-   arquivo mexe nos controles — a barra roxa, as velocidades e a troca de
-   termos seguem intactas. */
+/* Botão central: nada de CSS aqui. O Plyr só cria o .plyr__control--overlaid
+   quando 'play-large' entra na lista de controls do sinalario.js, e quem apaga
+   esse nó é o próprio sinalario.js — a remoção é de DOM (depois do 'ready',
+   com um MutationObserver de reforço). O botão gigante que o YouTube desenha
+   dentro do iframe (camada nativa tratada logo acima) continua fora do alcance
+   de qualquer seletor desta página. Nada mais neste arquivo mexe nos
+   controles — a barra roxa, as velocidades e a troca de termos seguem
+   intactas. */
 
 /* Definição: compacta e sem esticamento (flex: 0 0 auto + height: auto).
    O margin-top de 16px pareia a distância player -> definição com os 16px

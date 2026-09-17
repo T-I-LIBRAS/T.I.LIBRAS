@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>T.I Libras - Sinalário</title>
-<!-- Ordem obrigatória: plyr.css primeiro, o style.css do projeto depois.
-     Como os dois declaram .plyr__control--overlaid com o mesmo peso (0,3,0),
-     é esta ordem que decide quem vence — sem precisar de !important. -->
+<!-- Ordem: a biblioteca primeiro, o style.css do projeto depois. Assim os
+     ajustes do projeto vencem os da biblioteca pela ordem do <head>, sem
+     precisar de !important. O botão central do Plyr não depende deste CSS:
+     ele é removido do DOM pelo sinalario.js. -->
 <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="css/style.css?v=45">
+<link rel="stylesheet" href="css/style.css?v=46">
 <link rel="stylesheet" href="css/sinalario.css?v=44">
 <script src="js/components.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

@@ -375,41 +375,7 @@ app-footer {
   }
 }
 
-/* --------------------- Plyr · esconde o botão central ---------------------
-   Quando o botão grande de play existe, o plyr.css o exibe com
-     .plyr--full-ui.plyr--video .plyr__control--overlaid { display: block }
-   ou seja, três classes (0,3,0). A regra anterior deste arquivo usava
-   :where(.plyr) .plyr__control--overlaid, que zera a especificidade (0,1,0) e
-   por isso nunca conseguia sobrepor a biblioteca, por mais que este arquivo
-   fosse carregado depois.
-
-   Os seletores abaixo mantêm três classes de peso (0,3,0) e empatam com a
-   regra da biblioteca — o empate é resolvido pela ordem do <head>, onde este
-   style.css entra depois do plyr.css. Resultado: o botão some sem nenhum
-   !important e a barra inferior roxa segue intocada.
-
-   Observação sobre a lista: no DOM do Plyr o botão sobreposto é inserido no
-   container ANTES do .plyr__controls (createButton('play-large') faz
-   container.appendChild logo no início do create()), então o combinador
-   .plyr__controls + .plyr__control--overlaid não casa em nenhuma hipótese;
-   ele fica aqui apenas como documentação da intenção. Quem casa de fato são
-   .plyr.plyr--video .plyr__control--overlaid e .plyr--video
-   .plyr__control--overlaid[data-plyr="play"]. Todos os seletores exigem a
-   classe --overlaid, então o play da barra inferior (que é só .plyr__control)
-   continua respondendo normalmente.
-
-   Importante: o Plyr só cria este elemento quando 'play-large' está na lista
-   de controls do sinalario.js — hoje ela não está, então a regra é uma
-   garantia para o caso de o botão ser reativado. O botão gigante que às vezes
-   aparece no centro vem do player do YouTube dentro do iframe (camada nativa
-   tratada em sinalario.css), e esse não é alcançável pelo CSS da página. */
-.plyr--video .plyr__controls + .plyr__control--overlaid,
-.plyr--paused .plyr__control--overlaid,
-.plyr__control--overlaid[data-plyr="play"],
-.plyr.plyr--video .plyr__control--overlaid,
-.plyr--video .plyr__control--overlaid[data-plyr="play"] {
-  display: none;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none; /* Garante que cliques passem direto para o vídeo */
-}
+/* Botão central do Plyr: a remoção é feita no JS (sinalario.js apaga o nó
+   .plyr__control--overlaid do DOM depois do 'ready'). Nenhuma regra de CSS
+   deste arquivo mexe nesse botão — aqui fica só o tema da barra roxa e a
+   limpeza do container .plyr. */

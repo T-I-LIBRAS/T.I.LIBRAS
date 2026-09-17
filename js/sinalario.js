@@ -192,6 +192,36 @@ const player = new Plyr('#player', {
   }
 });
 
+/* Botão grande de play do Plyr: quando 'play-large' está na lista de controls,
+   a biblioteca cria um <button class="plyr__control plyr__control--overlaid">
+   direto no container, ANTES de montar o .plyr__controls. Em vez de disputar
+   especificidade no CSS, o nó é apagado da própria árvore do DOM assim que o
+   player fica pronto.
+   O MutationObserver logo abaixo é o reforço: se o Plyr voltar a injetar o
+   botão (mudança de controls, remontagem do embed), ele é removido de novo.
+   O seletor exige a classe --overlaid, então o play da barra roxa
+   (.plyr__control, sem o sufixo) nunca é tocado — a barra inferior, o voltar
+   5s, a barra de progresso e o menu de velocidade seguem funcionando. */
+player.on('ready', () => {
+  const removeLargePlay = () => {
+    const largePlayBtn = document.querySelector('.plyr__control--overlaid');
+    if (largePlayBtn) {
+      largePlayBtn.remove(); // Remove o elemento HTML da árvore do DOM
+    }
+  };
+
+  removeLargePlay();
+
+  /* Observa o container do Plyr: se o botão central for injetado de novo, ele
+     é apagado na mesma hora. A própria remoção gera uma mutação, mas então a
+     consulta já volta nula e o observador para de disparar — sem laço. */
+  const container = document.querySelector('.plyr');
+  if (!container) return;
+
+  const observer = new MutationObserver(removeLargePlay);
+  observer.observe(container, { childList: true, subtree: true });
+});
+
 /* Estado da troca de vídeo. O provider do YouTube sobe de forma assíncrona:
    até o Plyr disparar 'ready' ainda não existe player para receber o vídeo,
    então o termo escolhido fica guardado e entra assim que ele fica pronto. */
