@@ -137,6 +137,35 @@ function desenharEstrelas(quantidade) {
   });
 }
 
+function desenharBarraDeProgresso(concluidos, total) {
+  const pontos = document.getElementById('progressDots');
+  const preenchimento = document.getElementById('progressFill');
+  if (!pontos || total <= 0) return;
+
+  if (pontos.children.length !== total) {
+    pontos.innerHTML = '';
+    for (let indice = 0; indice < total; indice += 1) {
+      const ponto = document.createElement('span');
+      ponto.className = 'progress-dot';
+      pontos.appendChild(ponto);
+    }
+  }
+
+  Array.from(pontos.children).forEach((ponto, indice) => {
+    ponto.classList.toggle('ativo', indice < concluidos);
+  });
+
+  if (!preenchimento) return;
+
+  if (concluidos <= 0) {
+    preenchimento.style.width = '0%';
+    return;
+  }
+
+  const largura = total > 1 ? ((concluidos - 1) / (total - 1)) * 100 : 100;
+  preenchimento.style.width = `${Math.max(0, Math.min(100, largura))}%`;
+}
+
 function mensagemDeProgresso(concluidos, total) {
   if (concluidos === 0) return 'Vamos começar? Escolha uma categoria abaixo!';
   if (concluidos < total / 2) {
@@ -167,6 +196,7 @@ function atualizarProgresso() {
   if (mensagemEl) mensagemEl.textContent = mensagemDeProgresso(concluidos.length, total);
 
   desenharEstrelas(concluidos.length);
+  desenharBarraDeProgresso(concluidos.length, total);
 }
 
 function registrarProgressoParcial(categoria, concluidas, total) {

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T.I Libras - Quiz Prático</title>
-  <link rel="stylesheet" href="css/style.css?v=53">
-  <link rel="stylesheet" href="css/praticar.css?v=53">
+  <link rel="stylesheet" href="css/style.css?v=54">
+  <link rel="stylesheet" href="css/praticar.css?v=54">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="js/components.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,7 +22,13 @@
           <h4 class="progress-title"><i class="fa-solid fa-chart-simple"></i> Progresso nos Quizzes</h4>
           <p class="progress-pct" id="progressText">0 / 6 Concluídos (0%)</p>
         </div>
-        <div class="stars-row" id="starsRow" aria-label="Estrelas de conquista por categoria"></div>
+        <div class="progress-visual">
+          <div class="stars-row" id="starsRow" aria-label="Estrelas de conquista por categoria"></div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+            <div class="progress-dots" id="progressDots" aria-hidden="true"></div>
+          </div>
+        </div>
         <p class="progress-message" id="progressMessage">Vamos começar? Escolha uma categoria abaixo!</p>
       </section>
 
@@ -244,6 +250,6 @@
 
   <script src="js/auth.js"></script>
   <script src="js/progresso.js"></script>
-  <script src="js/praticar.js?v=53"></script>
+  <script src="js/praticar.js?v=54"></script>
 </body>
 </html>
