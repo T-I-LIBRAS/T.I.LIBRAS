@@ -1,24 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --cor-primaria: #3c50b4;
-  --cor-primaria-2: #3c64c8;
-  --cor-azul: #3c8cdc;
-  --cor-azul-claro: #afd7f7;
-  --cor-lilas: #783cc8;
-  --cor-lilas-2: #643cc8;
-  --cor-lilas-claro: #dcb4f0;
-  --cor-fundo: #f3f6ff;
-  --cor-fundo-alt: #e8eefc;
+  --cor-primaria: #7c3aed;
+  --cor-primaria-2: #9333ea;
+  --cor-azul: #a855f7;
+  --cor-azul-claro: #e9d5ff;
+  --cor-lilas: #6d28d9;
+  --cor-lilas-2: #5b21b6;
+  --cor-lilas-claro: #f3e8ff;
+  --cor-amarelo: #f5b301;
+  --cor-amarelo-2: #eab308;
+  --cor-amarelo-escuro: #a35b00;
+  --cor-amarelo-claro: #fef3c7;
+  --cor-fundo: #faf5ff;
+  --cor-fundo-alt: #f3e8ff;
   --cor-card: #ffffff;
-  --cor-texto: #101a3d;
-  --cor-texto-suave: #5a6a8f;
-  --borda: 1px solid #dbe3f7;
+  --cor-texto: #241b35;
+  --cor-texto-suave: #6b5b8a;
+  --borda: 1px solid #e4d9f7;
   --raio: 6px;
   --raio-pequeno: 4px;
   --transicao: all 0.2s ease;
-  --gradiente-marca: linear-gradient(135deg, #3c50b4 0%, #3c64c8 45%, #783cc8 100%);
-  --gradiente-suave: linear-gradient(135deg, #3c8cdc 0%, #783cc8 100%);
+  --gradiente-marca: linear-gradient(135deg, #6d28d9 0%, #9333ea 45%, #f5b301 100%);
+  --gradiente-suave: linear-gradient(135deg, #a855f7 0%, #f5b301 100%);
 }
 
 * {
@@ -78,7 +82,10 @@ app-footer {
 .logo-text {
   font-weight: 800;
   font-size: 1.15rem;
-  color: var(--cor-primaria);
+  background: var(--gradiente-marca);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .nav-links {
@@ -98,12 +105,12 @@ app-footer {
 }
 
 .nav-links a:hover {
-  background: #eef3fd;
+  background: #f3e8ff;
   color: var(--cor-texto);
 }
 
 .nav-links a.active {
-  background: #e3ebfb;
+  background: #ede4fb;
   color: var(--cor-primaria);
 }
 
@@ -131,19 +138,44 @@ app-footer {
 }
 
 .auth-btn.auth-register {
-  background: transparent;
-  color: var(--cor-primaria);
-  border: var(--borda);
+  background: var(--cor-amarelo);
+  color: #3b2a04;
+  border: 1px solid transparent;
 }
 
 .auth-btn:hover {
   filter: brightness(1.05);
 }
 
+.auth-btn.auth-perfil {
+  gap: 8px;
+  background: var(--cor-fundo-alt);
+  color: var(--cor-primaria);
+  border: var(--borda);
+}
+
+.auth-btn.auth-perfil:hover {
+  background: #ede4fb;
+  filter: none;
+}
+
+.auth-btn.auth-perfil .avatar-mini {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gradiente-marca);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 .auth-btn.auth-logout {
   gap: 7px;
   background: transparent;
-  color: #4a5a7d;
+  color: #5c4a7a;
   border: var(--borda);
 }
 
@@ -159,8 +191,8 @@ app-footer {
   height: 38px;
   border: none;
   border-radius: var(--raio);
-  background: #eef3fd;
-  color: #4a5a7d;
+  background: #f3e8ff;
+  color: #5c4a7a;
   font-size: 1rem;
   cursor: pointer;
   display: grid;
@@ -169,7 +201,7 @@ app-footer {
 }
 
 .icon-btn:hover {
-  background: #e2e9f8;
+  background: #ede4fb;
 }
 
 .footer {
@@ -194,14 +226,14 @@ app-footer {
   gap: 12px;
 }
 
-.footer-brand .brand-logo {
-  height: 40px;
-}
-
 .footer-brand-text strong {
   display: block;
-  font-size: 1rem;
-  color: var(--cor-texto);
+  font-size: 1.05rem;
+  font-weight: 800;
+  background: var(--gradiente-marca);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .footer-brand-text span {
@@ -261,7 +293,7 @@ app-footer {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #4a5a7d;
+  color: #5c4a7a;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
@@ -293,7 +325,7 @@ app-footer {
 }
 
 .footer-copy {
-  color: #8e9cbd;
+  color: #8a7aa8;
   font-size: 0.82rem;
 }
 
@@ -318,19 +350,19 @@ app-footer {
 }
 
 .btn-primary:hover {
-  background: #2f4096;
+  background: #6425c4;
 }
 
 .btn-ghost,
 .btn-outline {
   background: #ffffff;
   color: var(--cor-texto);
-  border-color: #cfd9ee;
+  border-color: #ded0f5;
 }
 
 .btn-ghost:hover,
 .btn-outline:hover {
-  background: #eef3fd;
+  background: #f3e8ff;
 }
 
 .card {

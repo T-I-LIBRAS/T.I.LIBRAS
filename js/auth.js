@@ -1,12 +1,8 @@
-const PAGINAS_PROTEGIDAS = ['/sinalario.html', '/praticar.html', '/quiz.html'];
-const PAGINA_INICIAL = 'sinalario.html';
+const PAGINAS_PROTEGIDAS = ['/home.html', '/sinalario.html', '/praticar.html', '/quiz.html', '/perfil.html'];
+const PAGINA_INICIAL = 'home.html';
 
 function porId(id) {
   return document.getElementById(id);
-}
-
-function obterCliente() {
-  return window.supabaseClient;
 }
 
 function paginaProtegida() {
@@ -26,101 +22,85 @@ function destinoSeguro(next) {
   return alvo;
 }
 
-function redirecionarUsuarioLogado(session) {
-  if (!session) return;
+function redirecionarUsuarioLogado(usuario) {
+  if (!usuario) return;
   if (!estaNaPaginaInicial()) return;
   const parametros = new URLSearchParams(window.location.search);
   window.location.replace(destinoSeguro(parametros.get('next')));
 }
 
-function aplicarUsuario(session) {
-  if (session && session.user) {
-    const usuario = session.user;
-    const metadados = usuario.user_metadata || {};
-    window.currentUser = {
-      uid: usuario.id,
-      email: usuario.email,
-      name: metadados.name || metadados.full_name || usuario.email
-    };
-  } else {
-    window.currentUser = null;
-  }
-
-  window.sessaoSupabase = session || null;
+function aplicarUsuario(usuario) {
+  window.currentUser = usuario || null;
   window.dispatchEvent(new CustomEvent('auth-changed'));
-  redirecionarUsuarioLogado(session);
+  redirecionarUsuarioLogado(usuario);
 }
 
 function irParaLogin() {
   window.currentUser = null;
-  window.sessaoSupabase = null;
   const destino = encodeURIComponent(window.location.pathname + window.location.search);
   window.location.href = `index.html?auth=login&next=${destino}`;
 }
 
 async function verificarSessao() {
-  const cliente = obterCliente();
-  if (!cliente) return;
-  const { data } = await cliente.auth.getSession();
-  const session = data ? data.session : null;
-  if (!session && paginaProtegida()) {
-    irParaLogin();
-    return;
-  }
-  aplicarUsuario(session);
-}
-
-const clienteSupabase = obterCliente();
-
-if (clienteSupabase) {
-  clienteSupabase.auth.onAuthStateChange((evento, session) => {
-    if (!session && paginaProtegida() && evento !== 'INITIAL_SESSION') {
+  try {
+    const dados = await window.apiFetch('/auth/session');
+    const usuario = dados ? dados.user : null;
+    if (!usuario && paginaProtegida()) {
       irParaLogin();
       return;
     }
-    aplicarUsuario(session);
-  });
-  verificarSessao();
+    aplicarUsuario(usuario);
+  } catch (erro) {
+    if (paginaProtegida()) {
+      irParaLogin();
+      return;
+    }
+    aplicarUsuario(null);
+  }
 }
 
 window.Auth = {
-  isLoggedIn: () =>
-    !!(window.currentUser && window.currentUser.uid) ||
-    !!(window.sessaoSupabase && window.sessaoSupabase.user),
+  isLoggedIn: () => !!(window.currentUser && window.currentUser.uid),
+
   getSession: async () => {
-    const cliente = obterCliente();
-    if (!cliente) return null;
-    const { data } = await cliente.auth.getSession();
-    return data ? data.session : null;
+    try {
+      const dados = await window.apiFetch('/auth/session');
+      return dados ? dados.user : null;
+    } catch (erro) {
+      return null;
+    }
   },
+
   registerWithEmail: async (name, email, pass) => {
-    const cliente = obterCliente();
-    const { data, error } = await cliente.auth.signUp({
-      email,
-      password: pass,
-      options: { data: { name } }
+    const dados = await window.apiFetch('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password: pass })
     });
-    if (error) throw error;
-    return data;
+    aplicarUsuario(dados.user);
+    return dados;
   },
+
   loginWithEmail: async (email, pass) => {
-    const cliente = obterCliente();
-    const { data, error } = await cliente.auth.signInWithPassword({ email, password: pass });
-    if (error) throw error;
-    return data.user;
+    const dados = await window.apiFetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password: pass })
+    });
+    aplicarUsuario(dados.user);
+    return dados.user;
   },
+
   logout: async () => {
-    const cliente = obterCliente();
-    if (cliente) {
-      try {
-        await cliente.auth.signOut();
-      } catch (erro) {}
+    try {
+      await window.apiFetch('/auth/logout', { method: 'POST' });
+    } catch (erro) {
+      // segue o fluxo mesmo se a chamada falhar
     }
     window.currentUser = null;
-    window.sessaoSupabase = null;
     window.dispatchEvent(new CustomEvent('auth-changed'));
   }
 };
+
+verificarSessao();
 
 document.addEventListener('DOMContentLoaded', () => {
   const formularioCadastro = porId('registerForm');
@@ -133,19 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const retorno = porId('registerFeedback');
       if (retorno) retorno.textContent = '';
       try {
-        const resultado = await window.Auth.registerWithEmail(nome, email, senha);
-        if (resultado && resultado.session) {
-          if (retorno) {
-            retorno.style.color = '#059669';
-            retorno.textContent = 'Conta criada com sucesso. Redirecionando...';
-          }
-          setTimeout(() => {
-            window.location.href = PAGINA_INICIAL;
-          }, 800);
-        } else if (retorno) {
+        await window.Auth.registerWithEmail(nome, email, senha);
+        if (retorno) {
           retorno.style.color = '#059669';
-          retorno.textContent = 'Conta criada! Confirme seu e-mail para poder entrar.';
+          retorno.textContent = 'Conta criada com sucesso. Redirecionando...';
         }
+        setTimeout(() => {
+          window.location.href = PAGINA_INICIAL;
+        }, 800);
       } catch (erro) {
         if (retorno) {
           retorno.style.color = '#ef4444';

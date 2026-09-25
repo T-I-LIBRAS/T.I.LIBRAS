@@ -29,7 +29,7 @@
 }
 
 .q-number {
-  background: #e4ebfd;
+  background: #f3e8ff;
   color: var(--cor-primaria);
   font-weight: 800;
   width: 34px;
@@ -113,7 +113,7 @@
   height: 46px;
   border-radius: var(--raio);
   object-fit: contain;
-  background: #e4eaf6;
+  background: #f3e8ff;
   flex-shrink: 0;
 }
 
@@ -153,7 +153,7 @@
 }
 
 .btn-next:hover {
-  background: #2f4096;
+  background: #6425c4;
 }
 
 @media (max-width: 640px) {

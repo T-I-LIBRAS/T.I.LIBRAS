@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T.I Libras - Início</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/home.css">
+<script src="js/components.js"></script>
+<script src="js/api-config.js"></script>
+</head>
+<body>
+<app-header></app-header>
+
+<main class="home-main">
+  <section class="home-hero">
+    <div class="container home-hero-inner">
+      <div class="home-hero-text">
+        <span class="home-hero-tag">Área do estudante</span>
+        <h1 id="homeSaudacao">Olá! 👋</h1>
+        <p>Continue de onde parou: explore o sinalário, pratique com os quizzes e acompanhe seu progresso.</p>
+      </div>
+      <div class="home-hero-avatar" id="homeAvatar">?</div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="home-stats">
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa-solid fa-hand-sparkles"></i></span>
+        <div>
+          <div class="stat-value" id="statSinais">0</div>
+          <div class="stat-label">Sinais vistos</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon amarelo"><i class="fa-solid fa-star"></i></span>
+        <div>
+          <div class="stat-value" id="statFavoritos">0</div>
+          <div class="stat-label">Termos favoritos</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa-solid fa-trophy"></i></span>
+        <div>
+          <div class="stat-value" id="statQuizzes">0</div>
+          <div class="stat-label">Quizzes concluídos</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="home-section-title">Acesso rápido</h2>
+    <div class="quick-grid">
+      <a href="sinalario.html" class="quick-card">
+        <span class="quick-card-icon"><i class="fa-solid fa-book-open"></i></span>
+        <strong>Sinalário</strong>
+        <span>Explore os termos de TI em Libras por categoria.</span>
+      </a>
+      <a href="praticar.html" class="quick-card amarelo">
+        <span class="quick-card-icon"><i class="fa-solid fa-bullseye"></i></span>
+        <strong>Praticar</strong>
+        <span>Teste o que aprendeu com os quizzes interativos.</span>
+      </a>
+      <a href="perfil.html" class="quick-card">
+        <span class="quick-card-icon"><i class="fa-solid fa-user"></i></span>
+        <strong>Meu perfil</strong>
+        <span>Veja seus dados e acompanhe seu progresso.</span>
+      </a>
+    </div>
+
+    <h2 class="home-section-title">Categorias</h2>
+    <div class="home-cats">
+      <a href="sinalario.html?categoria=hardware" class="home-cat-chip">
+        <i class="fa-solid fa-desktop"></i>
+        <span>Hardware</span>
+      </a>
+      <a href="sinalario.html?categoria=software" class="home-cat-chip">
+        <i class="fa-solid fa-compact-disc"></i>
+        <span>Software</span>
+      </a>
+      <a href="sinalario.html?categoria=programacao" class="home-cat-chip">
+        <i class="fa-solid fa-laptop-code"></i>
+        <span>Programação</span>
+      </a>
+      <a href="sinalario.html?categoria=redes" class="home-cat-chip">
+        <i class="fa-solid fa-tower-broadcast"></i>
+        <span>Redes</span>
+      </a>
+      <a href="sinalario.html?categoria=eletricidade" class="home-cat-chip">
+        <i class="fa-solid fa-plug"></i>
+        <span>Eletricidade</span>
+      </a>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>
+
+<script src="js/auth.js"></script>
+<script src="js/progresso.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>

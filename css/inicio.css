@@ -182,7 +182,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e4ebfd;
+  background: #f3e8ff;
   color: var(--cor-primaria);
   font-size: 2.2rem;
 }
@@ -207,7 +207,7 @@
 }
 
 .pres-body p {
-  color: #4a5a7d;
+  color: #5c4a7a;
   font-size: 0.98rem;
   line-height: 1.6;
   margin: 0 0 12px;
@@ -316,7 +316,7 @@
 
 .cat-tile {
   --tile-cor: var(--cor-primaria);
-  --tile-tint: #3c50b414;
+  --tile-tint: #7c3aed14;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -369,12 +369,12 @@
 
 .cat-tile.cat-hardware {
   --tile-cor: var(--cor-lilas);
-  --tile-tint: #783cc814;
+  --tile-tint: #6d28d914;
 }
 
 .cat-tile.cat-software {
   --tile-cor: var(--cor-azul);
-  --tile-tint: #3c8cdc14;
+  --tile-tint: #a855f714;
 }
 
 @media (max-width: 1100px) {

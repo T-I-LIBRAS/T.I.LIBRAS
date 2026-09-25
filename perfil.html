@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T.I Libras - Meu Perfil</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/perfil.css">
+<script src="js/components.js"></script>
+<script src="js/api-config.js"></script>
+</head>
+<body>
+<app-header></app-header>
+
+<main class="perfil-main">
+  <section class="perfil-header">
+    <div class="container perfil-header-inner">
+      <div class="perfil-avatar-grande" id="perfilAvatar">?</div>
+      <div class="perfil-header-text">
+        <h1 id="perfilNome">Meu perfil</h1>
+        <p id="perfilEmail">carregando...</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="container perfil-content">
+    <div class="perfil-grid">
+      <div class="perfil-card">
+        <h2><i class="fa-solid fa-id-card"></i> Dados da conta</h2>
+        <div class="perfil-info-row">
+          <span class="perfil-info-label">Nome</span>
+          <span class="perfil-info-value" id="infoNome">-</span>
+        </div>
+        <div class="perfil-info-row">
+          <span class="perfil-info-label">E-mail</span>
+          <span class="perfil-info-value" id="infoEmail">-</span>
+        </div>
+        <div class="perfil-actions">
+          <a href="home.html" class="btn btn-outline"><i class="fa-solid fa-house"></i> Ir para o início</a>
+          <button type="button" class="btn btn-primary" id="btnSairPerfil"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair da conta</button>
+        </div>
+      </div>
+
+      <div class="perfil-card">
+        <h2><i class="fa-solid fa-chart-simple"></i> Meu progresso</h2>
+        <div class="perfil-stats-list">
+          <div class="perfil-stat-item">
+            <span class="perfil-stat-icon"><i class="fa-solid fa-hand-sparkles"></i></span>
+            <div class="perfil-stat-texto">
+              <strong id="perfilSinais">0</strong>
+              <span>Sinais vistos no sinalário</span>
+            </div>
+          </div>
+          <div class="perfil-stat-item">
+            <span class="perfil-stat-icon amarelo"><i class="fa-solid fa-star"></i></span>
+            <div class="perfil-stat-texto">
+              <strong id="perfilFavoritos">0</strong>
+              <span>Termos favoritos</span>
+            </div>
+          </div>
+          <div class="perfil-stat-item">
+            <span class="perfil-stat-icon"><i class="fa-solid fa-trophy"></i></span>
+            <div class="perfil-stat-texto">
+              <strong id="perfilQuizzes">0</strong>
+              <span>Quizzes concluídos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>
+
+<script src="js/auth.js"></script>
+<script src="js/progresso.js"></script>
+<script src="js/perfil.js"></script>
+</body>
+</html>
