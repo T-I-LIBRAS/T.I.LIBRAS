@@ -1,5 +1,3 @@
-const TABELA_PROGRESSO = 'progresso_usuario';
-
 function progressoVazio() {
   return {
     sinais_vistos: [],
@@ -15,29 +13,9 @@ let salvandoProgresso = false;
 let salvamentoPendente = false;
 let timerSalvamento = null;
 
-function clienteProgresso() {
-  return window.supabaseClient || null;
-}
-
 function idDoUsuarioAtual() {
   if (window.currentUser && window.currentUser.uid) return window.currentUser.uid;
   return null;
-}
-
-async function resolverIdDoUsuario() {
-  const idDireto = idDoUsuarioAtual();
-  if (idDireto) return idDireto;
-
-  const cliente = clienteProgresso();
-  if (!cliente) return null;
-
-  try {
-    const { data } = await cliente.auth.getSession();
-    const sessao = data ? data.session : null;
-    return sessao && sessao.user ? sessao.user.id : null;
-  } catch (erro) {
-    return null;
-  }
 }
 
 function normalizarRegistro(registro) {
@@ -67,10 +45,9 @@ function limparProgressoEmMemoria() {
 }
 
 async function carregarProgresso(forcar) {
-  const cliente = clienteProgresso();
-  const uid = await resolverIdDoUsuario();
+  const uid = idDoUsuarioAtual();
 
-  if (!cliente || !uid) {
+  if (!uid) {
     limparProgressoEmMemoria();
     return dadosProgresso;
   }
@@ -78,17 +55,10 @@ async function carregarProgresso(forcar) {
   if (!forcar && usuarioCarregado === uid) return dadosProgresso;
 
   try {
-    const { data, error } = await cliente
-      .from(TABELA_PROGRESSO)
-      .select('sinais_vistos, termos_favoritos, quizzes_concluidos, pontuacoes')
-      .eq('user_id', uid)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    dadosProgresso = normalizarRegistro(data);
+    const registro = await window.apiFetch('/progresso');
+    dadosProgresso = normalizarRegistro(registro);
   } catch (erro) {
-    console.error('[Progresso] Falha ao carregar dados do Supabase:', erro && erro.message ? erro.message : erro);
+    console.error('[Progresso] Falha ao carregar dados do backend:', erro && erro.message ? erro.message : erro);
     dadosProgresso = progressoVazio();
   }
 
@@ -98,10 +68,8 @@ async function carregarProgresso(forcar) {
 }
 
 async function gravarProgresso() {
-  const cliente = clienteProgresso();
-  const uid = await resolverIdDoUsuario();
-
-  if (!cliente || !uid) return false;
+  const uid = idDoUsuarioAtual();
+  if (!uid) return false;
 
   if (salvandoProgresso) {
     salvamentoPendente = true;
@@ -109,26 +77,16 @@ async function gravarProgresso() {
   }
 
   salvandoProgresso = true;
-
   let falhou = false;
 
   try {
-    const { error } = await cliente.from(TABELA_PROGRESSO).upsert(
-      {
-        user_id: uid,
-        sinais_vistos: dadosProgresso.sinais_vistos,
-        termos_favoritos: dadosProgresso.termos_favoritos,
-        quizzes_concluidos: dadosProgresso.quizzes_concluidos,
-        pontuacoes: dadosProgresso.pontuacoes,
-        atualizado_em: new Date().toISOString()
-      },
-      { onConflict: 'user_id' }
-    );
-
-    if (error) throw error;
+    await window.apiFetch('/progresso', {
+      method: 'PUT',
+      body: JSON.stringify(dadosProgresso)
+    });
   } catch (erro) {
     falhou = true;
-    console.error('[Progresso] Falha ao salvar dados no Supabase:', erro && erro.message ? erro.message : erro);
+    console.error('[Progresso] Falha ao salvar dados no backend:', erro && erro.message ? erro.message : erro);
   }
 
   salvandoProgresso = false;
@@ -279,7 +237,6 @@ window.addEventListener('auth-changed', async () => {
 });
 
 window.Progresso = {
-  TABELA: TABELA_PROGRESSO,
   carregar: carregarProgresso,
   salvar: gravarProgresso,
   vazio: progressoVazio,
