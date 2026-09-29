@@ -9,6 +9,7 @@ function progressoVazio() {
 
 let dadosProgresso = progressoVazio();
 let usuarioCarregado = null;
+let carregamentoFalhou = false;
 let salvandoProgresso = false;
 let salvamentoPendente = false;
 let timerSalvamento = null;
@@ -42,6 +43,7 @@ function normalizarRegistro(registro) {
 function limparProgressoEmMemoria() {
   dadosProgresso = progressoVazio();
   usuarioCarregado = null;
+  carregamentoFalhou = false;
 }
 
 async function carregarProgresso(forcar) {
@@ -52,17 +54,20 @@ async function carregarProgresso(forcar) {
     return dadosProgresso;
   }
 
-  if (!forcar && usuarioCarregado === uid) return dadosProgresso;
+  if (!forcar && usuarioCarregado === uid && !carregamentoFalhou) return dadosProgresso;
 
   try {
     const registro = await window.apiFetch('/progresso');
     dadosProgresso = normalizarRegistro(registro);
+    usuarioCarregado = uid;
+    carregamentoFalhou = false;
   } catch (erro) {
     console.error('[Progresso] Falha ao carregar dados do backend:', erro && erro.message ? erro.message : erro);
     dadosProgresso = progressoVazio();
+    usuarioCarregado = null;
+    carregamentoFalhou = true;
   }
 
-  usuarioCarregado = uid;
   window.dispatchEvent(new CustomEvent('progresso-carregado'));
   return dadosProgresso;
 }
@@ -70,6 +75,7 @@ async function carregarProgresso(forcar) {
 async function gravarProgresso() {
   const uid = idDoUsuarioAtual();
   if (!uid) return false;
+  if (carregamentoFalhou || usuarioCarregado !== uid) return false;
 
   if (salvandoProgresso) {
     salvamentoPendente = true;

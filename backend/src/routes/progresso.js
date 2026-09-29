@@ -39,13 +39,24 @@ router.get('/', autenticar, async (req, res) => {
 });
 
 router.put('/', autenticar, async (req, res) => {
-  const base = progressoVazio();
   const corpo = req.body || {};
 
-  const sinais_vistos = Array.isArray(corpo.sinais_vistos) ? corpo.sinais_vistos : base.sinais_vistos;
-  const termos_favoritos = Array.isArray(corpo.termos_favoritos) ? corpo.termos_favoritos : base.termos_favoritos;
-  const quizzes_concluidos = Array.isArray(corpo.quizzes_concluidos) ? corpo.quizzes_concluidos : base.quizzes_concluidos;
-  const pontuacoes = corpo.pontuacoes && typeof corpo.pontuacoes === 'object' ? corpo.pontuacoes : base.pontuacoes;
+  const listas = ['sinais_vistos', 'termos_favoritos', 'quizzes_concluidos'];
+  const listaInvalida = listas.some((campo) => (
+    !Array.isArray(corpo[campo]) ||
+    corpo[campo].length > 500 ||
+    corpo[campo].some((valor) => typeof valor !== 'string' || valor.length > 150)
+  ));
+  const pontuacoesValida = corpo.pontuacoes &&
+    typeof corpo.pontuacoes === 'object' &&
+    !Array.isArray(corpo.pontuacoes) &&
+    Object.keys(corpo.pontuacoes).length <= 100;
+
+  if (listaInvalida || !pontuacoesValida) {
+    return res.status(400).json({ message: 'Formato de progresso inválido' });
+  }
+
+  const { sinais_vistos, termos_favoritos, quizzes_concluidos, pontuacoes } = corpo;
 
   try {
     await pool.query(

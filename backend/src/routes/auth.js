@@ -1,19 +1,31 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
 const pool = require('../db');
 const { autenticarOpcional } = require('../middleware/auth');
 
 const router = express.Router();
+const limitarLogin = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Muitas tentativas. Tente novamente mais tarde.' }
+});
 
-const COOKIE_OPCOES = {
+const COOKIE_OPCOES_BASE = {
   httpOnly: true,
   sameSite: 'lax',
-  // Em produção com HTTPS, mude para true.
-  secure: false,
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias
+  secure: process.env.NODE_ENV === 'production'
 };
+
+function opcoesCookie(lembrar = true) {
+  return lembrar
+    ? { ...COOKIE_OPCOES_BASE, maxAge: 7 * 24 * 60 * 60 * 1000 }
+    : COOKIE_OPCOES_BASE;
+}
 
 function gerarToken(userId) {
   return jwt.sign({ sub: userId }, process.env.JWT_SECRET, {
@@ -50,7 +62,7 @@ router.post('/register', async (req, res) => {
     );
 
     const token = gerarToken(id);
-    res.cookie('token', token, COOKIE_OPCOES);
+    res.cookie('token', token, opcoesCookie());
     return res.status(201).json({ user: { uid: id, email, name } });
   } catch (erro) {
     console.error('[auth/register]', erro);
@@ -58,8 +70,8 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body || {};
+router.post('/login', limitarLogin, async (req, res) => {
+  const { email, password, lembrar } = req.body || {};
 
   if (!email || !password) {
     return res.status(400).json({ message: 'E-mail e senha são obrigatórios' });
@@ -82,7 +94,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = gerarToken(usuario.id);
-    res.cookie('token', token, COOKIE_OPCOES);
+    res.cookie('token', token, opcoesCookie(lembrar !== false));
     return res.json({ user: paraUsuarioPublico(usuario) });
   } catch (erro) {
     console.error('[auth/login]', erro);
@@ -91,7 +103,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-  res.clearCookie('token', COOKIE_OPCOES);
+  res.clearCookie('token', COOKIE_OPCOES_BASE);
   return res.json({ ok: true });
 });
 

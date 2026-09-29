@@ -17,9 +17,23 @@ function estaNaPaginaInicial() {
 
 function destinoSeguro(next) {
   if (!next) return PAGINA_INICIAL;
-  const alvo = decodeURIComponent(next);
-  if (alvo.includes('index.html') || alvo === '/' || alvo === '') return PAGINA_INICIAL;
-  return alvo;
+  let alvo;
+  try {
+    alvo = decodeURIComponent(next);
+  } catch (erro) {
+    return PAGINA_INICIAL;
+  }
+
+  let url;
+  try {
+    url = new URL(alvo, window.location.origin);
+  } catch (erro) {
+    return PAGINA_INICIAL;
+  }
+  if (url.origin !== window.location.origin || !url.pathname.endsWith('.html')) {
+    return PAGINA_INICIAL;
+  }
+  return `${url.pathname}${url.search}${url.hash}`;
 }
 
 function redirecionarUsuarioLogado(usuario) {
@@ -81,9 +95,10 @@ window.Auth = {
   },
 
   loginWithEmail: async (email, pass) => {
+    const lembrar = !!porId('loginRemember')?.checked;
     const dados = await window.apiFetch('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password: pass })
+      body: JSON.stringify({ email, password: pass, lembrar })
     });
     aplicarUsuario(dados.user);
     return dados.user;
