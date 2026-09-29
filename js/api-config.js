@@ -1,5 +1,5 @@
 // Ajuste para a URL onde o backend Node/Express está rodando.
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'http://127.0.0.1:3000/api';
 
 // Wrapper de fetch: envia/recebe cookies de sessão e já trata JSON/erros.
 window.apiFetch = async function apiFetch(caminho, opcoes = {}) {
