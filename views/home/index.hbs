@@ -1,0 +1,131 @@
+<app-header></app-header>
+
+<main class="home-main">
+  <div class="container home-container">
+
+    <!-- Banner de boas-vindas -->
+    <section class="home-banner">
+      <div class="home-banner-text">
+        <h1 id="homeSaudacao">Olá!</h1>
+        <p>Aqui você pode aprender, praticar e acompanhar seu progresso em Libras.</p>
+        <span class="home-banner-traco"></span>
+      </div>
+      <!-- Coloque a imagem do robô em public/images/robo.png. Sem ela, o banner fica só com o texto. -->
+      <img class="home-banner-robo" src="/images/robo.png" alt="" onerror="this.remove()">
+    </section>
+
+    <!-- Números do aluno -->
+    <section class="home-stats">
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa-solid fa-hand"></i></span>
+        <div>
+          <div class="stat-value" id="statSinais">0</div>
+          <div class="stat-label">Sinais visualizados</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon amarelo"><i class="fa-solid fa-star"></i></span>
+        <div>
+          <div class="stat-value" id="statFavoritos">0</div>
+          <div class="stat-label">Termos favoritos</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+        <div>
+          <div class="stat-value" id="statQuizzes">0</div>
+          <div class="stat-label">Quizzes concluídos</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon amarelo"><i class="fa-solid fa-chart-simple"></i></span>
+        <div>
+          <div class="stat-value" id="statProgresso">0%</div>
+          <div class="stat-label">Progresso total</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acesso rápido -->
+    <section class="quick-grid">
+      <a href="sinalario.html" class="quick-card">
+        <span class="quick-card-icon"><i class="fa-solid fa-book-open"></i></span>
+        <span class="quick-card-text">
+          <strong>Sinalário</strong>
+          <span>Consulte os termos de TI em Libras.</span>
+        </span>
+        <span class="quick-card-seta"><i class="fa-solid fa-arrow-right"></i></span>
+      </a>
+      <a href="praticar.html" class="quick-card amarelo">
+        <span class="quick-card-icon"><i class="fa-solid fa-bullseye"></i></span>
+        <span class="quick-card-text">
+          <strong>Praticar</strong>
+          <span>Exercite seus conhecimentos com atividades interativas.</span>
+        </span>
+        <span class="quick-card-seta"><i class="fa-solid fa-arrow-right"></i></span>
+      </a>
+      <a href="perfil.html" class="quick-card">
+        <span class="quick-card-icon"><i class="fa-solid fa-user"></i></span>
+        <span class="quick-card-text">
+          <strong>Meu perfil</strong>
+          <span>Veja suas conquistas e dados de aprendizado.</span>
+        </span>
+        <span class="quick-card-seta"><i class="fa-solid fa-arrow-right"></i></span>
+      </a>
+    </section>
+
+    <!-- Progresso e última atividade -->
+    <section class="home-painel">
+      <div class="home-box">
+        <div class="home-box-topo">
+          <h2 class="home-box-titulo"><i class="fa-solid fa-chart-simple"></i> Seu progresso</h2>
+          <a href="perfil.html" class="home-box-link">Ver detalhes <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="home-progresso">
+          <div class="home-barra" role="progressbar" aria-label="Progresso total" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barraProgresso">
+            <span class="home-barra-preenchida" id="barraProgressoPreenchida"></span>
+          </div>
+          <span class="home-progresso-valor" id="textoProgresso">0%</span>
+        </div>
+      </div>
+
+      <div class="home-box">
+        <div class="home-box-topo">
+          <h2 class="home-box-titulo"><i class="fa-solid fa-calendar-days"></i> Última atividade</h2>
+        </div>
+        <!-- Preenchido pelo home.js: último sinal visto ou último quiz concluído, com a data. -->
+        <div id="ultimaAtividade">
+          <p class="home-box-vazio">Você ainda não tem atividades. Comece pelo <a href="sinalario.html">Sinalário</a>!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categorias (já existia; se não quiser mais, apague esta seção e o trecho .home-cat* do home.css) -->
+    <h2 class="home-section-title">Categorias</h2>
+    <div class="home-cats">
+      <a href="sinalario.html?categoria=hardware" class="home-cat-chip">
+        <i class="fa-solid fa-desktop"></i>
+        <span>Hardware</span>
+      </a>
+      <a href="sinalario.html?categoria=software" class="home-cat-chip">
+        <i class="fa-solid fa-compact-disc"></i>
+        <span>Software</span>
+      </a>
+      <a href="sinalario.html?categoria=programacao" class="home-cat-chip">
+        <i class="fa-solid fa-laptop-code"></i>
+        <span>Programação</span>
+      </a>
+      <a href="sinalario.html?categoria=redes" class="home-cat-chip">
+        <i class="fa-solid fa-tower-broadcast"></i>
+        <span>Redes</span>
+      </a>
+      <a href="sinalario.html?categoria=eletricidade" class="home-cat-chip">
+        <i class="fa-solid fa-plug"></i>
+        <span>Eletricidade</span>
+      </a>
+    </div>
+
+  </div>
+</main>
+
+<app-footer></app-footer>

@@ -1,0 +1,249 @@
+  <app-header></app-header>
+
+  <main class="quiz-container-box">
+    <div id="selectionScreen">
+      <section class="progress-panel">
+        <div class="progress-head">
+          <h4 class="progress-title"><i class="fa-solid fa-chart-simple"></i> Progresso nos Quizzes</h4>
+          <p class="progress-pct" id="progressText">0 / 6 Concluídos (0%)</p>
+        </div>
+        <div class="progress-visual">
+          <div class="stars-row" id="starsRow" aria-label="Estrelas de conquista por categoria"></div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+            <div class="progress-dots" id="progressDots" aria-hidden="true"></div>
+          </div>
+        </div>
+        <p class="progress-message" id="progressMessage">Vamos começar? Escolha uma categoria abaixo!</p>
+      </section>
+
+      <section class="categories-panel">
+        <header class="categories-header">
+          <h2><i class="fa-solid fa-bullseye"></i> Praticar Quiz de TI em Libras</h2>
+          <p class="categories-sub">Escolha uma categoria para testar seus conhecimentos. No final, você vê quantas questões acertou e quantas errou.</p>
+        </header>
+
+        <div class="selection-grid" id="selectionGrid">
+          <article class="category-card cat-hardware" id="card-Hardware">
+            <div class="card-top">
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-desktop"></i></span>
+              <h3>Hardware</h3>
+            </div>
+            <div class="card-mid">
+              <div class="donut" data-donut="Hardware">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
+              </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong data-stat="resultado">--</strong></span></li>
+              </ul>
+            </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Hardware')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Hardware" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
+
+          <article class="category-card cat-software" id="card-Software">
+            <div class="card-top">
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-compact-disc"></i></span>
+              <h3>Software</h3>
+            </div>
+            <div class="card-mid">
+              <div class="donut" data-donut="Software">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
+              </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong data-stat="resultado">--</strong></span></li>
+              </ul>
+            </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Software')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Software" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
+
+          <article class="category-card cat-programacao" id="card-Programação">
+            <div class="card-top">
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-laptop-code"></i></span>
+              <h3>Programação</h3>
+            </div>
+            <div class="card-mid">
+              <div class="donut" data-donut="Programação">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
+              </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong data-stat="resultado">--</strong></span></li>
+              </ul>
+            </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Programação')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Programacao" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
+
+          <article class="category-card cat-eletricidade" id="card-Eletricidade">
+            <div class="card-top">
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-plug"></i></span>
+              <h3>Eletricidade</h3>
+            </div>
+            <div class="card-mid">
+              <div class="donut" data-donut="Eletricidade">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
+              </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong data-stat="resultado">--</strong></span></li>
+              </ul>
+            </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Eletricidade')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Eletricidade" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
+
+          <article class="category-card cat-redes" id="card-Redes">
+            <div class="card-top">
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-tower-broadcast"></i></span>
+              <h3>Redes</h3>
+            </div>
+            <div class="card-mid">
+              <div class="donut" data-donut="Redes">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
+              </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong data-stat="resultado">--</strong></span></li>
+              </ul>
+            </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Redes')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html?cat=Redes" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i> Consultar</a>
+            </div>
+          </article>
+
+          <article class="category-card cat-todos" id="card-Todos">
+            <div class="card-top">
+              <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
+              <span class="badge-icon"><i class="fa-solid fa-trophy"></i></span>
+              <h3>Simulado Geral</h3>
+            </div>
+            <div class="card-mid">
+              <div class="donut" data-donut="Todos">
+                <svg class="donut-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="donut-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="donut-value" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="donut-center">
+                  <span class="donut-pct">0%</span>
+                  <span class="donut-status">Não iniciado</span>
+                </div>
+              </div>
+              <ul class="card-stats">
+                <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span data-stat="total">0</span> questões</span></li>
+                <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong data-stat="resultado">--</strong></span></li>
+              </ul>
+            </div>
+            <div class="card-actions">
+              <button class="btn-card-start" type="button" onclick="iniciarQuiz('Todos')"><i class="fa-solid fa-play"></i> Começar</button>
+              <a href="sinalario.html" class="btn-card-consult"><i class="fa-solid fa-book-open"></i> Consultar</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <div id="quizScreen" class="quiz-card quiz-screen">
+      <div class="quiz-header">
+        <div>
+          <button class="btn-back" type="button" onclick="voltarParaSelecao()"><i class="fa-solid fa-arrow-left"></i> Voltar à Seleção</button>
+          <div class="quiz-header-info">
+            <span class="category-tag" id="qCategory">HARDWARE</span>
+            <h2 id="qTitle">Pergunta 1 de 1</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-body-grid">
+        <div class="quiz-media-col">
+          <div class="quiz-video-box">
+            <video id="qVideo" autoplay loop muted playsinline preload="auto"></video>
+            <div class="quiz-video-aviso" id="qVideoAviso">
+              <i class="fa-solid fa-video-slash"></i>
+              <span>Vídeo do sinal em breve</span>
+            </div>
+          </div>
+          <p class="quiz-media-hint">Assista ao vídeo e selecione o termo correspondente:</p>
+        </div>
+
+        <div class="quiz-options-col">
+          <h3 class="options-title">Qual é a resposta correta?</h3>
+          <div class="options-list" id="optionsContainer"></div>
+        </div>
+      </div>
+
+      <div id="resultPanel" class="result-panel">
+        <span class="result-icon"><i class="fa-solid fa-flag-checkered"></i></span>
+        <h3 class="result-title">Quiz concluído!</h3>
+        <div class="result-stats">
+          <div class="result-stat result-stat-acertos">
+            <span class="result-num" id="resultAcertos">0</span>
+            <span class="result-label"><i class="fa-solid fa-check"></i> Acertos</span>
+          </div>
+          <div class="result-stat result-stat-erros">
+            <span class="result-num" id="resultErros">0</span>
+            <span class="result-label"><i class="fa-solid fa-xmark"></i> Erros</span>
+          </div>
+        </div>
+        <p class="result-pct" id="resultPct"></p>
+        <div class="result-actions">
+          <button class="btn-card-start" type="button" onclick="iniciarQuiz(categoriaAtual)"><i class="fa-solid fa-rotate-right"></i> Tentar de novo</button>
+          <button class="btn-card-consult" type="button" onclick="voltarParaSelecao()"><i class="fa-solid fa-arrow-left"></i> Voltar à seleção</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>

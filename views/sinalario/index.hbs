@@ -1,0 +1,136 @@
+<app-header></app-header>
+<div class="container main-layout">
+<aside class="sidebar-filtros">
+<div class="filtros-panel">
+  <h2 class="filtros-title">Filtros</h2>
+<div class="filtros-field">
+<div class="custom-select-container" id="categoryCustomSelect">
+<button
+class="custom-select-trigger"
+id="categoryTrigger"
+type="button"
+data-value="todos"
+aria-haspopup="listbox"
+aria-expanded="false"
+title="Filtrar por área">
+<span class="selected-option">
+  <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
+</span>
+<i class="fa-solid fa-chevron-down arrow-icon"></i>
+</button>
+
+<div class="custom-options-menu" role="listbox">
+  <div class="custom-option active" data-value="todos" role="option">
+    <i class="fa-solid fa-shapes icon-todos"></i> Todas as áreas
+  </div>
+  <div class="custom-option" data-value="hardware" role="option">
+    <i class="fa-solid fa-desktop icon-hardware"></i> Hardware
+  </div>
+  <div class="custom-option" data-value="software" role="option">
+    <i class="fa-solid fa-compact-disc icon-software"></i> Software
+  </div>
+  <div class="custom-option" data-value="programacao" role="option">
+    <i class="fa-solid fa-laptop-code icon-programacao"></i> Programação
+  </div>
+  <div class="custom-option" data-value="eletricidade" role="option">
+    <i class="fa-solid fa-plug icon-eletricidade"></i> Eletricidade
+  </div>
+  <div class="custom-option" data-value="redes" role="option">
+    <i class="fa-solid fa-tower-broadcast icon-redes"></i> Redes
+  </div>
+  <div class="custom-option" data-value="favoritos" role="option">
+    <i class="fa-solid fa-heart icon-favoritos"></i> Favoritos
+  </div>
+</div>
+</div>
+</div>
+
+<div class="search-box">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input type="text" id="searchInput" placeholder="Buscar Termo...">
+</div>
+
+<span class="terms-count" id="termsCount">0 TERMOS</span>
+
+<div class="terms-list" id="termsList"></div>
+</div>
+</aside>
+
+<main class="content-column">
+
+<header class="term-header" id="termHeader">
+<span class="category-row">
+<i class="fa-solid fa-desktop" id="displayCategoryIcon"></i>
+<span class="category-tag" id="displayCategory">HARDWARE</span>
+</span>
+<div class="term-title-row">
+<h2 id="displayTerm">Monitor</h2>
+<button class="btn-fav-large" id="btnMainFav" title="Favoritar Termo">
+<i class="fa-regular fa-heart"></i>
+</button>
+</div>
+</header>
+<div class="card-video-container">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-circle-play"></i></span>
+<h3 class="info-card-title">Vídeo do sinal</h3>
+</div>
+
+<div class="video-wrapper" id="videoWrapper">
+<video
+class="video-sinal"
+id="videoSinal"
+autoplay
+loop
+muted
+playsinline
+preload="auto"></video>
+<div class="video-indisponivel" id="avisoVideoIndisponivel">
+<i class="fa-solid fa-video-slash"></i>
+<span>Vídeo do sinal em breve</span>
+</div>
+</div>
+</div>
+<section class="definicao-card">
+<div class="definicao-head">
+<span class="icon-circle roxo"><i class="fa-solid fa-book-open"></i></span>
+<h3 class="definicao-title">Definição do termo</h3>
+</div>
+<p id="displayDef"></p>
+</section>
+</main>
+<aside class="detalhes-column">
+<section class="info-card info-card--imagem">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-image"></i></span>
+<h3 class="info-card-title">Imagem do termo</h3>
+</div>
+<div class="imagem-content">
+<img src="" alt="Termo" id="termImage">
+<span class="img-placeholder" id="imgPlaceholder">
+<i class="fa-solid fa-image"></i>
+<span>Imagem em breve</span>
+</span>
+</div>
+</section>
+
+<section class="info-card info-card--exemplo">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-comment-dots"></i></span>
+<h3 class="info-card-title">Exemplo em português</h3>
+</div>
+<p id="displayExPt"></p>
+</section>
+
+<section class="info-card info-card--exemplo">
+<div class="info-card-head">
+<span class="icon-circle lilas"><i class="fa-solid fa-hands"></i></span>
+<h3 class="info-card-title">Exemplo em Libras</h3>
+</div>
+<p class="libras-text" id="displayExGlosa"></p>
+</section>
+
+    </aside>
+  </div>
+
+  <app-footer></app-footer>

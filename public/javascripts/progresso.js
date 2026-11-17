@@ -1,0 +1,352 @@
+function progressoVazio() {
+  return {
+    sinais_vistos: [],
+    termos_favoritos: [],
+    quizzes_concluidos: [],
+    pontuacoes: {}
+  };
+}
+
+let dadosProgresso = progressoVazio();
+let usuarioCarregado = null;
+let carregamentoFalhou = false;
+let salvandoProgresso = false;
+let salvamentoPendente = false;
+let timerSalvamento = null;
+
+function idDoUsuarioAtual() {
+  if (window.currentUser && window.currentUser.uid) return window.currentUser.uid;
+  return null;
+}
+
+function normalizarRegistro(registro) {
+  const base = progressoVazio();
+  if (!registro) return base;
+
+  return {
+    sinais_vistos: Array.isArray(registro.sinais_vistos)
+      ? registro.sinais_vistos.slice()
+      : base.sinais_vistos,
+    termos_favoritos: Array.isArray(registro.termos_favoritos)
+      ? registro.termos_favoritos.slice()
+      : base.termos_favoritos,
+    quizzes_concluidos: Array.isArray(registro.quizzes_concluidos)
+      ? registro.quizzes_concluidos.slice()
+      : base.quizzes_concluidos,
+    pontuacoes:
+      registro.pontuacoes && typeof registro.pontuacoes === 'object'
+        ? { ...registro.pontuacoes }
+        : base.pontuacoes
+  };
+}
+
+function limparProgressoEmMemoria() {
+  dadosProgresso = progressoVazio();
+  usuarioCarregado = null;
+  carregamentoFalhou = false;
+}
+
+async function carregarProgresso(forcar) {
+  const uid = idDoUsuarioAtual();
+
+  if (!uid) {
+    limparProgressoEmMemoria();
+    return dadosProgresso;
+  }
+
+  if (!forcar && usuarioCarregado === uid && !carregamentoFalhou) return dadosProgresso;
+
+  try {
+    const registro = await window.apiFetch('/progresso');
+    dadosProgresso = normalizarRegistro(registro);
+    usuarioCarregado = uid;
+    carregamentoFalhou = false;
+  } catch (erro) {
+    console.error('[Progresso] Falha ao carregar dados do backend:', erro && erro.message ? erro.message : erro);
+    dadosProgresso = progressoVazio();
+    usuarioCarregado = null;
+    carregamentoFalhou = true;
+  }
+
+  window.dispatchEvent(new CustomEvent('progresso-carregado'));
+  return dadosProgresso;
+}
+
+let timerAvisoConquista = null;
+
+// Aviso discreto ("Conquista desbloqueada: ..."), anunciado a leitores de tela (role="status").
+function mostrarAvisoConquista(novas) {
+  const nomes = novas.map((c) => c.nome);
+  const texto = nomes.length === 1
+    ? `Conquista desbloqueada: ${nomes[0]}`
+    : `${nomes.length} conquistas desbloqueadas: ${nomes.join(', ')}`;
+
+  let aviso = document.getElementById('avisoConquista');
+  if (!aviso) {
+    aviso = document.createElement('div');
+    aviso.id = 'avisoConquista';
+    aviso.className = 'aviso-conquista';
+    aviso.setAttribute('role', 'status');
+    aviso.setAttribute('aria-live', 'polite');
+    document.body.appendChild(aviso);
+  }
+
+  aviso.textContent = texto;
+  aviso.classList.add('visivel');
+  if (timerAvisoConquista) clearTimeout(timerAvisoConquista);
+  timerAvisoConquista = setTimeout(() => aviso.classList.remove('visivel'), 6000);
+}
+
+// O servidor confere as conquistas ao salvar e informa as novas em `novas_conquistas`.
+function avisarConquistas(resposta) {
+  const novas = resposta && Array.isArray(resposta.novas_conquistas) ? resposta.novas_conquistas : [];
+  if (!novas.length) return;
+  window.dispatchEvent(new CustomEvent('conquistas-desbloqueadas', { detail: { conquistas: novas } }));
+  mostrarAvisoConquista(novas);
+}
+
+async function gravarProgresso() {
+  const uid = idDoUsuarioAtual();
+  if (!uid) return false;
+  if (carregamentoFalhou || usuarioCarregado !== uid) return false;
+
+  if (salvandoProgresso) {
+    salvamentoPendente = true;
+    return false;
+  }
+
+  salvandoProgresso = true;
+  let falhou = false;
+
+  try {
+    const resposta = await window.apiFetch('/progresso', {
+      method: 'PUT',
+      body: JSON.stringify(dadosProgresso)
+    });
+    avisarConquistas(resposta);
+  } catch (erro) {
+    falhou = true;
+    console.error('[Progresso] Falha ao salvar dados no backend:', erro && erro.message ? erro.message : erro);
+  }
+
+  salvandoProgresso = false;
+
+  if (salvamentoPendente) {
+    salvamentoPendente = false;
+    return gravarProgresso();
+  }
+
+  return !falhou;
+}
+
+function agendarGravacao() {
+  if (timerSalvamento) clearTimeout(timerSalvamento);
+  timerSalvamento = setTimeout(() => {
+    timerSalvamento = null;
+    gravarProgresso();
+  }, 350);
+}
+
+function sinaisVistos() {
+  return dadosProgresso.sinais_vistos.slice();
+}
+
+function adicionarSinalVisto(termo) {
+  if (!termo || dadosProgresso.sinais_vistos.includes(termo)) return false;
+  dadosProgresso.sinais_vistos.push(termo);
+  agendarGravacao();
+  return true;
+}
+
+function removerSinalVisto(termo) {
+  const antes = dadosProgresso.sinais_vistos.length;
+  dadosProgresso.sinais_vistos = dadosProgresso.sinais_vistos.filter((item) => item !== termo);
+  if (dadosProgresso.sinais_vistos.length !== antes) {
+    agendarGravacao();
+    return true;
+  }
+  return false;
+}
+
+function favoritos() {
+  return dadosProgresso.termos_favoritos.slice();
+}
+
+function ehFavorito(termo) {
+  return dadosProgresso.termos_favoritos.includes(termo);
+}
+
+function alternarFavorito(termo) {
+  if (!termo) return false;
+
+  if (ehFavorito(termo)) {
+    dadosProgresso.termos_favoritos = dadosProgresso.termos_favoritos.filter(
+      (item) => item !== termo
+    );
+  } else {
+    dadosProgresso.termos_favoritos.push(termo);
+  }
+
+  agendarGravacao();
+  return ehFavorito(termo);
+}
+
+function quizzesConcluidos() {
+  return dadosProgresso.quizzes_concluidos.slice();
+}
+
+function quizConcluido(categoria) {
+  return dadosProgresso.quizzes_concluidos.includes(categoria);
+}
+
+function concluirQuiz(categoria) {
+  if (!categoria || quizConcluido(categoria)) return false;
+  dadosProgresso.quizzes_concluidos.push(categoria);
+  agendarGravacao();
+  return true;
+}
+
+function limparQuizzesConcluidos() {
+  dadosProgresso.quizzes_concluidos = [];
+  agendarGravacao();
+}
+
+function pontuacoes() {
+  return { ...dadosProgresso.pontuacoes };
+}
+
+function pontuacaoDe(categoria) {
+  return { ...(dadosProgresso.pontuacoes[categoria] || {}) };
+}
+
+function registrarPontuacao(categoria, valores) {
+  if (!categoria || !valores) return;
+
+  const atual = dadosProgresso.pontuacoes[categoria] || {};
+  dadosProgresso.pontuacoes[categoria] = {
+    ...atual,
+    ...valores,
+    atualizado_em: new Date().toISOString()
+  };
+  agendarGravacao();
+}
+
+function incrementarPontuacao(categoria, valores) {
+  if (!categoria || !valores) return;
+
+  const atual = dadosProgresso.pontuacoes[categoria] || {};
+  const somado = { ...atual };
+
+  Object.keys(valores).forEach((chave) => {
+    const valor = valores[chave];
+    if (typeof valor === 'number') {
+      somado[chave] = (typeof somado[chave] === 'number' ? somado[chave] : 0) + valor;
+    } else {
+      somado[chave] = valor;
+    }
+  });
+
+  somado.atualizado_em = new Date().toISOString();
+  dadosProgresso.pontuacoes[categoria] = somado;
+  agendarGravacao();
+}
+
+function definirPontuacao(categoria, valores) {
+  if (!categoria) return;
+  dadosProgresso.pontuacoes[categoria] = {
+    ...(valores || {}),
+    atualizado_em: new Date().toISOString()
+  };
+  agendarGravacao();
+}
+
+// Última atividade (sinal visto ou quiz concluído). Fica guardada dentro de `pontuacoes`,
+// numa chave reservada, então não precisa mudar o banco nem o servidor.
+const CHAVE_ULTIMA_ATIVIDADE = '_ultima_atividade';
+
+function registrarUltimaAtividade(tipo, rotulo) {
+  if (!tipo || !rotulo) return;
+  definirPontuacao(CHAVE_ULTIMA_ATIVIDADE, {
+    tipo: tipo,
+    rotulo: rotulo,
+    data: new Date().toISOString()
+  });
+}
+
+// Devolve { tipo: 'sinal' | 'quiz', rotulo, data } ou null.
+// Também olha a data de conclusão dos quizzes antigos, que já existia antes deste recurso.
+function ultimaAtividade() {
+  const candidatas = [];
+  const guardada = dadosProgresso.pontuacoes[CHAVE_ULTIMA_ATIVIDADE];
+  if (guardada && guardada.tipo && guardada.rotulo && guardada.data) {
+    candidatas.push({ tipo: guardada.tipo, rotulo: guardada.rotulo, data: guardada.data });
+  }
+
+  Object.keys(dadosProgresso.pontuacoes).forEach((chave) => {
+    if (chave === CHAVE_ULTIMA_ATIVIDADE) return;
+    const registro = dadosProgresso.pontuacoes[chave];
+    if (registro && registro.ultima_conclusao) {
+      candidatas.push({ tipo: 'quiz', rotulo: chave, data: registro.ultima_conclusao });
+    }
+  });
+
+  let melhor = null;
+  candidatas.forEach((item) => {
+    const tempo = new Date(item.data).getTime();
+    if (Number.isNaN(tempo)) return;
+    if (!melhor || tempo > new Date(melhor.data).getTime()) melhor = item;
+  });
+  return melhor;
+}
+
+// Progresso geral = sinais vistos que existem no sinalário ÷ total de termos (0 a 100).
+// Devolve null quando a lista de termos (/data/termos.js) não está carregada na página.
+function percentualGeral() {
+  if (typeof TERMOS === 'undefined' || !Array.isArray(TERMOS) || !TERMOS.length) return null;
+  const nomes = new Set(TERMOS.map((t) => t.termo));
+  const vistos = new Set(dadosProgresso.sinais_vistos.filter((nome) => nomes.has(nome)));
+  return Math.min(100, Math.round((vistos.size / TERMOS.length) * 100));
+}
+
+window.addEventListener('auth-changed', async () => {
+  const uid = idDoUsuarioAtual();
+
+  if (!uid) {
+    if (timerSalvamento) {
+      clearTimeout(timerSalvamento);
+      timerSalvamento = null;
+    }
+    limparProgressoEmMemoria();
+    window.dispatchEvent(new CustomEvent('progresso-carregado'));
+    return;
+  }
+
+  if (uid !== usuarioCarregado) await carregarProgresso(true);
+});
+
+window.Progresso = {
+  carregar: carregarProgresso,
+  salvar: gravarProgresso,
+  vazio: progressoVazio,
+  dados: () => normalizarRegistro(dadosProgresso),
+  usuarioId: () => usuarioCarregado,
+  sinaisVistos,
+  adicionarSinalVisto,
+  removerSinalVisto,
+  favoritos,
+  ehFavorito,
+  alternarFavorito,
+  quizzesConcluidos,
+  quizConcluido,
+  concluirQuiz,
+  limparQuizzesConcluidos,
+  pontuacoes,
+  pontuacaoDe,
+  registrarPontuacao,
+  incrementarPontuacao,
+  definirPontuacao,
+  percentualGeral,
+  registrarUltimaAtividade,
+  ultimaAtividade,
+  avisarConquistas
+};

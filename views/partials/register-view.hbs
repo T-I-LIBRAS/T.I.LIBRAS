@@ -1,0 +1,53 @@
+    <section class="auth-inline" id="viewRegister" hidden>
+      <div class="auth-page">
+        <div class="auth-form-side">
+          <div class="auth-form-wrap">
+            <div class="auth-card">
+              <div class="auth-card-inner">
+                <div class="auth-form-main">
+                  <button type="button" class="btn-back-inline" data-voltar><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                  <h2 class="auth-heading">Criar conta</h2>
+                  <form id="registerForm" class="form">
+                    <div class="field">
+                      <label for="regName"><i class="fa-solid fa-user"></i> Nome</label>
+                      <input id="regName" type="text" required placeholder="Seu nome">
+                    </div>
+                    <div class="field">
+                      <label for="regEmail"><i class="fa-regular fa-envelope"></i> E-mail</label>
+                      <input id="regEmail" type="email" required placeholder="seu@exemplo.com">
+                    </div>
+                    <div class="field">
+                      <label for="regPass"><i class="fa-solid fa-lock"></i> Senha</label>
+                      <span class="pass-field">
+                        <input id="regPass" type="password" minlength="6" required placeholder="Mínimo 6 caracteres">
+                        <button type="button" class="toggle-pass" data-toggle-pass="regPass" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-solid fa-eye"></i></button>
+                      </span>
+                    </div>
+                    <div class="form-check form-check-consent">
+                      <input id="regConsent" type="checkbox" required>
+                      <label for="regConsent">Li e concordo com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso e a Política de Privacidade</a> e autorizo o tratamento dos meus dados para o funcionamento da plataforma.</label>
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
+                    </div>
+                    <div id="registerFeedback" class="feedback"></div>
+                  </form>
+                </div>
+                <div class="auth-form-foot">
+                  <p class="auth-switch">Já tem conta? <button type="button" id="switchToLogin">Entrar</button></p>
+                  <div class="small-info">
+                    <p>Saiba como tratamos seus dados na <a href="termos.html" target="_blank" rel="noopener">Política de Privacidade</a>.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="auth-visual">
+          <div class="visual-inner">
+            <h1 class="visual-title">Crie sua conta e comece a aprender</h1>
+            <p class="visual-sub">Cadastre-se gratuitamente para acessar a plataforma e salvar favoritos, acompanhar o seu progresso, de forma sincronizada, prática e acessível.</p>
+          </div>
+        </aside>
+      </div>
+    </section>

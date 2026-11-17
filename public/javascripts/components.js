@@ -1,0 +1,206 @@
+const PAGINA_INICIAL_APP = 'home.html';
+const LINK_GITHUB = 'https://github.com/ti-libras/T.I.-LIBRAS';
+
+function estaLogado() {
+  return (
+    !!(window.currentUser && window.currentUser.uid) ||
+    !!(window.sessaoSupabase && window.sessaoSupabase.user)
+  );
+}
+
+function encerrarSessao() {
+  window.currentUser = null;
+  window.sessaoSupabase = null;
+  window.dispatchEvent(new CustomEvent('auth-changed'));
+}
+
+async function sairDoSistema() {
+  if (window.Auth && window.Auth.logout) {
+    await window.Auth.logout();
+  } else {
+    encerrarSessao();
+  }
+}
+
+function menuAcessibilidadeHtml() {
+  return `
+    <div class="acess-menu">
+      <button type="button" class="acess-btn" id="acessBtn" aria-haspopup="true" aria-expanded="false" aria-controls="acessPainel" aria-label="Opções de acessibilidade" title="Acessibilidade">
+        <svg class="acess-icone" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7.2" r="1.7" fill="currentColor"/><path d="M6.5 9.6l5.5.9 5.5-.9M12 10.5v3.2m0 0l-2.4 4.3m2.4-4.3l2.4 4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="acess-painel" id="acessPainel" role="group" aria-label="Opções de acessibilidade" hidden>
+        <h2 class="acess-titulo">Acessibilidade</h2>
+        <div class="acess-grupo">
+          <span class="acess-rotulo">Tema</span>
+          <div class="acess-opcoes">
+            <button type="button" class="acess-opcao" data-tema-opcao="claro" aria-pressed="true"><i class="fa-solid fa-sun"></i> Claro</button>
+            <button type="button" class="acess-opcao" data-tema-opcao="escuro" aria-pressed="false"><i class="fa-solid fa-moon"></i> Escuro</button>
+          </div>
+        </div>
+        <div class="acess-grupo">
+          <span class="acess-rotulo">Contraste</span>
+          <div class="acess-opcoes">
+            <button type="button" class="acess-opcao" data-contraste-opcao="normal" aria-pressed="true">Normal</button>
+            <button type="button" class="acess-opcao" data-contraste-opcao="alto" aria-pressed="false"><i class="fa-solid fa-circle-half-stroke"></i> Alto</button>
+          </div>
+        </div>
+        <button type="button" class="acess-restaurar" id="acessRestaurar">Restaurar padrão</button>
+      </div>
+    </div>
+  `;
+}
+
+class AppHeaderHome extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <header class="header">
+        <a href="index.html" class="logo" title="Ir para a página inicial">
+          <img src="/images/logo.png" alt="T.I. Libras Logo" class="brand-logo">
+          <span class="logo-text">T.I Libras</span>
+        </a>
+        <div class="header-actions">
+          ${menuAcessibilidadeHtml()}
+          <a href="#login" class="auth-btn auth-login" id="headerLogin" data-abrir-auth="login">Entrar</a>
+          <a href="#cadastro" class="auth-btn auth-register" id="headerRegister" data-abrir-auth="register">Criar conta</a>
+          <a href="${PAGINA_INICIAL_APP}" class="auth-btn auth-register" id="headerAcessar" hidden>Acessar plataforma</a>
+          <button type="button" class="auth-btn auth-logout" id="headerSair" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
+        </div>
+      </header>
+    `;
+
+    const aplicarEstado = () => {
+      const logado = estaLogado();
+      const login = this.querySelector('#headerLogin');
+      const registro = this.querySelector('#headerRegister');
+      const acessar = this.querySelector('#headerAcessar');
+      const sair = this.querySelector('#headerSair');
+      if (login) login.style.display = logado ? 'none' : '';
+      if (registro) registro.style.display = logado ? 'none' : '';
+      if (acessar) acessar.style.display = logado ? '' : 'none';
+      if (sair) sair.style.display = logado ? '' : 'none';
+    };
+
+    const sairBtn = this.querySelector('#headerSair');
+    if (sairBtn) sairBtn.addEventListener('click', sairDoSistema);
+
+    aplicarEstado();
+    window.addEventListener('auth-changed', aplicarEstado);
+  }
+}
+
+class AppHeader extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <header class="header">
+        <a href="index.html" class="logo" title="Ir para a página inicial">
+          <img src="/images/logo.png" alt="T.I. Libras Logo" class="brand-logo">
+          <span class="logo-text">T.I Libras</span>
+        </a>
+        <nav class="nav-links">
+          <a href="home.html" id="nav-inicio">Início</a>
+          <a href="sinalario.html" id="nav-sinalario">Sinalário</a>
+          <a href="praticar.html" id="nav-praticar">Praticar</a>
+        </nav>
+        <div class="header-actions">
+          ${menuAcessibilidadeHtml()}
+          <a href="index.html?auth=login" class="auth-btn auth-login" id="headerLogin">Entrar</a>
+          <a href="index.html?auth=register" class="auth-btn auth-register" id="headerRegister">Cadastrar</a>
+          <a href="perfil.html" class="auth-btn auth-perfil" id="headerPerfil" hidden>
+            <span class="avatar-mini" id="headerAvatarMini">?</span>
+            <span id="headerPerfilNome">Perfil</span>
+          </a>
+          <button type="button" class="auth-btn auth-logout" id="headerSair" hidden><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
+        </div>
+      </header>
+    `;
+
+    const caminho = window.location.pathname;
+    if (caminho.includes('home.html')) {
+      this.querySelector('#nav-inicio')?.classList.add('active');
+    } else if (caminho.includes('sinalario.html')) {
+      this.querySelector('#nav-sinalario')?.classList.add('active');
+    } else if (caminho.includes('praticar.html')) {
+      this.querySelector('#nav-praticar')?.classList.add('active');
+    }
+
+    const aplicarEstado = () => {
+      const logado = estaLogado();
+      const inicio = this.querySelector('#nav-inicio');
+      const praticar = this.querySelector('#nav-praticar');
+      const sinalario = this.querySelector('#nav-sinalario');
+      const login = this.querySelector('#headerLogin');
+      const registro = this.querySelector('#headerRegister');
+      const perfil = this.querySelector('#headerPerfil');
+      const sair = this.querySelector('#headerSair');
+      const nav = this.querySelector('.nav-links');
+      const logo = this.querySelector('.logo');
+      if (logo) logo.setAttribute('href', logado ? PAGINA_INICIAL_APP : 'index.html');
+      if (inicio) inicio.style.display = logado ? '' : 'none';
+      if (praticar) praticar.style.display = logado ? '' : 'none';
+      if (sinalario) sinalario.style.display = logado ? '' : 'none';
+      if (nav) nav.style.display = logado ? '' : 'none';
+      if (login) login.style.display = logado ? 'none' : '';
+      if (registro) registro.style.display = logado ? 'none' : '';
+      if (perfil) perfil.style.display = logado ? '' : 'none';
+      if (sair) sair.style.display = logado ? '' : 'none';
+
+      if (logado) {
+        const usuario = (window.currentUser) || (window.sessaoSupabase && window.sessaoSupabase.user) || {};
+        const nome = usuario.name || usuario.email || 'Perfil';
+        const inicial = (nome || '?').trim().charAt(0).toUpperCase();
+        const nomeEl = this.querySelector('#headerPerfilNome');
+        const avatarEl = this.querySelector('#headerAvatarMini');
+        if (nomeEl) nomeEl.textContent = (usuario.name || nome.split('@')[0] || 'Perfil');
+        if (avatarEl) avatarEl.textContent = inicial || '?';
+      }
+    };
+
+    const sairBtn = this.querySelector('#headerSair');
+    if (sairBtn) {
+      sairBtn.addEventListener('click', async () => {
+        await sairDoSistema();
+        window.location.href = 'index.html';
+      });
+    }
+
+    aplicarEstado();
+    window.addEventListener('auth-changed', aplicarEstado);
+  }
+}
+
+class AppFooter extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <footer class="footer">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <div class="footer-brand-text">
+              <strong>T.I Libras</strong>
+              <span>Tecnologia acessível em Libras</span>
+            </div>
+          </div>
+          <div class="footer-social">
+            <a href="${LINK_GITHUB}" target="_blank" rel="noopener noreferrer" class="social-round github" aria-label="GitHub" title="GitHub">
+              <i class="fa-brands fa-github"></i>
+            </a>
+            <a href="https://www.youtube.com/@t.i.libras" target="_blank" rel="noopener noreferrer" class="social-round youtube" aria-label="YouTube" title="YouTube">
+              <i class="fa-brands fa-youtube"></i>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <div class="footer-links-group">
+            <span class="footer-contact">Contato: <a href="mailto:ttilibras@gmail.com">ttilibras@gmail.com</a></span>
+            <a href="ficha-tecnica.html">Ficha Técnica</a>
+            <a href="termos.html">Termos e Condições de Uso</a>
+          </div>
+          <span class="footer-copy">© 2026 T.I. Libras. Todos os direitos reservados.</span>
+        </div>
+      </footer>
+    `;
+  }
+}
+
+customElements.define('app-header-home', AppHeaderHome);
+customElements.define('app-header', AppHeader);
+customElements.define('app-footer', AppFooter);

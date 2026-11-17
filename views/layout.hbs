@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="icon" type="image/png" sizes="512x512" href="/images/favicon.png?v=1">
+  <link rel="shortcut icon" href="/favicon.ico?v=1">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=1">
+  {{#each styles}}
+  <link rel="stylesheet" href="{{{this}}}">
+  {{/each}}
+  <link rel="stylesheet" href="/stylesheets/temas.css?v=1">
+  <script src="/javascripts/tema.js?v=1"></script>
+  {{#each headScripts}}
+  <script src="{{{this}}}"></script>
+  {{/each}}
+</head>
+<body>
+{{{body}}}
+  {{#each scripts}}
+  <script src="{{{this}}}"></script>
+  {{/each}}
+</body>
+</html>

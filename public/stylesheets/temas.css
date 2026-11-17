@@ -1,0 +1,326 @@
+/* =====================================================================
+   Temas: ESCURO e ALTO CONTRASTE
+   Os dois podem ser usados separados ou juntos (escuro + alto contraste).
+   O <html> recebe  data-tema="escuro"  e/ou  data-contraste="alto".
+   Tudo funciona trocando as variáveis de cor definidas em style.css.
+   ===================================================================== */
+
+/* ---------- TEMA ESCURO ---------- */
+:root[data-tema="escuro"] {
+  color-scheme: dark;
+
+  --cor-fundo: #14101f;
+  --cor-fundo-alt: #1b1530;
+  --cor-card: #1f1833;
+  --cor-texto: #f1eafc;
+  --cor-texto-suave: #b9abd6;
+  --cor-texto-medio: #cbbfe3;
+  --cor-texto-claro: #9d8fbd;
+  --cor-titulo: #e9ddff;
+
+  --cor-borda: #3a2f57;
+  --cor-borda-forte: #4b3d70;
+  --cor-trilho: #3a2f57;
+
+  --cor-primaria-texto: #b79cff;
+  --cor-lilas-texto: #c9b2ff;
+  --cor-lilas-2-texto: #e2d4ff;
+  --cor-lilas-claro: #2a2145;
+  --cor-lilas-hover: #342a55;
+  --cor-lilas-suave: #2d2350;
+  --cor-azul-claro: #3a2f57;
+  --cor-amarelo-claro: #3a2d0b;
+  --cor-amarelo-escuro: #fbbf24;
+
+  --cor-ok-fundo: #0f2e22;
+  --cor-ok-borda: #1f6b4c;
+  --cor-ok-texto: #6ee7b7;
+  --cor-erro-fundo: #3a1620;
+  --cor-erro-borda: #7f1d2d;
+  --cor-erro-texto: #fca5a5;
+}
+
+/* ---------- ALTO CONTRASTE (claro) ---------- */
+:root[data-contraste="alto"] {
+  --cor-fundo: #ffffff;
+  --cor-fundo-alt: #ffffff;
+  --cor-card: #ffffff;
+  --cor-texto: #000000;
+  --cor-texto-suave: #1a1a1a;
+  --cor-texto-medio: #000000;
+  --cor-texto-claro: #262626;
+  --cor-titulo: #000000;
+
+  --cor-borda: #000000;
+  --cor-borda-forte: #000000;
+  --cor-trilho: #d4d4d4;
+  --largura-borda: 2px;
+
+  --cor-primaria: #3b0764;
+  --cor-primaria-2: #3b0764;
+  --cor-primaria-hover: #240046;
+  --cor-lilas: #3b0764;
+  --cor-lilas-2: #2e0554;
+  --cor-azul: #3b0764;
+  --cor-primaria-texto: #3b0764;
+  --cor-lilas-texto: #3b0764;
+  --cor-lilas-2-texto: #240046;
+  --cor-lilas-claro: #f1e9ff;
+  --cor-lilas-hover: #e0d0ff;
+  --cor-lilas-suave: #f1e9ff;
+  --cor-azul-claro: #e0d0ff;
+  --cor-amarelo: #ffd400;
+  --cor-amarelo-2: #ffd400;
+  --cor-amarelo-escuro: #5c3a00;
+  --cor-amarelo-claro: #fff3b0;
+
+  --cor-ok-fundo: #ffffff;
+  --cor-ok-borda: #064e3b;
+  --cor-ok-texto: #064e3b;
+  --cor-erro-fundo: #ffffff;
+  --cor-erro-borda: #7f1d1d;
+  --cor-erro-texto: #7f1d1d;
+
+  --cor-sobre-amarelo: #000000;
+  --gradiente-marca: linear-gradient(#3b0764, #3b0764);
+  --gradiente-suave: linear-gradient(#3b0764, #3b0764);
+}
+
+/* ---------- ESCURO + ALTO CONTRASTE (mesclados) ---------- */
+:root[data-tema="escuro"][data-contraste="alto"] {
+  --cor-fundo: #000000;
+  --cor-fundo-alt: #000000;
+  --cor-card: #000000;
+  --cor-texto: #ffffff;
+  --cor-texto-suave: #f2f2f2;
+  --cor-texto-medio: #ffffff;
+  --cor-texto-claro: #e6e6e6;
+  --cor-titulo: #ffffff;
+
+  --cor-borda: #ffffff;
+  --cor-borda-forte: #ffffff;
+  --cor-trilho: #4d4d4d;
+
+  --cor-primaria: #5b21b6;
+  --cor-primaria-2: #5b21b6;
+  --cor-primaria-hover: #4c1d95;
+  --cor-lilas: #5b21b6;
+  --cor-lilas-2: #4c1d95;
+  --cor-azul: #5b21b6;
+  --cor-primaria-texto: #e9d5ff;
+  --cor-lilas-texto: #e9d5ff;
+  --cor-lilas-2-texto: #ffffff;
+  --cor-lilas-claro: #12002b;
+  --cor-lilas-hover: #240046;
+  --cor-lilas-suave: #12002b;
+  --cor-azul-claro: #240046;
+  --cor-amarelo: #ffd400;
+  --cor-amarelo-2: #ffd400;
+  --cor-amarelo-escuro: #ffd400;
+  --cor-amarelo-claro: #1a1400;
+
+  --cor-ok-fundo: #000000;
+  --cor-ok-borda: #6ee7b7;
+  --cor-ok-texto: #6ee7b7;
+  --cor-erro-fundo: #000000;
+  --cor-erro-borda: #ff8a8a;
+  --cor-erro-texto: #ff8a8a;
+
+  --gradiente-marca: linear-gradient(#5b21b6, #5b21b6);
+  --gradiente-suave: linear-gradient(#5b21b6, #5b21b6);
+}
+
+/* ---------- Regras extras do ALTO CONTRASTE ---------- */
+:root[data-contraste="alto"] a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+:root[data-contraste="alto"] a:hover {
+  text-decoration-thickness: 3px;
+}
+
+/* Foco bem visível para quem navega pelo teclado */
+:root[data-contraste="alto"] :focus-visible {
+  outline: 3px solid #000000;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px #ffd400;
+}
+
+:root[data-tema="escuro"][data-contraste="alto"] :focus-visible {
+  outline-color: #ffd400;
+  box-shadow: 0 0 0 6px #000000;
+}
+
+/* Sem fundos degradê/translúcidos nos banners: cor sólida com borda */
+:root[data-contraste="alto"] .home-banner,
+:root[data-contraste="alto"] .perfil-banner,
+:root[data-contraste="alto"] .hero,
+:root[data-contraste="alto"] .auth-visual,
+:root[data-contraste="alto"] .quick-card:not(.amarelo) {
+  background: var(--cor-primaria);
+  border: 2px solid var(--cor-borda);
+}
+
+:root[data-contraste="alto"] .nav-links a.active {
+  text-decoration: underline;
+  font-weight: 800;
+  border: 2px solid var(--cor-borda);
+}
+
+:root[data-contraste="alto"] .auth-btn,
+:root[data-contraste="alto"] .btn-primary {
+  border: 2px solid var(--cor-borda);
+}
+
+:root[data-contraste="alto"] input,
+:root[data-contraste="alto"] select,
+:root[data-contraste="alto"] textarea {
+  border: 2px solid var(--cor-borda);
+  background: var(--cor-card);
+  color: var(--cor-texto);
+}
+
+/* Texto com degradê (logo): no alto contraste vira cor sólida e legível */
+:root[data-contraste="alto"] .logo-text,
+:root[data-contraste="alto"] .footer-brand-text strong {
+  background: linear-gradient(var(--cor-primaria-texto), var(--cor-primaria-texto));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Barras de progresso visíveis */
+:root[data-contraste="alto"] .home-barra {
+  background: var(--cor-card);
+  border: 2px solid var(--cor-borda);
+}
+
+:root[data-contraste="alto"] .home-barra-preenchida {
+  background: var(--cor-primaria-texto);
+}
+
+:root[data-contraste="alto"] .quick-card.amarelo {
+  background: var(--cor-amarelo);
+  border: 2px solid var(--cor-borda);
+  color: #000000;
+}
+
+:root[data-contraste="alto"] .quick-card.amarelo * {
+  color: #000000;
+}
+
+/* ---------- Botão e painel de acessibilidade (cabeçalho) ---------- */
+.acess-menu {
+  position: relative;
+}
+
+.acess-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio);
+  border: var(--borda);
+  background: var(--cor-card);
+  color: var(--cor-texto);
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: var(--transicao);
+}
+
+.acess-btn:hover,
+.acess-btn[aria-expanded="true"] {
+  background: var(--cor-lilas-hover);
+}
+
+.acess-painel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 200;
+  width: 260px;
+  padding: 16px;
+  border: var(--borda);
+  border-radius: 12px;
+  background: var(--cor-card);
+  color: var(--cor-texto);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.acess-painel[hidden] {
+  display: none;
+}
+
+.acess-titulo {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--cor-titulo);
+}
+
+.acess-grupo + .acess-grupo {
+  margin-top: 14px;
+}
+
+.acess-rotulo {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cor-texto-suave);
+}
+
+.acess-opcoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.acess-opcao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 8px;
+  border: var(--borda);
+  border-radius: var(--raio);
+  background: var(--cor-card);
+  color: var(--cor-texto);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.acess-opcao:hover {
+  background: var(--cor-lilas-hover);
+}
+
+.acess-opcao[aria-pressed="true"] {
+  background: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #ffffff;
+}
+
+.acess-restaurar {
+  width: 100%;
+  margin-top: 14px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--cor-primaria-texto);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .acess-painel {
+    position: fixed;
+    top: 72px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}

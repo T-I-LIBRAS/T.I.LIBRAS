@@ -1,0 +1,162 @@
+/* ===== ficha-tecnica.css ===== */
+.ficha-main {
+  flex: 1;
+  width: 100%;
+}
+
+.ficha-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 3vw, 24px) 40px;
+}
+
+.ficha-topo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.ficha-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--cor-lilas-claro);
+  color: var(--cor-primaria-texto);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.ficha-topo h1 {
+  margin: 14px 0 10px;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  color: var(--cor-titulo);
+}
+
+.ficha-topo p {
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.6;
+  color: var(--cor-texto-suave);
+}
+
+.ficha-card {
+  padding: clamp(18px, 3vw, 28px);
+  margin-bottom: 20px;
+  line-height: 1.65;
+}
+
+.ficha-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 1.25rem;
+  color: var(--cor-titulo);
+}
+
+.ficha-card h2 i {
+  color: var(--cor-primaria-texto);
+}
+
+.ficha-card h3 {
+  margin: 18px 0 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.ficha-card p,
+.ficha-card li,
+.ficha-card dd {
+  color: var(--cor-texto);
+}
+
+.ficha-card p {
+  margin: 0 0 10px;
+}
+
+.ficha-card a {
+  color: var(--cor-primaria-texto);
+  text-decoration: underline;
+}
+
+.ficha-lista {
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+
+.ficha-lista > div {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: var(--borda);
+}
+
+.ficha-lista > div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.ficha-lista dt {
+  font-weight: 700;
+  color: var(--cor-texto-suave);
+}
+
+.ficha-lista dd {
+  margin: 0;
+}
+
+.ficha-metas {
+  margin: 8px 0 0;
+  padding-left: 22px;
+}
+
+.ficha-metas li {
+  margin-bottom: 6px;
+}
+
+.ficha-pessoas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.ficha-pessoas li {
+  padding: 10px 14px;
+  border: var(--borda);
+  border-radius: var(--raio);
+  background: var(--cor-fundo);
+  font-weight: 600;
+}
+
+.ficha-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ficha-chips span {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--cor-lilas-claro);
+  color: var(--cor-lilas-2-texto);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: var(--borda);
+}
+
+@media (max-width: 640px) {
+  .ficha-lista > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}

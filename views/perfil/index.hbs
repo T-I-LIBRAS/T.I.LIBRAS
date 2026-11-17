@@ -1,0 +1,149 @@
+<app-header></app-header>
+
+<main class="perfil-main">
+  <div class="container perfil-container">
+
+    <!-- Banner do usuário -->
+    <section class="perfil-banner">
+      <div class="perfil-avatar" id="perfilAvatar" aria-hidden="true">?</div>
+      <div class="perfil-banner-texto">
+        <h1 id="perfilNome">Meu perfil</h1>
+        <p id="perfilEmail">Carregando...</p>
+      </div>
+      <button type="button" class="perfil-btn-editar" id="btnEditarPerfil" aria-expanded="false" aria-controls="formEditarNome">
+        <i class="fa-solid fa-pen" aria-hidden="true"></i> Editar perfil
+      </button>
+      <!-- Imagem do robô: public/images/robo.png. Sem ela, o banner fica só com o texto. -->
+      <img class="perfil-banner-robo" src="/images/robo.png" alt="" onerror="this.remove()">
+    </section>
+
+    <div class="perfil-grid">
+
+      <!-- Informações da conta -->
+      <section class="perfil-card" aria-labelledby="tituloConta">
+        <h2 id="tituloConta"><i class="fa-solid fa-user" aria-hidden="true"></i> Informações da conta</h2>
+
+        <dl class="perfil-lista">
+          <div class="perfil-linha">
+            <span class="perfil-linha-icone"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
+            <div>
+              <dt>Nome completo</dt>
+              <dd id="infoNome">-</dd>
+            </div>
+          </div>
+          <div class="perfil-linha">
+            <span class="perfil-linha-icone"><i class="fa-solid fa-envelope" aria-hidden="true"></i></span>
+            <div>
+              <dt>E-mail</dt>
+              <dd id="infoEmail">-</dd>
+            </div>
+          </div>
+          <div class="perfil-linha" id="linhaCadastro" hidden>
+            <span class="perfil-linha-icone"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></span>
+            <div>
+              <dt>Cadastro em</dt>
+              <dd id="infoCadastro">-</dd>
+            </div>
+          </div>
+        </dl>
+
+        <form class="perfil-form" id="formEditarNome" hidden novalidate>
+          <label for="inputNome">Nome completo</label>
+          <input type="text" id="inputNome" name="name" maxlength="150" autocomplete="name" required>
+          <p class="perfil-form-erro" id="erroNome" role="alert" hidden></p>
+          <div class="perfil-form-botoes">
+            <button type="submit" class="btn btn-primary" id="btnSalvarNome">Salvar</button>
+            <button type="button" class="btn btn-outline" id="btnCancelarEdicao">Cancelar</button>
+          </div>
+        </form>
+        <p class="perfil-aviso-ok" id="avisoPerfil" role="status" hidden></p>
+
+        <div class="perfil-actions">
+          <a href="home.html" class="btn btn-outline"><i class="fa-solid fa-house" aria-hidden="true"></i> Voltar ao início</a>
+          <button type="button" class="btn btn-primary" id="btnSairPerfil"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i> Sair da conta</button>
+        </div>
+      </section>
+
+      <!-- Progresso -->
+      <section class="perfil-card" aria-labelledby="tituloProgresso">
+        <h2 id="tituloProgresso"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Meu progresso</h2>
+
+        <div class="perfil-stats">
+          <div class="perfil-stat">
+            <span class="perfil-stat-icone"><i class="fa-solid fa-hand" aria-hidden="true"></i></span>
+            <strong id="perfilSinais">0</strong>
+            <span class="perfil-stat-nome">Sinais vistos</span>
+            <span class="perfil-stat-desc">Sinais abertos no sinalário</span>
+          </div>
+          <div class="perfil-stat amarelo">
+            <span class="perfil-stat-icone"><i class="fa-solid fa-star" aria-hidden="true"></i></span>
+            <strong id="perfilFavoritos">0</strong>
+            <span class="perfil-stat-nome">Termos favoritos</span>
+            <span class="perfil-stat-desc">Termos salvos para consulta</span>
+          </div>
+          <div class="perfil-stat">
+            <span class="perfil-stat-icone"><i class="fa-solid fa-trophy" aria-hidden="true"></i></span>
+            <strong id="perfilQuizzes">0</strong>
+            <span class="perfil-stat-nome">Quizzes concluídos</span>
+            <span class="perfil-stat-desc">Quizzes finalizados</span>
+          </div>
+        </div>
+
+        <div class="perfil-geral" id="blocoProgressoGeral" hidden>
+          <div class="perfil-geral-topo">
+            <span>Progresso geral</span>
+            <strong id="perfilPercentual">0%</strong>
+          </div>
+          <div class="perfil-barra" id="perfilBarra" role="progressbar" aria-label="Progresso geral" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span id="perfilBarraPreenchida"></span>
+          </div>
+          <p class="perfil-geral-legenda">Sinais vistos ÷ total de termos do sinalário.</p>
+        </div>
+
+        <p class="perfil-resumo-conquistas" id="perfilResumoConquistas"></p>
+      </section>
+    </div>
+
+    <!-- Conquistas -->
+    <section class="perfil-card perfil-conquistas" aria-labelledby="tituloConquistas">
+      <div class="perfil-conquistas-topo">
+        <h2 id="tituloConquistas"><i class="fa-solid fa-medal" aria-hidden="true"></i> Conquistas</h2>
+      </div>
+      <p class="perfil-conquistas-estado" id="conquistasEstado" role="status">Carregando conquistas...</p>
+      <button type="button" class="btn btn-outline" id="btnRecarregarConquistas" hidden>Tentar de novo</button>
+      <ul class="conquistas-grid" id="listaConquistas" hidden></ul>
+    </section>
+
+    <!-- Privacidade e exclusão da conta (LGPD) -->
+    <section class="perfil-card perfil-privacidade" aria-labelledby="tituloPrivacidade">
+      <h2 id="tituloPrivacidade"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Privacidade e dados</h2>
+      <p>Seus dados são usados só para o funcionamento do T.I. Libras. Veja os detalhes nos <a href="termos.html">Termos de Uso e Política de Privacidade</a>.</p>
+      <div class="perfil-perigo">
+        <div>
+          <h3>Excluir minha conta</h3>
+          <p>Apaga de forma permanente o seu nome, e-mail, progresso, favoritos e conquistas. Essa ação não pode ser desfeita.</p>
+        </div>
+        <button type="button" class="btn-excluir" id="btnExcluirConta"><i class="fa-solid fa-trash" aria-hidden="true"></i> Excluir minha conta</button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Confirmação de exclusão de conta -->
+<dialog class="dialogo-excluir" id="dialogoExcluir" aria-labelledby="tituloExcluir" aria-describedby="textoExcluir">
+  <form id="formExcluirConta" novalidate>
+    <span class="dialogo-icone" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span>
+    <h2 id="tituloExcluir">Excluir a conta?</h2>
+    <p id="textoExcluir">Todos os seus dados serão apagados <strong>de forma permanente</strong>: nome, e-mail, progresso, favoritos e conquistas. Essa ação não pode ser desfeita.</p>
+    <label for="inputSenhaExcluir">Para confirmar, digite a sua senha</label>
+    <input type="password" id="inputSenhaExcluir" autocomplete="current-password" required>
+    <p class="dialogo-erro" id="erroExcluir" role="alert" hidden></p>
+    <div class="dialogo-botoes">
+      <button type="button" class="btn btn-outline" id="btnCancelarExcluir">Cancelar</button>
+      <button type="submit" class="btn-excluir" id="btnConfirmarExcluir">Excluir definitivamente</button>
+    </div>
+  </form>
+</dialog>
+
+<app-footer></app-footer>

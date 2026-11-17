@@ -1,0 +1,73 @@
+/* ===== termos.css: Termos de Uso e Política de Privacidade ===== */
+.termos-main {
+  flex: 1;
+  width: 100%;
+}
+
+.termos-container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px clamp(16px, 3vw, 24px);
+}
+
+.termos-card {
+  padding: clamp(20px, 4vw, 40px);
+  line-height: 1.65;
+  color: var(--cor-texto);
+}
+
+.termos-card h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--cor-titulo);
+  margin: 0 0 4px;
+}
+
+.termos-card h2 {
+  font-size: 1.2rem;
+  color: var(--cor-titulo);
+  margin: 0 0 10px;
+}
+
+.termos-card section {
+  margin-top: 28px;
+  scroll-margin-top: 80px;
+}
+
+.termos-card p,
+.termos-card li {
+  color: var(--cor-texto);
+}
+
+.termos-card ul {
+  padding-left: 22px;
+  margin: 8px 0 12px;
+}
+
+.termos-card li {
+  margin-bottom: 6px;
+}
+
+.termos-card a:not(.btn) {
+  color: var(--cor-primaria-texto);
+  text-decoration: underline;
+}
+
+.termos-atualizacao {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+}
+
+.termos-indice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  background: var(--cor-lilas-claro);
+  border: var(--borda);
+  border-radius: var(--raio);
+}
+
+.termos-voltar {
+  margin-top: 32px;
+}

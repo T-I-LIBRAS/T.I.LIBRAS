@@ -1,0 +1,660 @@
+/* ===== perfil.css ===== */
+.perfil-main {
+  flex: 1;
+  width: 100%;
+}
+
+.perfil-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* o atributo hidden precisa vencer os "display" definidos abaixo */
+.perfil-main [hidden] {
+  display: none !important;
+}
+
+.perfil-main a:focus-visible,
+.perfil-main button:focus-visible,
+.perfil-main input:focus-visible {
+  outline: 3px solid var(--cor-amarelo);
+  outline-offset: 2px;
+}
+
+/* ---------- Banner ---------- */
+.perfil-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 190px;
+  padding: 28px clamp(20px, 4vw, 48px);
+  border-radius: 16px;
+  color: #ffffff;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 55% 120% at 100% 100%, rgba(245, 179, 1, 0.95) 0%, rgba(245, 179, 1, 0) 70%),
+    linear-gradient(100deg, #5b21b6 0%, #7c3aed 42%, #9333ea 62%, #f5b301 100%);
+}
+
+.perfil-avatar {
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.14);
+  border: 3px solid rgba(255, 255, 255, 0.7);
+}
+
+.perfil-banner-texto {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.perfil-banner-texto h1 {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+}
+
+.perfil-banner-texto p {
+  font-size: 1.02rem;
+  opacity: 0.95;
+  overflow-wrap: anywhere;
+}
+
+.perfil-btn-editar {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--cor-card);
+  color: var(--cor-lilas-2-texto);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transicao);
+}
+
+.perfil-btn-editar:hover {
+  background: var(--cor-lilas-claro);
+}
+
+.perfil-banner-robo {
+  position: absolute;
+  right: clamp(120px, 12vw, 190px);
+  bottom: 0;
+  height: 108%;
+  max-height: 220px;
+  width: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* ---------- Cartões ---------- */
+.perfil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: clamp(14px, 1.8vw, 20px);
+  margin: 20px 0;
+}
+
+.perfil-card {
+  background: var(--cor-card);
+  border: var(--borda);
+  border-radius: 14px;
+  padding: 22px 24px;
+}
+
+.perfil-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--cor-lilas-2-texto);
+  margin-bottom: 18px;
+}
+
+.perfil-card h2 i {
+  color: var(--cor-primaria-texto);
+}
+
+/* ---------- Informações da conta ---------- */
+.perfil-lista {
+  margin: 0;
+}
+
+.perfil-linha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: var(--borda);
+}
+
+.perfil-linha:last-child {
+  border-bottom: 0;
+}
+
+.perfil-linha-icone {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--cor-lilas-claro);
+  color: var(--cor-lilas-2-texto);
+}
+
+.perfil-linha dt {
+  font-size: 0.82rem;
+  color: var(--cor-texto-suave);
+}
+
+.perfil-linha dd {
+  margin: 0;
+  font-weight: 700;
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}
+
+.perfil-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--cor-fundo);
+  border: var(--borda);
+}
+
+.perfil-form label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cor-lilas-2-texto);
+}
+
+.perfil-form input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--cor-card);
+  color: var(--cor-texto);
+}
+
+.perfil-form-erro {
+  color: var(--cor-erro-texto);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.perfil-form-botoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.perfil-aviso-ok {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--cor-lilas-claro);
+  color: var(--cor-lilas-2-texto);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.perfil-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* ---------- Progresso ---------- */
+.perfil-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.perfil-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--cor-lilas-claro);
+}
+
+.perfil-stat.amarelo {
+  background: var(--cor-amarelo-claro);
+}
+
+.perfil-stat-icone {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  font-size: 1.15rem;
+  background: var(--cor-card);
+  color: var(--cor-lilas-2-texto);
+}
+
+.perfil-stat.amarelo .perfil-stat-icone {
+  color: var(--cor-amarelo-escuro);
+}
+
+.perfil-stat strong {
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--cor-texto);
+}
+
+.perfil-stat-nome {
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.perfil-stat-desc {
+  font-size: 0.82rem;
+  color: var(--cor-texto-suave);
+}
+
+.perfil-geral {
+  margin-top: 18px;
+}
+
+.perfil-geral-topo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--cor-lilas-2-texto);
+}
+
+.perfil-barra {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--cor-fundo-alt);
+  overflow: hidden;
+}
+
+.perfil-barra span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c3aed, #5b21b6);
+  transition: width 0.6s ease;
+}
+
+.perfil-geral-legenda {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+.perfil-resumo-conquistas {
+  margin-top: 14px;
+  font-weight: 700;
+  color: var(--cor-lilas-2-texto);
+}
+
+.perfil-resumo-conquistas:empty {
+  display: none;
+}
+
+/* ---------- Conquistas ---------- */
+.perfil-conquistas {
+  margin-bottom: 24px;
+}
+
+.perfil-conquistas-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.perfil-conquistas-topo h2 {
+  margin-bottom: 0;
+}
+
+.perfil-conquistas-contador {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--cor-texto-suave);
+}
+
+.perfil-conquistas-estado {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--cor-lilas-claro);
+  color: var(--cor-texto-suave);
+  font-size: 0.92rem;
+  margin-bottom: 12px;
+}
+
+.conquistas-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.conquista {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 12px;
+  border: var(--borda);
+  background: var(--cor-card);
+}
+
+.conquista.desbloqueada {
+  border: 2px solid var(--cor-primaria);
+  background: var(--cor-lilas-claro);
+}
+
+.conquista.bloqueada {
+  border-style: dashed;
+  background: var(--cor-fundo);
+}
+
+.conquista-icone {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+  font-size: 1.35rem;
+}
+
+.conquista.desbloqueada .conquista-icone {
+  background: var(--cor-amarelo);
+  color: var(--cor-sobre-amarelo);
+}
+
+.conquista.bloqueada .conquista-icone {
+  background: var(--cor-trilho);
+  color: var(--cor-texto-claro);
+}
+
+.conquista-nome {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--cor-texto);
+}
+
+.conquista-desc {
+  font-size: 0.9rem;
+  color: var(--cor-texto);
+}
+
+.conquista-req {
+  font-size: 0.82rem;
+  color: var(--cor-texto-suave);
+}
+
+.conquista-estado {
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--cor-lilas-2-texto);
+}
+
+.conquista.bloqueada .conquista-estado {
+  color: var(--cor-texto-medio);
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1000px) {
+  .perfil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .conquistas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .perfil-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 72px;
+  }
+
+  .perfil-banner-robo {
+    display: none;
+  }
+
+  .perfil-btn-editar {
+    top: 16px;
+    right: 16px;
+  }
+
+  .perfil-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .conquistas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perfil-barra span,
+  .perfil-btn-editar {
+    transition: none;
+  }
+}
+
+/* ---------- Privacidade e exclusão de conta (LGPD) ---------- */
+.perfil-privacidade {
+  margin-top: 20px;
+}
+
+.perfil-privacidade p {
+  color: var(--cor-texto-suave);
+  line-height: 1.55;
+  margin: 0 0 14px;
+}
+
+.perfil-privacidade a {
+  color: var(--cor-primaria-texto);
+  text-decoration: underline;
+}
+
+.perfil-perigo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px;
+  border: 1px solid var(--cor-erro-borda);
+  background: var(--cor-erro-fundo);
+  border-radius: var(--raio);
+}
+
+.perfil-perigo h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+  color: var(--cor-erro-texto);
+}
+
+.perfil-perigo p {
+  margin: 0;
+  color: var(--cor-erro-texto);
+  font-size: 0.92rem;
+}
+
+.btn-excluir {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid #991b1b;
+  border-radius: var(--raio);
+  background: #b91c1c;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transicao);
+}
+
+.btn-excluir:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.btn-excluir:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Caixa de confirmação de exclusão.
+   O reset global (* { margin: 0 }) do style.css anula o centralizado automático do <dialog>,
+   por isso margin: auto e o inset: 0 estão explícitos aqui. */
+.dialogo-excluir {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(440px, calc(100vw - 32px));
+  height: fit-content;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 32px 28px 24px;
+  border: var(--borda);
+  border-radius: 14px;
+  background: var(--cor-card);
+  color: var(--cor-texto);
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+
+.dialogo-excluir[open] {
+  animation: dialogo-entrada 0.18s ease-out;
+}
+
+.dialogo-excluir::backdrop {
+  background: rgba(20, 10, 40, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+@keyframes dialogo-entrada {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogo-excluir[open] { animation: none; }
+}
+
+.dialogo-icone {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--cor-erro-fundo);
+  border: 1px solid var(--cor-erro-borda);
+  color: var(--cor-erro-texto);
+  font-size: 1.6rem;
+}
+
+.dialogo-excluir h2 {
+  margin: 0 0 10px;
+  font-size: 1.4rem;
+  color: var(--cor-titulo);
+}
+
+.dialogo-excluir p {
+  margin: 0 0 20px;
+  line-height: 1.55;
+  color: var(--cor-texto-suave);
+}
+
+.dialogo-excluir label {
+  display: block;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.dialogo-excluir input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-size: 1rem;
+}
+
+.dialogo-excluir input:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 1px;
+}
+
+.dialogo-excluir .dialogo-erro {
+  margin: 10px 0 0;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cor-erro-texto);
+}
+
+.dialogo-botoes {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.dialogo-botoes .btn,
+.dialogo-botoes .btn-excluir {
+  flex: 1;
+  justify-content: center;
+  padding: 12px 14px;
+}
+
+@media (max-width: 420px) {
+  .dialogo-botoes {
+    flex-direction: column-reverse;
+  }
+}
