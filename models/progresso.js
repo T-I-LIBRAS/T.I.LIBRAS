@@ -1,5 +1,10 @@
 const pool = require('../config/database');
 
+// MySQL pode devolver JSON já convertido; no MariaDB a coluna também pode vir como texto.
+function lerJson(valor) {
+  return typeof valor === 'string' ? JSON.parse(valor) : valor;
+}
+
 // Modelo do progresso do usuário (tabela `progresso_usuario`, ver config/schema.sql).
 const Progresso = {
   // Progresso de quem ainda não salvou nada.
@@ -41,10 +46,10 @@ const Progresso = {
 
     const registro = linhas[0];
     return {
-      sinais_vistos: registro.sinais_vistos,
-      termos_favoritos: registro.termos_favoritos,
-      quizzes_concluidos: registro.quizzes_concluidos,
-      pontuacoes: registro.pontuacoes
+      sinais_vistos: lerJson(registro.sinais_vistos),
+      termos_favoritos: lerJson(registro.termos_favoritos),
+      quizzes_concluidos: lerJson(registro.quizzes_concluidos),
+      pontuacoes: lerJson(registro.pontuacoes)
     };
   },
 

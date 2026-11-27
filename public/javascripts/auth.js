@@ -115,7 +115,7 @@ window.Auth = {
   }
 };
 
-verificarSessao();
+window.Auth.pronta = verificarSessao();
 
 document.addEventListener('DOMContentLoaded', () => {
   const formularioCadastro = porId('registerForm');

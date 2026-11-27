@@ -1,13 +1,11 @@
-const CATEGORIAS_DO_PRATICAR = ['Hardware', 'Software', 'Programação', 'Eletricidade', 'Redes'];
-const CATEGORIAS_DA_PROGRESSAO = [...CATEGORIAS_DO_PRATICAR, 'Todos'];
 const PERIMETRO_DO_ANEL = 2 * Math.PI * 52;
 
 let categoriaAtual = 'Hardware';
 let perguntasAtivas = [];
 let perguntaAtual = 0;
-let acertos = 0;
-let erros = 0;
-let idDaExecucao = 0;
+let respostasDaTentativa = [];
+let perguntaRespondida = false;
+let progressoPronto = false;
 
 function termosDoProjeto() {
   return typeof TERMOS_LOCAIS !== 'undefined' && Array.isArray(TERMOS_LOCAIS) ? TERMOS_LOCAIS : [];
@@ -15,10 +13,6 @@ function termosDoProjeto() {
 
 function termoPorNome(nome) {
   return termosDoProjeto().find((item) => item.termo === nome) || null;
-}
-
-function embaralhar(lista) {
-  return [...lista].sort(() => 0.5 - Math.random());
 }
 
 function termosDaCategoria(categoria) {
@@ -48,7 +42,8 @@ function formatarResultado(resultado) {
   if (!resultado) return '--';
   const rotuloAcertos = resultado.acertos === 1 ? 'acerto' : 'acertos';
   const rotuloErros = resultado.erros === 1 ? 'erro' : 'erros';
-  return `${resultado.acertos} ${rotuloAcertos} · ${resultado.erros} ${rotuloErros}`;
+  const placar = `${resultado.acertos} ${rotuloAcertos} · ${resultado.erros} ${rotuloErros}`;
+  return resultado.semRegistro ? `${placar} · ${resultado.semRegistro} sem registro` : placar;
 }
 
 function resumoDaCategoria(categoria) {
@@ -70,11 +65,13 @@ function resumoDaCategoria(categoria) {
     total,
     concluidas,
     porcentagem,
-    concluido: concluido || (total > 0 && porcentagem === 100),
+    concluido,
+    emAndamento: !!registro.tentativa || (!concluido && concluidas > 0),
     ultimoResultado: temResultado
       ? {
           acertos: Math.round(acertosSalvos),
-          erros: Number.isFinite(errosSalvos) && errosSalvos >= 0 ? Math.round(errosSalvos) : 0
+          erros: Number.isFinite(errosSalvos) && errosSalvos >= 0 ? Math.round(errosSalvos) : 0,
+          semRegistro: Number(registro.questoes_sem_registro) || 0
         }
       : null
   };
@@ -100,7 +97,7 @@ function desenharAnel(categoria, resumo) {
     return;
   }
 
-  const status = resumo.porcentagem > 0 ? 'Em andamento' : 'Não iniciado';
+  const status = resumo.emAndamento ? 'Em andamento' : 'Não iniciado';
   centro.innerHTML = `<span class="donut-pct">${resumo.porcentagem}%</span><span class="donut-status">${status}</span>`;
 }
 
@@ -109,6 +106,11 @@ function atualizarDadosDoCard(categoria, resumo) {
   if (!card) return;
 
   desenharAnel(categoria, resumo);
+
+  const botao = card.querySelector('.btn-card-start');
+  botao.disabled = !progressoPronto || resumo.total === 0;
+  botao.querySelector('[data-acao-quiz]').textContent =
+    resumo.emAndamento ? 'Continuar' : resumo.concluido ? 'Refazer' : 'Começar';
 
   const concluidasEl = card.querySelector('[data-stat="concluidas"]');
   if (concluidasEl) concluidasEl.textContent = String(resumo.concluidas);
@@ -202,43 +204,40 @@ function atualizarProgresso() {
   desenharBarraDeProgresso(concluidos.length, total);
 }
 
-function registrarProgressoParcial(categoria, concluidas, total) {
-  if (!progressoDisponivel() || typeof window.Progresso.registrarPontuacao !== 'function') return;
+function celebrarNaSelecao() {
+  if (!progressoPronto || !document.getElementById('selectionScreen').getClientRects().length) return;
+  if (obterQuizzesConcluidos().length !== CATEGORIAS_DA_PROGRESSAO.length) return;
+  if (lerPontuacao(CHAVE_CELEBRACAO_PRATICAR).exibida) return;
+  TentativasQuiz.gravar(CHAVE_CELEBRACAO_PRATICAR, { exibida: true });
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const registro = lerPontuacao(categoria);
-  const salvo = Number(registro.melhor_progresso);
-  const melhor = Number.isFinite(salvo) ? Math.max(salvo, concluidas) : concluidas;
-
-  window.Progresso.registrarPontuacao(categoria, {
-    melhor_progresso: melhor,
-    total_questoes: total
-  });
-}
-
-function registrarQuizConcluido(categoria, totalDeQuestoes, totalDeAcertos, totalDeErros) {
-  if (!progressoDisponivel()) return;
-
-  window.Progresso.concluirQuiz(categoria);
-  if (typeof window.Progresso.registrarUltimaAtividade === 'function') {
-    window.Progresso.registrarUltimaAtividade('quiz', categoria);
+  const camada = document.createElement('div');
+  camada.className = 'confetes-pratica';
+  camada.setAttribute('aria-hidden', 'true');
+  const cores = ['#fbbf24', '#c4b5fd', '#8b5cf6', '#38bdf8', '#34d399'];
+  for (let i = 0; i < 48; i++) {
+    const papel = document.createElement('span');
+    papel.style.setProperty('--x', `${Math.random() * 100}%`);
+    papel.style.setProperty('--desvio', `${Math.random() * 140 - 70}px`);
+    papel.style.setProperty('--giro', `${Math.random() * 720 - 360}deg`);
+    papel.style.setProperty('--duracao', `${1.3 + Math.random() * 1.1}s`);
+    papel.style.setProperty('--atraso', `${Math.random() * 0.35}s`);
+    papel.style.setProperty('--cor', cores[i % cores.length]);
+    camada.appendChild(papel);
   }
-
-  window.Progresso.registrarPontuacao(categoria, {
-    ultima_pontuacao: totalDeAcertos,
-    ultimo_erros: totalDeErros,
-    total_questoes: totalDeQuestoes,
-    melhor_progresso: totalDeQuestoes,
-    ultima_conclusao: new Date().toISOString()
-  });
+  document.getElementById('selectionScreen').appendChild(camada);
+  window.setTimeout(() => camada.remove(), 2800);
 }
 
 function iniciarQuiz(categoria) {
+  if (!progressoPronto || !CATEGORIAS_DA_PROGRESSAO.includes(categoria)) return;
+  const termos = termosDaCategoria(categoria);
+  if (termos.length === 0) return;
   categoriaAtual = categoria;
-  perguntasAtivas = embaralhar(termosDaCategoria(categoria));
-  perguntaAtual = 0;
-  acertos = 0;
-  erros = 0;
-  idDaExecucao += 1;
+  const tentativa = TentativasQuiz.abrir(categoria, termos);
+  perguntasAtivas = tentativa.perguntas;
+  respostasDaTentativa = tentativa.respostas;
+  perguntaAtual = respostasDaTentativa.length;
 
   const selecao = document.getElementById('selectionScreen');
   const tela = document.getElementById('quizScreen');
@@ -250,10 +249,11 @@ function iniciarQuiz(categoria) {
   if (painelResultado) painelResultado.style.display = 'none';
 
   carregarPergunta(perguntaAtual);
+  document.getElementById('qTitle').focus();
 }
 
 function voltarParaSelecao() {
-  idDaExecucao += 1;
+  perguntaRespondida = false;
 
   const tela = document.getElementById('quizScreen');
   const selecao = document.getElementById('selectionScreen');
@@ -262,6 +262,7 @@ function voltarParaSelecao() {
 
   pararVideoDaPergunta();
   atualizarProgresso();
+  celebrarNaSelecao();
 }
 
 function obterImagemPadrao() {
@@ -322,13 +323,14 @@ function nomesDasOpcoes(pergunta) {
 }
 
 function carregarPergunta(indice) {
+  perguntaRespondida = false;
+  document.getElementById('qAvancar').hidden = true;
+  document.getElementById('qFeedback').textContent = '';
+
   if (indice >= perguntasAtivas.length) {
     mostrarResultado();
     return;
   }
-
-  registrarProgressoParcial(categoriaAtual, indice, perguntasAtivas.length);
-  atualizarProgresso();
 
   const pergunta = perguntasAtivas[indice];
 
@@ -342,7 +344,7 @@ function carregarPergunta(indice) {
   const container = document.getElementById('optionsContainer');
   container.innerHTML = '';
 
-  embaralhar(nomesDasOpcoes(pergunta)).forEach((nome) => {
+  TentativasQuiz.embaralhar(nomesDasOpcoes(pergunta)).forEach((nome) => {
     const opcao = termoPorNome(nome);
     if (!opcao) return;
 
@@ -370,50 +372,55 @@ function marcarCorreto(card, rotulo) {
   card.appendChild(marcador);
 }
 
-function irParaProximaPergunta(execucao, atraso) {
-  setTimeout(() => {
-    if (execucao !== idDaExecucao) return;
-    perguntaAtual += 1;
-    carregarPergunta(perguntaAtual);
-  }, atraso);
+function avancarPergunta() {
+  if (!perguntaRespondida) return;
+  perguntaAtual += 1;
+  carregarPergunta(perguntaAtual);
+  document.getElementById('qTitle').focus();
 }
 
 function verificarResposta(respostaEscolhida, respostaCorreta, cardClicado) {
-  const todosOsCards = document.querySelectorAll('.option-btn-card');
+  if (perguntaRespondida) return;
+  perguntaRespondida = true;
+
+  const todosOsCards = document.querySelectorAll('#optionsContainer .option-btn-card');
   todosOsCards.forEach((card) => {
     card.disabled = true;
   });
 
-  const execucao = idDaExecucao;
-
-  if (respostaEscolhida === respostaCorreta) {
-    acertos += 1;
+  const feedback = document.getElementById('qFeedback');
+  const acertou = respostaEscolhida === respostaCorreta;
+  respostasDaTentativa.push(acertou);
+  if (acertou) {
     marcarCorreto(cardClicado, 'Correto');
-    irParaProximaPergunta(execucao, 1200);
-    return;
+    feedback.textContent = `Correto! O sinal é ${respostaCorreta}.`;
+  } else {
+    cardClicado.classList.add('wrong');
+    const marcador = document.createElement('span');
+    marcador.className = 'answer-status-tag';
+    marcador.innerHTML = '<i class="fa-solid fa-xmark"></i> Incorreto';
+    cardClicado.appendChild(marcador);
+    todosOsCards.forEach((card) => {
+      if (card.dataset.termo === respostaCorreta) marcarCorreto(card, 'Resposta Certa');
+    });
+    feedback.textContent = `Incorreto. O sinal é ${respostaCorreta}.`;
   }
 
-  erros += 1;
-  cardClicado.classList.add('wrong');
+  const respondidas = perguntaAtual + 1;
+  const total = perguntasAtivas.length;
+  const ultimaPergunta = respondidas === total;
+  TentativasQuiz.registrar(categoriaAtual, perguntasAtivas, respostasDaTentativa);
+  atualizarProgresso();
 
-  const marcador = document.createElement('span');
-  marcador.className = 'answer-status-tag';
-  marcador.innerHTML = '<i class="fa-solid fa-xmark"></i> Incorreto';
-  cardClicado.appendChild(marcador);
-
-  todosOsCards.forEach((card) => {
-    if (card.dataset.termo === respostaCorreta) marcarCorreto(card, 'Resposta Certa');
-  });
-
-  irParaProximaPergunta(execucao, 1800);
+  const botao = document.getElementById('qAvancar');
+  document.getElementById('qAvancarTexto').textContent = ultimaPergunta ? 'Ver resultado' : 'Avançar';
+  botao.hidden = false;
+  botao.focus({ preventScroll: true });
 }
 
 function mostrarResultado() {
-  const total = perguntasAtivas.length;
-  const porcentagem = total > 0 ? Math.round((acertos / total) * 100) : 0;
+  const { acertos, erros } = TentativasQuiz.placar(respostasDaTentativa);
 
-  registrarQuizConcluido(categoriaAtual, total, acertos, erros);
-  atualizarProgresso();
   pararVideoDaPergunta();
 
   const corpo = document.querySelector('#quizScreen .quiz-body-grid');
@@ -431,17 +438,20 @@ function mostrarResultado() {
 
   definirTexto('resultAcertos', String(acertos));
   definirTexto('resultErros', String(erros));
-  definirTexto('resultPct', `Você acertou ${porcentagem}% das ${total} questões de ${categoriaAtual}.`);
+  definirTexto('resultPct', TentativasQuiz.resumoResultado(categoriaAtual, respostasDaTentativa));
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  if (window.Progresso && window.Progresso.carregar) {
-    await window.Progresso.carregar();
-  }
-
-  atualizarProgresso();
-
   window.addEventListener('progresso-carregado', atualizarProgresso);
+  const recarregar = document.getElementById('recarregarPratica');
+  recarregar.addEventListener('click', () => window.location.reload());
+  progressoPronto = await TentativasQuiz.carregar();
+  atualizarProgresso();
+  if (!progressoPronto) {
+    document.getElementById('progressMessage').textContent = 'Não foi possível carregar seu progresso.';
+    recarregar.hidden = false;
+    return;
+  }
 
   const video = videoDaPergunta();
   const aviso = avisoDaPergunta();
@@ -455,4 +465,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   const parametros = new URLSearchParams(window.location.search);
   const categoria = parametros.get('cat');
   if (categoria && CATEGORIAS_DA_PROGRESSAO.includes(categoria)) iniciarQuiz(categoria);
+  else celebrarNaSelecao();
 });

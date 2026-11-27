@@ -1,5 +1,6 @@
 const pool = require('../config/database');
 const Progresso = require('./progresso');
+const categoriasQuiz = require('../public/data/categorias-quiz');
 
 // Catálogo das conquistas. Para criar outra, basta incluir um item aqui:
 //   campo -> qual lista do progresso é contada (sinais_vistos, termos_favoritos ou quizzes_concluidos)
@@ -40,21 +41,32 @@ const CATALOGO = [
     icone: 'fa-award',
     campo: 'sinais_vistos',
     meta: 50
+  },
+  {
+    codigo: 'sabe_tudo',
+    nome: 'Sabe-Tudo',
+    descricao: 'Complete todo o percurso do Praticar.',
+    requisito: 'Concluir as cinco categorias e o Simulado Geral',
+    icone: 'fa-graduation-cap',
+    campo: 'quizzes_concluidos',
+    itens: categoriasQuiz,
+    meta: categoriasQuiz.length
   }
 ];
 
 // Conta itens DISTINTOS (texto não vazio). Repetições e valores inválidos não contam.
-function contarDistintos(lista) {
+function contarDistintos(lista, permitidos) {
   if (!Array.isArray(lista)) return 0;
   const itens = lista.filter((valor) => typeof valor === 'string' && valor.trim() !== '');
-  return new Set(itens).size;
+  const distintos = new Set(itens);
+  return permitidos ? permitidos.filter((item) => distintos.has(item)).length : distintos.size;
 }
 
 // Quais conquistas o progresso informado cumpre (não grava nada).
 function avaliar(progresso) {
   const dados = progresso || {};
   return CATALOGO.map((conquista) => {
-    const atual = contarDistintos(dados[conquista.campo]);
+    const atual = contarDistintos(dados[conquista.campo], conquista.itens);
     return { ...conquista, atual, cumprida: atual >= conquista.meta };
   });
 }

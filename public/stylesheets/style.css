@@ -250,10 +250,7 @@ app-footer {
   display: block;
   font-size: 1.05rem;
   font-weight: 800;
-  background: var(--gradiente-marca);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #000;
 }
 
 .footer-brand-text span {
@@ -262,7 +259,8 @@ app-footer {
 }
 
 .footer-social {
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
   gap: 8px;
 }
 
@@ -283,8 +281,23 @@ app-footer {
   filter: brightness(1.1);
 }
 
+.social-round svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.social-round:focus-visible {
+  outline: 2px solid var(--cor-lilas-texto);
+  outline-offset: 3px;
+}
+
 .social-round.github {
   background: #24292e;
+}
+
+.social-round.instagram {
+  background: linear-gradient(145deg, #7236a5, #a32771 58%, #b64432);
 }
 
 .social-round.youtube {
@@ -464,4 +477,171 @@ app-footer {
   border: 0;
   border-radius: var(--raio);
   background: #000000;
+}
+
+/* Botão e painel móveis ficam ocultos nas telas maiores. */
+.mobile-menu-toggle,
+.mobile-menu {
+  display: none;
+}
+
+/* Garante que o painel fechado não apareça nem receba foco. */
+.mobile-menu[hidden] {
+  display: none !important;
+}
+
+/* ===== Cabeçalho para celular ===== */
+@media (max-width: 600px) {
+  .header {
+    position: relative;
+    flex-wrap: nowrap;
+    height: 64px;
+    min-height: 64px;
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .header .logo {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .header .brand-logo {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  .header .logo-text {
+    min-width: 0;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header .header-actions {
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /*
+   * Evita mostrar os controles antigos no topo antes
+   * de o JavaScript colocá-los dentro do painel.
+   */
+  .header > .nav-links,
+  .header .header-actions > .auth-btn {
+    display: none;
+  }
+
+  .header .acess-menu {
+    display: flex;
+    align-items: center;
+  }
+
+  .header .acess-btn,
+  .mobile-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: var(--raio);
+    background: transparent;
+    color: var(--cor-primaria-texto);
+    cursor: pointer;
+  }
+
+  .header .acess-btn:hover,
+  .mobile-menu-toggle:hover,
+  .mobile-menu-toggle[aria-expanded="true"] {
+    background: var(--cor-lilas-hover);
+  }
+
+  .mobile-menu-toggle:focus-visible,
+  .mobile-menu a:focus-visible,
+  .mobile-menu button:focus-visible {
+    outline: 3px solid var(--cor-primaria-texto);
+    outline-offset: 2px;
+  }
+
+  /* Painel aberto abaixo do cabeçalho. */
+  .mobile-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px 16px;
+    max-height: calc(100vh - 80px);
+    max-height: calc(100dvh - 80px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--cor-card);
+    color: var(--cor-texto);
+    border-bottom: var(--borda);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Links principais em uma lista vertical. */
+  .mobile-menu .nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    order: 0;
+    width: 100%;
+    gap: 4px; 
+  }
+
+  .mobile-menu .nav-links a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  /* Perfil, sair, entrar e cadastro dentro do painel. */
+  .mobile-menu .auth-btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: flex-start;
+    padding: 12px;
+    font-size: 1rem;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-menu .avatar-mini {
+    flex-shrink: 0;
+  }
+
+  .mobile-menu #headerPerfilNome {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Mantém a acessibilidade dentro da largura do celular. */
+  .header .acess-painel {
+    position: fixed;
+    top: 72px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-height: calc(100vh - 88px);
+    max-height: calc(100dvh - 88px);
+    overflow-y: auto;
+  }
 }

@@ -181,10 +181,21 @@ class AppFooter extends HTMLElement {
           </div>
           <div class="footer-social">
             <a href="${LINK_GITHUB}" target="_blank" rel="noopener noreferrer" class="social-round github" aria-label="GitHub" title="GitHub">
-              <i class="fa-brands fa-github"></i>
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.62 7.62 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/t.i.libras/" target="_blank" rel="noopener noreferrer" class="social-round instagram" aria-label="Instagram do T.I Libras" title="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                <rect x="3" y="3" width="18" height="18" rx="5"/>
+                <circle cx="12" cy="12" r="4.2"/>
+                <circle cx="17.5" cy="6.7" r="1.15" fill="currentColor" stroke="none"/>
+              </svg>
             </a>
             <a href="https://www.youtube.com/@t.i.libras" target="_blank" rel="noopener noreferrer" class="social-round youtube" aria-label="YouTube" title="YouTube">
-              <i class="fa-brands fa-youtube"></i>
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                <path fill-rule="evenodd" d="M3.7 5.3C5.3 4.8 8 4.7 12 4.7s6.7.1 8.3.6c1.3.4 2 1.5 2.3 3.1.5 2.4.5 4.8 0 7.2-.3 1.6-1 2.7-2.3 3.1-1.6.5-4.3.6-8.3.6s-6.7-.1-8.3-.6c-1.3-.4-2-1.5-2.3-3.1-.5-2.4-.5-4.8 0-7.2.3-1.6 1-2.7 2.3-3.1ZM10 8.4v7.2l6-3.6-6-3.6Z"/>
+              </svg>
             </a>
           </div>
         </div>
@@ -200,6 +211,200 @@ class AppFooter extends HTMLElement {
     `;
   }
 }
+
+// Menu exclusivo para celular.
+// Reaproveita os links existentes, sem duplicar IDs ou eventos.
+(() => {
+  function prepararMenuMobile(componente, indice) {
+    const header = componente.querySelector('.header');
+    const acoes = header?.querySelector('.header-actions');
+
+    if (!header || !acoes) return;
+
+    const telaMobile = window.matchMedia('(max-width: 600px)');
+
+    // Elementos que entrarão no menu do celular.
+    const itens = [
+      header.querySelector('.nav-links'),
+      ...acoes.querySelectorAll(':scope > .auth-btn')
+    ].filter(Boolean);
+
+    // Guarda a posição original de cada elemento no computador.
+    const posicoes = itens.map((elemento) => {
+      const marcador = document.createComment('Posição no computador');
+
+      elemento.before(marcador);
+
+      return { elemento, marcador };
+    });
+
+    // Botão de abrir e fechar.
+    const botao = document.createElement('button');
+
+    botao.type = 'button';
+    botao.className = 'mobile-menu-toggle';
+    botao.setAttribute('aria-label', 'Abrir menu');
+    botao.setAttribute('aria-expanded', 'false');
+    botao.setAttribute('aria-controls', `mobile-menu-${indice}`);
+
+    botao.innerHTML = `
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    `;
+
+    // Painel que receberá os links e botões.
+    const painel = document.createElement('div');
+
+    painel.id = `mobile-menu-${indice}`;
+    painel.className = 'mobile-menu';
+    painel.hidden = true;
+
+    acoes.append(botao);
+    header.append(painel);
+
+    function fecharMenu(devolverFoco = false) {
+      painel.hidden = true;
+
+      botao.setAttribute('aria-expanded', 'false');
+      botao.setAttribute('aria-label', 'Abrir menu');
+
+      if (devolverFoco && telaMobile.matches) {
+        botao.focus();
+      }
+    }
+
+    function abrirMenu() {
+      if (!telaMobile.matches) return;
+
+      // Fecha a acessibilidade antes de abrir a navegação.
+      const acessPainel = header.querySelector('#acessPainel');
+      const acessBotao = header.querySelector('#acessBtn');
+
+      if (acessPainel) acessPainel.hidden = true;
+
+      acessBotao?.setAttribute('aria-expanded', 'false');
+
+      painel.hidden = false;
+
+      botao.setAttribute('aria-expanded', 'true');
+      botao.setAttribute('aria-label', 'Fechar menu');
+
+      // Coloca o foco na primeira opção visível.
+      const primeiroItem = [...painel.querySelectorAll('a, button')]
+        .find((el) => el.getClientRects().length > 0 && !el.disabled);
+
+      primeiroItem?.focus();
+    }
+
+    function adaptarLayout() {
+      const foco = document.activeElement;
+
+      const precisaMoverFoco =
+        painel.contains(foco) ||
+        foco === botao ||
+        posicoes.some(({ elemento }) => elemento.contains(foco));
+
+      fecharMenu();
+
+      posicoes.forEach(({ elemento, marcador }) => {
+        if (telaMobile.matches) {
+          painel.append(elemento);
+        } else {
+          marcador.after(elemento);
+        }
+      });
+
+      if (precisaMoverFoco) {
+        const destino = telaMobile.matches
+          ? botao
+          : header.querySelector('.logo');
+
+        destino?.focus();
+      }
+    }
+
+    botao.addEventListener('click', () => {
+      if (painel.hidden) {
+        abrirMenu();
+      } else {
+        fecharMenu(true);
+      }
+    });
+
+    componente.addEventListener('click', (evento) => {
+      const alvo = evento.target;
+
+      if (!(alvo instanceof Element)) return;
+
+      // Fecha a navegação quando abrir a acessibilidade.
+      if (alvo.closest('#acessBtn')) {
+        fecharMenu();
+      }
+
+      // Fecha ao escolher uma opção.
+      if (painel.contains(alvo) && alvo.closest('a, button')) {
+        fecharMenu(true);
+      }
+    });
+
+    // Fecha ao clicar fora do cabeçalho.
+    document.addEventListener('click', (evento) => {
+      if (!header.contains(evento.target)) {
+        fecharMenu();
+      }
+    });
+
+    // Fecha quando a navegação por teclado sair do cabeçalho.
+    document.addEventListener('focusin', (evento) => {
+      if (!painel.hidden && !header.contains(evento.target)) {
+        fecharMenu();
+      }
+    });
+
+    // Fecha com Escape.
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape' && !painel.hidden) {
+        evento.preventDefault();
+        fecharMenu(true);
+      }
+    });
+
+    // A atualização da sessão continua sendo feita pelo código original.
+    window.addEventListener('auth-changed', () => {
+      fecharMenu(painel.contains(document.activeElement));
+    });
+
+    // Reorganiza ao passar entre celular e computador.
+    telaMobile.addEventListener('change', adaptarLayout);
+
+    adaptarLayout();
+  }
+
+  function iniciarMenusMobile() {
+    document.querySelectorAll('app-header, app-header-home')
+      .forEach(prepararMenuMobile);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener(
+      'DOMContentLoaded',
+      iniciarMenusMobile,
+      { once: true }
+    );
+  } else {
+    iniciarMenusMobile();
+  }
+})();
 
 customElements.define('app-header-home', AppHeaderHome);
 customElements.define('app-header', AppHeader);

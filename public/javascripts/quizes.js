@@ -7,23 +7,17 @@ const CATEGORIAS_DO_QUIZ = {
 };
 
 function termosDoProjeto() {
-  return typeof TERMOS !== 'undefined' && Array.isArray(TERMOS) ? TERMOS : [];
+  return typeof TERMOS_LOCAIS !== 'undefined' && Array.isArray(TERMOS_LOCAIS)
+    ? TERMOS_LOCAIS
+    : [];
 }
 
 function termoPorNome(nome) {
   return termosDoProjeto().find((item) => item.termo === nome) || null;
 }
 
-function embaralhar(lista) {
-  return [...lista].sort(() => 0.5 - Math.random());
-}
-
 function nomeDaCategoria(chave) {
   return CATEGORIAS_DO_QUIZ[String(chave || '').toLowerCase()] || 'Hardware';
-}
-
-function perguntasDaCategoria(nome) {
-  return embaralhar(termosDoProjeto().filter((item) => item.categoria === nome));
 }
 
 function nomesDasOpcoes(pergunta) {
@@ -35,8 +29,9 @@ function nomesDasOpcoes(pergunta) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  if (window.Progresso && window.Progresso.carregar) {
-    await window.Progresso.carregar();
+  if (!await TentativasQuiz.carregar()) {
+    document.getElementById('quizBreadcrumb').textContent = 'Recarregue a página para retomar seu quiz.';
+    return;
   }
 
   const gradeOpcoes = document.getElementById('optionsGrid');
@@ -52,29 +47,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const categoriaDaUrl = parametros.get('categoria') || 'hardware';
   const nomeCategoria = nomeDaCategoria(categoriaDaUrl);
 
-  const perguntasAtivas = perguntasDaCategoria(nomeCategoria);
-  let indicePerguntaAtual = 0;
-  let pontuacao = 0;
-  let erros = 0;
-
-  function registrarQuestaoFeita(categoria) {
-    if (!window.Progresso) return;
-    window.Progresso.incrementarPontuacao(categoria, { questoes_feitas: 1 });
-  }
-
-  function registrarQuizConcluido(categoria) {
-    if (!window.Progresso) return;
-    window.Progresso.concluirQuiz(categoria);
-    if (typeof window.Progresso.registrarUltimaAtividade === 'function') {
-      window.Progresso.registrarUltimaAtividade('quiz', categoria);
-    }
-    window.Progresso.registrarPontuacao(categoria, {
-      ultima_pontuacao: pontuacao,
-      ultimo_erros: erros,
-      total_questoes: perguntasAtivas.length,
-      ultima_conclusao: new Date().toISOString()
-    });
-  }
+  const termos = termosDoProjeto().filter((item) => item.categoria === nomeCategoria);
+  const { perguntas: perguntasAtivas, respostas } = TentativasQuiz.abrir(nomeCategoria, termos);
+  let indicePerguntaAtual = respostas.length;
 
   function atualizarIconeDoVideo() {
     if (!botaoVideo || !videoQuiz) return;
@@ -161,24 +136,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     carregarVideoDaPergunta(pergunta);
 
-    embaralhar(nomesDasOpcoes(pergunta)).forEach((nome) => {
+    TentativasQuiz.embaralhar(nomesDasOpcoes(pergunta)).forEach((nome) => {
       const opcao = termoPorNome(nome);
       if (opcao) gradeOpcoes.appendChild(montarOpcao(opcao, pergunta));
     });
   }
 
   function selecionarResposta(botaoEscolhido, opcaoEscolhida, opcaoCorreta) {
+    if (respostas.length !== indicePerguntaAtual) return;
     const todosOsBotoes = gradeOpcoes.querySelectorAll('.option-btn');
     todosOsBotoes.forEach((botao) => { botao.disabled = true; });
 
-    registrarQuestaoFeita(nomeCategoria);
-
-    if (opcaoEscolhida === opcaoCorreta) {
+    const acertou = opcaoEscolhida === opcaoCorreta;
+    respostas.push(acertou);
+    window.Progresso.incrementarPontuacao(nomeCategoria, { questoes_feitas: 1 });
+    TentativasQuiz.registrar(nomeCategoria, perguntasAtivas, respostas);
+    if (acertou) {
       botaoEscolhido.classList.add('correct');
       botaoEscolhido.querySelector('.status-badge').innerText = '✓ Correto!';
-      pontuacao += 1;
     } else {
-      erros += 1;
       botaoEscolhido.classList.add('incorrect');
       botaoEscolhido.querySelector('.status-badge').innerText = 'X Incorreto';
 
@@ -197,8 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function exibirResultadoFinal() {
-    const total = perguntasAtivas.length;
-    const porcentagem = total > 0 ? Math.round((pontuacao / total) * 100) : 0;
+    const { acertos: pontuacao, erros } = TentativasQuiz.placar(respostas);
 
     cardQuiz.innerHTML = `
       <div style="text-align: center; padding: 2rem 1rem;">
@@ -215,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
         <p style="color: #64748b; margin-bottom: 20px;">
-          Você acertou ${porcentagem}% das ${total} questões da categoria ${nomeCategoria}.
+          ${TentativasQuiz.resumoResultado(nomeCategoria, respostas)}
         </p>
         <a href="praticar.html" class="btn btn-primary">Voltar para Praticar</a>
       </div>
@@ -245,11 +220,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   botaoProxima.addEventListener('click', () => {
+    if (respostas.length !== indicePerguntaAtual + 1) return;
     if (indicePerguntaAtual < perguntasAtivas.length - 1) {
       indicePerguntaAtual += 1;
       carregarPergunta();
     } else {
-      registrarQuizConcluido(nomeCategoria);
       exibirResultadoFinal();
     }
   });
