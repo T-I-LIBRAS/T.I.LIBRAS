@@ -41,7 +41,7 @@
     const dados = await window.Progresso.carregar();
     if ($('perfilSinais')) $('perfilSinais').textContent = dados.sinais_vistos.length;
     if ($('perfilFavoritos')) $('perfilFavoritos').textContent = dados.termos_favoritos.length;
-    if ($('perfilQuizzes')) $('perfilQuizzes').textContent = dados.quizzes_concluidos.length;
+    if ($('perfilQuizzes')) $('perfilQuizzes').textContent = window.Progresso.quizzesConcluidos().length;
 
     // Sem a lista de termos não há como calcular a porcentagem: o bloco fica escondido
     const percentual = window.Progresso.percentualGeral();
@@ -107,13 +107,16 @@
   function renderizarConquistas(dados) {
     const lista = $('listaConquistas');
     if (!lista) return;
-    lista.replaceChildren(...dados.conquistas.map(criarCartaoConquista));
+    lista.textContent = '';
+    lista.append(...dados.conquistas.map(criarCartaoConquista));
     lista.hidden = false;
     if ($('conquistasEstado')) $('conquistasEstado').hidden = true;
     if ($('btnRecarregarConquistas')) $('btnRecarregarConquistas').hidden = true;
 
-    if ($('perfilResumoConquistas')) {
-      $('perfilResumoConquistas').textContent = `Conquistas desbloqueadas: ${dados.desbloqueadas} de ${dados.total}`;
+    const contador = $('perfilResumoConquistas');
+    if (contador) {
+      contador.textContent = `${dados.desbloqueadas} de ${dados.total}`;
+      contador.append(elemento('span', 'perfil-conquistas-legenda', ' desbloqueadas'));
     }
   }
 

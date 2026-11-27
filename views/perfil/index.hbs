@@ -75,8 +75,8 @@
             <span class="perfil-stat-nome">Sinais vistos</span>
             <span class="perfil-stat-desc">Sinais abertos no sinalário</span>
           </div>
-          <div class="perfil-stat amarelo">
-            <span class="perfil-stat-icone"><i class="fa-solid fa-star" aria-hidden="true"></i></span>
+          <div class="perfil-stat perfil-stat-favoritos">
+            <span class="perfil-stat-icone"><i class="fa-solid fa-heart" aria-hidden="true"></i></span>
             <strong id="perfilFavoritos">0</strong>
             <span class="perfil-stat-nome">Termos favoritos</span>
             <span class="perfil-stat-desc">Termos salvos para consulta</span>
@@ -100,7 +100,6 @@
           <p class="perfil-geral-legenda">Sinais vistos ÷ total de termos do sinalário.</p>
         </div>
 
-        <p class="perfil-resumo-conquistas" id="perfilResumoConquistas"></p>
       </section>
     </div>
 
@@ -108,6 +107,7 @@
     <section class="perfil-card perfil-conquistas" aria-labelledby="tituloConquistas">
       <div class="perfil-conquistas-topo">
         <h2 id="tituloConquistas"><i class="fa-solid fa-medal" aria-hidden="true"></i> Conquistas</h2>
+        <span class="perfil-conquistas-contador" id="perfilResumoConquistas" aria-live="polite"></span>
       </div>
       <p class="perfil-conquistas-estado" id="conquistasEstado" role="status">Carregando conquistas...</p>
       <button type="button" class="btn btn-outline" id="btnRecarregarConquistas" hidden>Tentar de novo</button>

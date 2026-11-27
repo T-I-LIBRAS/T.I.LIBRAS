@@ -92,8 +92,7 @@
   align-items: center;
 }
 
-.progress-track::before {
-  content: '';
+.progress-rail {
   position: absolute;
   left: calc(100% / 12);
   right: calc(100% / 12);
@@ -101,16 +100,14 @@
   height: 10px;
   transform: translateY(-50%);
   border-radius: 999px;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.22);
 }
 
 .progress-fill {
-  position: absolute;
-  left: calc(100% / 12);
-  top: 50%;
   width: 0;
-  height: 10px;
-  transform: translateY(-50%);
+  max-width: 100%;
+  height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, #fde68a, #fbbf24);
   transition: width 0.45s ease;
@@ -118,7 +115,10 @@
 
 .progress-dots {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: center;
@@ -147,6 +147,39 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.92);
   line-height: 1.45;
+}
+
+#recarregarPratica[hidden] { display: none; }
+
+.confetes-pratica {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetes-pratica span {
+  position: absolute;
+  top: -18px;
+  left: var(--x);
+  width: 7px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--cor);
+  animation: queda-confete var(--duracao) ease-in var(--atraso) both;
+}
+
+@keyframes queda-confete {
+  from { transform: translate(0, 0) rotate(0); }
+  to { transform: translate(var(--desvio), 102vh) rotate(var(--giro)); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetes-pratica { display: none; }
 }
 
 .categories-panel {
@@ -321,7 +354,10 @@
 
 .donut-center {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -601,6 +637,35 @@
   gap: 10px;
 }
 
+.pratica-avancar {
+  display: inline-grid;
+  grid-auto-flow: column;
+  align-self: flex-end;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 8px 12px 8px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.pratica-avancar svg {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.pratica-avancar[hidden] {
+  display: none;
+}
+
+.pratica-avancar:focus-visible {
+  outline: 2px solid var(--cor-lilas-texto);
+  outline-offset: 3px;
+}
+
 .option-btn-card {
   background: var(--cor-fundo);
   border: 2px solid var(--cor-borda);
@@ -756,7 +821,18 @@
   }
 }
 
+@media (max-width: 600px) {
+  .pratica-avancar {
+    align-self: stretch;
+  }
+}
+
 @media (max-width: 420px) {
+  .option-btn-card {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
   .category-card {
     min-height: 330px;
     padding: 18px 14px;

@@ -32,7 +32,7 @@ const paginas = [
     styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/home.css'],
     // termos.js entra aqui para o "Progresso total" saber quantos termos existem
     headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/javascripts/progresso.js?v=2', '/javascripts/home.js?v=2']
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/home.js?v=3']
   },
   {
     urls: ['/perfil.html'],
@@ -41,7 +41,7 @@ const paginas = [
     styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/perfil.css'],
     // termos.js entra aqui para o progresso geral saber quantos termos existem
     headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/javascripts/progresso.js?v=2', '/javascripts/perfil.js']
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/perfil.js?v=3']
   },
   {
     urls: ['/praticar.html'],
@@ -51,7 +51,7 @@ const paginas = [
     // quiz.css também é carregado porque as duas páginas de quiz dividem .quiz-card e .quiz-header.
     styles: ['/stylesheets/style.css', '/stylesheets/praticar.css', '/stylesheets/quiz.css', FONT_AWESOME_6_5_2],
     headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/javascripts/progresso.js?v=2', '/javascripts/youtube-video.js', '/javascripts/praticar.js?v=56']
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/tentativas-quiz.js', '/javascripts/youtube-video.js', '/javascripts/praticar.js?v=57']
   },
   {
     urls: ['/quiz.html'],
@@ -60,7 +60,7 @@ const paginas = [
     // Sem Font Awesome (como no original). praticar.css entra porque quiz-card/quiz-header estão definidos nele também.
     styles: ['/stylesheets/style.css', '/stylesheets/praticar.css', '/stylesheets/quiz.css'],
     headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/javascripts/progresso.js?v=2', '/javascripts/youtube-video.js', '/javascripts/quizes.js?v=49']
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/tentativas-quiz.js', '/javascripts/youtube-video.js', '/javascripts/quizes.js?v=50']
   },
   {
     urls: ['/ficha-tecnica.html'],
@@ -84,7 +84,7 @@ const paginas = [
     title: 'T.I Libras - Sinalário',
     styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/sinalario.css'],
     headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/javascripts/progresso.js?v=2', '/javascripts/youtube-video.js', '/javascripts/sinalario.js?v=50']
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/youtube-video.js', '/javascripts/busca-sinalario.js', '/javascripts/sinalario.js?v=51']
   }
 ];
 

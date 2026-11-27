@@ -13,6 +13,7 @@ let carregamentoFalhou = false;
 let salvandoProgresso = false;
 let salvamentoPendente = false;
 let timerSalvamento = null;
+let consultaEmCurso = null;
 
 function idDoUsuarioAtual() {
   if (window.currentUser && window.currentUser.uid) return window.currentUser.uid;
@@ -56,20 +57,29 @@ async function carregarProgresso(forcar) {
 
   if (!forcar && usuarioCarregado === uid && !carregamentoFalhou) return dadosProgresso;
 
-  try {
-    const registro = await window.apiFetch('/progresso');
-    dadosProgresso = normalizarRegistro(registro);
-    usuarioCarregado = uid;
-    carregamentoFalhou = false;
-  } catch (erro) {
-    console.error('[Progresso] Falha ao carregar dados do backend:', erro && erro.message ? erro.message : erro);
-    dadosProgresso = progressoVazio();
-    usuarioCarregado = null;
-    carregamentoFalhou = true;
-  }
-
-  window.dispatchEvent(new CustomEvent('progresso-carregado'));
-  return dadosProgresso;
+  if (consultaEmCurso && consultaEmCurso.uid === uid) return consultaEmCurso.promessa;
+  const consulta = { uid };
+  consultaEmCurso = consulta;
+  consulta.promessa = (async () => {
+    try {
+      const registro = await window.apiFetch('/progresso');
+      if (idDoUsuarioAtual() !== uid || consultaEmCurso !== consulta) return dadosProgresso;
+      dadosProgresso = normalizarRegistro(registro);
+      usuarioCarregado = uid;
+      carregamentoFalhou = false;
+    } catch (erro) {
+      if (idDoUsuarioAtual() !== uid || consultaEmCurso !== consulta) return dadosProgresso;
+      console.error('[Progresso] Falha ao carregar dados no backend:', erro);
+      dadosProgresso = progressoVazio();
+      usuarioCarregado = null;
+      carregamentoFalhou = true;
+    } finally {
+      if (consultaEmCurso === consulta) consultaEmCurso = null;
+    }
+    window.dispatchEvent(new CustomEvent('progresso-carregado'));
+    return dadosProgresso;
+  })();
+  return consulta.promessa;
 }
 
 let timerAvisoConquista = null;
@@ -110,6 +120,9 @@ async function gravarProgresso() {
   if (!uid) return false;
   if (carregamentoFalhou || usuarioCarregado !== uid) return false;
 
+  clearTimeout(timerSalvamento);
+  timerSalvamento = null;
+
   if (salvandoProgresso) {
     salvamentoPendente = true;
     return false;
@@ -121,6 +134,7 @@ async function gravarProgresso() {
   try {
     const resposta = await window.apiFetch('/progresso', {
       method: 'PUT',
+      keepalive: true,
       body: JSON.stringify(dadosProgresso)
     });
     avisarConquistas(resposta);
@@ -192,7 +206,7 @@ function alternarFavorito(termo) {
 }
 
 function quizzesConcluidos() {
-  return dadosProgresso.quizzes_concluidos.slice();
+  return CATEGORIAS_DA_PROGRESSAO.filter(quizConcluido);
 }
 
 function quizConcluido(categoria) {

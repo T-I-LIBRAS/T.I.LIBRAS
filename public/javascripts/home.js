@@ -71,7 +71,7 @@
     const statQuizzes = document.getElementById('statQuizzes');
     if (statSinais) statSinais.textContent = dados.sinais_vistos.length;
     if (statFavoritos) statFavoritos.textContent = dados.termos_favoritos.length;
-    if (statQuizzes) statQuizzes.textContent = dados.quizzes_concluidos.length;
+    if (statQuizzes) statQuizzes.textContent = window.Progresso.quizzesConcluidos().length;
     const percentual = window.Progresso.percentualGeral();
     mostrarProgresso(percentual === null ? 0 : percentual);
     mostrarUltimaAtividade();

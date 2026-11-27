@@ -40,6 +40,10 @@
   --cor-erro-texto: #fca5a5;
 }
 
+:root[data-tema="escuro"] .footer-brand-text strong {
+  color: #fff;
+}
+
 /* ---------- ALTO CONTRASTE (claro) ---------- */
 :root[data-contraste="alto"] {
   --cor-fundo: #ffffff;
@@ -182,8 +186,7 @@
 }
 
 /* Texto com degradê (logo): no alto contraste vira cor sólida e legível */
-:root[data-contraste="alto"] .logo-text,
-:root[data-contraste="alto"] .footer-brand-text strong {
+:root[data-contraste="alto"] .logo-text {
   background: linear-gradient(var(--cor-primaria-texto), var(--cor-primaria-texto));
   -webkit-background-clip: text;
   background-clip: text;

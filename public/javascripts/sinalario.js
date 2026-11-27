@@ -1,4 +1,5 @@
 const TERMOS_DO_SINALARIO = typeof TERMOS !== 'undefined' ? TERMOS : [];
+const pesquisarSinais = BuscaSinalario.criarIndice(TERMOS_DO_SINALARIO);
 
 const MAPA_DE_PONTOS = {
   Hardware: 'purple',
@@ -115,6 +116,7 @@ function definirVideoIndisponivel(estado) {
   videoIndisponivel = !!estado;
   const aviso = document.getElementById('avisoVideoIndisponivel');
   if (aviso) aviso.classList.toggle('esta-visivel', videoIndisponivel);
+  document.getElementById('controlesSinal').hidden = videoIndisponivel;
 }
 
 function tentarReproduzir() {
@@ -145,7 +147,8 @@ function carregarVideoDoTermo(termo) {
 
   // Link do YouTube: toca no iframe. Não há como saber quando o vídeo termina,
   // então o sinal é marcado como visto só pelo tempo de visualização.
-  if (window.VideoYoutube && window.VideoYoutube.exibir(video, fonte, { controles: true })) {
+  if (window.VideoYoutube && window.VideoYoutube.exibir(video, fonte, { controles: false })) {
+    document.getElementById('controlesSinal').hidden = true;
     if (visto && visto.termo === termo.termo) visto.videoTerminou = true;
     return;
   }
@@ -177,9 +180,95 @@ function conectarVideo() {
   const video = videoDoSinal();
   if (!video) return;
 
+  const botao = document.getElementById('reproduzirSinal');
+  const posicao = document.getElementById('posicaoSinal');
+  const tempo = document.getElementById('tempoSinal');
+  const player = document.getElementById('playerSinal');
+  const telaCheia = document.getElementById('telaCheiaSinal');
+
+  function atualizarBotao() {
+    const texto = video.paused ? 'Reproduzir' : 'Pausar';
+    botao.title = texto;
+    botao.setAttribute('aria-label', texto);
+    document.getElementById('iconeReproducao').setAttribute('d', video.paused
+      ? 'M6 3v14l11-7z' : 'M4 3h4v14H4zM12 3h4v14h-4z');
+  }
+
+  function formatarTempo(segundos) {
+    const valor = Math.floor(segundos);
+    return `${Math.floor(valor / 60)}:${String(valor % 60).padStart(2, '0')}`;
+  }
+
+  function atualizarPosicao() {
+    const duracao = Number.isFinite(video.duration) ? video.duration : 0;
+    const atual = Math.min(video.currentTime || 0, duracao);
+    posicao.disabled = duracao <= 0;
+    posicao.max = String(duracao || 1);
+    posicao.value = String(atual);
+    tempo.textContent = `${formatarTempo(atual)} / ${formatarTempo(duracao)}`;
+    posicao.setAttribute('aria-valuetext', tempo.textContent);
+  }
+
+  function alternarReproducao() {
+    if (video.paused) tentarReproduzir();
+    else video.pause();
+  }
+
+  botao.addEventListener('click', alternarReproducao);
+  video.addEventListener('click', alternarReproducao);
+  video.addEventListener('play', atualizarBotao);
+  video.addEventListener('pause', atualizarBotao);
+  video.addEventListener('emptied', atualizarBotao);
+  for (const evento of ['timeupdate', 'durationchange', 'emptied']) {
+    video.addEventListener(evento, atualizarPosicao);
+  }
+  posicao.addEventListener('input', () => {
+    if (!posicao.disabled) video.currentTime = Number(posicao.value);
+  });
+  video.addEventListener('volumechange', () => {
+    if (!video.muted) video.muted = true;
+  });
+
+  if (document.fullscreenEnabled && player.requestFullscreen) {
+    telaCheia.hidden = false;
+    telaCheia.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === player) await document.exitFullscreen();
+        else await player.requestFullscreen();
+      } catch {
+        // O navegador pode cancelar a transição. O vídeo continua na página.
+      }
+    });
+    document.addEventListener('fullscreenchange', () => {
+      const texto = document.fullscreenElement === player ? 'Sair da tela cheia' : 'Tela cheia';
+      telaCheia.title = texto;
+      telaCheia.setAttribute('aria-label', texto);
+    });
+  }
+
   video.addEventListener('timeupdate', aoAtualizarTempo);
   video.addEventListener('error', () => {
     definirVideoIndisponivel(true);
+  });
+
+  const seletor = document.getElementById('velocidadeSinal');
+  if (!seletor) return;
+
+  seletor.addEventListener('change', () => {
+    const taxa = Number(seletor.value);
+    video.defaultPlaybackRate = taxa;
+    video.playbackRate = taxa;
+  });
+
+  // Mantém o seletor sincronizado com mudanças na reprodução.
+  video.addEventListener('ratechange', () => {
+    const taxa = video.playbackRate;
+    const valor = String(taxa);
+    seletor.value = valor;
+    if (seletor.selectedIndex < 0) {
+      seletor.add(new Option(`${taxa.toLocaleString('pt-BR')}×`, valor, false, true));
+    }
+    if (video.defaultPlaybackRate !== taxa) video.defaultPlaybackRate = taxa;
   });
 }
 
@@ -193,17 +282,10 @@ function alternarFavorito(nomeDoTermo) {
 
 function filtrarDados() {
   const favoritos = obterFavoritos();
-
-  return TERMOS_DO_SINALARIO.filter((item) => {
-    const bateCategoria = categoriaSelecionada === 'todos'
-      ? true
-      : categoriaSelecionada === 'favoritos'
-        ? favoritos.includes(item.termo)
-        : normalizar(item.categoria) === categoriaSelecionada;
-
-    const buscaBate = normalizar(item.termo).includes(normalizar(busca));
-
-    return bateCategoria && buscaBate;
+  return pesquisarSinais(busca, (item) => {
+    if (categoriaSelecionada === 'todos') return true;
+    if (categoriaSelecionada === 'favoritos') return favoritos.includes(item.termo);
+    return normalizar(item.categoria) === categoriaSelecionada;
   });
 }
 
@@ -211,7 +293,8 @@ function renderizarLista() {
   const container = document.getElementById('termsList');
   if (!container) return;
 
-  const filtrados = filtrarDados();
+  const { termos: filtrados, aviso } = filtrarDados();
+  document.getElementById('avisoBusca').textContent = aviso;
   const contador = document.getElementById('termsCount');
 
   if (contador) {
@@ -390,7 +473,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderizarLista();
 
   if (categoriaDaUrl) {
-    const filtrados = filtrarDados();
+    const { termos: filtrados } = filtrarDados();
     if (filtrados.length > 0) {
       termoAtual = filtrados[0];
       renderizarLista();

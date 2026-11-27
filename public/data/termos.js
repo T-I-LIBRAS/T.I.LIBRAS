@@ -1,679 +1,5 @@
+// Sinalário com vídeos locais servidos pela pasta public/videos.
 const TERMOS = [
-  {
-    id: 'monitor',
-    termo: 'Monitor',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/PSShL06SuZw?si=iEBdMi0yNUZ1IktT',
-    imagem: '/images/monitor.avif',
-    descricao: 'Dispositivo de saída que exibe a interface visual do computador.',
-    exemploPt: 'O monitor exibe a imagem em alta definição.',
-    exemploGlosa: 'MONITOR MOSTRAR IMAGEM BONITO',
-    opcoes: ['Monitor', 'Mouse', 'Teclado', 'Fone de ouvido']
-  },
-  {
-    id: 'mouse',
-    termo: 'Mouse',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/1FVnSoLDuaA',
-    imagem: '/images/mouse.jpg',
-    descricao: 'Periférico de entrada usado para mover o ponteiro na tela.',
-    exemploPt: 'Clique com o botão direito do mouse.',
-    exemploGlosa: 'MOUSE APONTAR CLICAR TELA',
-    opcoes: ['Mouse', 'Teclado', 'Fone de ouvido', 'Microfone']
-  },
-  {
-    id: 'teclado',
-    termo: 'Teclado',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/agoBWN12-_k',
-    imagem: '/images/teclado.jpg',
-    descricao: 'Periférico de entrada com teclas para digitação de texto e comandos.',
-    exemploPt: 'Estou digitando o código no teclado.',
-    exemploGlosa: 'TECLADO DIGITAR RÁPIDO CÓDIGO',
-    opcoes: ['Teclado', 'Fone de ouvido', 'Microfone', 'Webcam']
-  },
-  {
-    id: 'fone-de-ouvido',
-    termo: 'Fone de ouvido',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/WEiQim1hXF4',
-    imagem: '/images/fone-de-ouvido.avif',
-    descricao: 'Dispositivo de áudio individual colocado nas orelhas.',
-    exemploPt: 'Coloque os fones de ouvido para ouvir a aula.',
-    exemploGlosa: 'FONE ORELHA OUVIR AULA',
-    opcoes: ['Fone de ouvido', 'Microfone', 'Webcam', 'Impressora']
-  },
-  {
-    id: 'microfone',
-    termo: 'Microfone',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/i08NmnZTfSI',
-    imagem: '/images/microfone.jpg',
-    descricao: 'Equipamento que capta ondas sonoras e as converte em sinal elétrico.',
-    exemploPt: 'O microfone está mudo na reunião.',
-    exemploGlosa: 'MICROFONE FALAR SOM ENTAR',
-    opcoes: ['Microfone', 'Webcam', 'Impressora', 'Placa Mãe']
-  },
-  {
-    id: 'webcam',
-    termo: 'Webcam',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/7eZisexAgC0',
-    imagem: '/images/webcam.jpg',
-    descricao: 'Câmera de vídeo conectada ao computador para transmissões ao vivo.',
-    exemploPt: 'Ligue a webcam para a videochamada.',
-    exemploGlosa: 'WEBCAM MOSTRAR ROSTO REUNIÃO',
-    opcoes: ['Webcam', 'Impressora', 'Placa Mãe', 'Memória RAM']
-  },
-  {
-    id: 'impressora',
-    termo: 'Impressora',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/x2uwlO43nas',
-    imagem: '/images/impressora.jpg',
-    descricao: 'Dispositivo que imprime documentos em papel.',
-    exemploPt: 'A impressora precisa de mais papel.',
-    exemploGlosa: 'IMPRESSORA PAPEL SAIR TEXTO',
-    opcoes: ['Impressora', 'Placa Mãe', 'Memória RAM', 'Fonte de alimentação']
-  },
-  {
-    id: 'placa-mae',
-    termo: 'Placa Mãe',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/GKCZN5Ttm4Y',
-    imagem: '/images/placa-mae.jpg',
-    descricao: 'Placa principal que conecta e interliga todos os componentes do computador.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Placa Mãe', 'Memória RAM', 'Fonte de alimentação', 'HD']
-  },
-  {
-    id: 'memoria-ram',
-    termo: 'Memória RAM',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/Utl5qKbVXLs',
-    imagem: '/images/memoria-ram.jpg',
-    descricao: 'Memória volátil que guarda temporariamente os dados em uso pelo sistema.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Memória RAM', 'Fonte de alimentação', 'HD', 'SSD']
-  },
-  {
-    id: 'fonte-de-alimentacao',
-    termo: 'Fonte de alimentação',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/I53K3K8fZfo',
-    imagem: '/images/fonte-de-alimentacao.jpg',
-    descricao: 'Componente que converte a energia da tomada nas tensões usadas pelo computador.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Fonte de alimentação', 'HD', 'SSD', 'Processador']
-  },
-  {
-    id: 'hd',
-    termo: 'HD',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/1v6WAlO8MB4',
-    imagem: '/images/hd.webp',
-    descricao: 'Disco rígido magnético usado para armazenar arquivos de forma permanente.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['HD', 'SSD', 'Processador', 'Gabinete']
-  },
-  {
-    id: 'ssd',
-    termo: 'SSD',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/SrmgqvN38-Y',
-    imagem: '/images/ssd.jpg',
-    descricao: 'Unidade de armazenamento em estado sólido, mais rápida e silenciosa que o HD.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['SSD', 'Processador', 'Gabinete', 'Laptop']
-  },
-  {
-    id: 'processador',
-    termo: 'Processador',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/5dcPnIA_ozM',
-    imagem: '/images/processador.jpg',
-    descricao: 'Chip que executa as instruções e processa os dados do computador.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Processador', 'Gabinete', 'Laptop', 'Cooler']
-  },
-  {
-    id: 'gabinete',
-    termo: 'Gabinete',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/YvsF6mw2GGM',
-    imagem: '/images/gabinete.jpg',
-    descricao: 'Estrutura que abriga e protege os componentes internos do computador.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Gabinete', 'Laptop', 'Cooler', 'Pendrive']
-  },
-  {
-    id: 'laptop',
-    termo: 'Laptop',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/07Xx2qP2wmk',
-    imagem: '/images/laptop.jpg',
-    descricao: 'Computador portátil que reúne tela, teclado e bateria em uma única peça.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Laptop', 'Cooler', 'Pendrive', 'Monitor']
-  },
-  {
-    id: 'cooler',
-    termo: 'Cooler',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/Ux45sztLxO4',
-    imagem: '/images/cooler.jpg',
-    descricao: 'Ventilador responsável por resfriar os componentes internos do computador.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Cooler', 'Pendrive', 'Monitor', 'Mouse']
-  },
-  {
-    id: 'pendrive',
-    termo: 'Pendrive',
-    categoria: 'Hardware',
-    video: 'https://youtu.be/M92lL7_kFGM',
-    imagem: '/images/pendrive.jpg',
-    descricao: 'Dispositivo removível de armazenamento conectado pela porta USB.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Pendrive', 'Monitor', 'Mouse', 'Teclado']
-  },
-  {
-    id: 'linux',
-    termo: 'Linux',
-    categoria: 'Software',
-    video: 'https://youtu.be/NRAq_xaNyis',
-    imagem: '/images/linux.png',
-    descricao: 'Sistema operacional de código aberto bastante utilizado por desenvolvedores.',
-    exemploPt: 'Aprendemos a usar o terminal no Linux.',
-    exemploGlosa: 'LINUX SISTEMA LIVRE CÓDIGO',
-    opcoes: ['Linux', 'Windows', 'Office', 'Aplicativo']
-  },
-  {
-    id: 'windows',
-    termo: 'Windows',
-    categoria: 'Software',
-    video: 'https://youtu.be/Q_VT2cUpOxg',
-    imagem: '/images/windows.png',
-    descricao: 'Sistema operacional desenvolvido pela empresa Microsoft.',
-    exemploPt: 'O Windows atualizou ontem à noite.',
-    exemploGlosa: 'WINDOWS SISTEMA JANELAS POPULAR',
-    opcoes: ['Windows', 'Office', 'Aplicativo', 'Kernel']
-  },
-  {
-    id: 'office',
-    termo: 'Office',
-    categoria: 'Software',
-    video: 'https://youtu.be/3eg1VZwHPIo?si=km80RAm6kEie9fSP',
-    imagem: '/images/office.avif',
-    descricao: 'Pacote de programas de escritório para textos, planilhas e apresentações.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Office', 'Aplicativo', 'Kernel', 'E-Mail']
-  },
-  {
-    id: 'aplicativo',
-    termo: 'Aplicativo',
-    categoria: 'Software',
-    video: 'https://youtu.be/jD04T_vPMHY',
-    imagem: '/images/aplicativo.png',
-    descricao: 'Programa com função específica instalado no computador ou no celular.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Aplicativo', 'Kernel', 'E-Mail', 'Mac']
-  },
-  {
-    id: 'kernel',
-    termo: 'Kernel',
-    categoria: 'Software',
-    video: 'https://youtu.be/PK4S3FXjObM',
-    imagem: '/images/kernel.webp',
-    descricao: 'Núcleo do sistema operacional que faz a ponte entre o software e o hardware.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Kernel', 'E-Mail', 'Mac', 'Word']
-  },
-  {
-    id: 'email',
-    termo: 'E-Mail',
-    categoria: 'Software',
-    video: 'https://youtu.be/JyO5UM75tNo',
-    imagem: '/images/email.webp',
-    descricao: 'Serviço de mensagens eletrônicas enviadas pela internet.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['E-Mail', 'Mac', 'Word', 'Excel']
-  },
-  {
-    id: 'mac',
-    termo: 'Mac',
-    categoria: 'Software',
-    video: 'https://youtu.be/ReDwqasJhCg',
-    imagem: '/images/mac.jpg',
-    descricao: 'Sistema operacional da Apple usado nos computadores Macintosh.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Mac', 'Word', 'Excel', 'PowerPoint']
-  },
-  {
-    id: 'word',
-    termo: 'Word',
-    categoria: 'Software',
-    video: 'https://youtu.be/EWSEk41f09M',
-    imagem: '/images/word.png',
-    descricao: 'Editor de textos do pacote Office usado para criar documentos.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Word', 'Excel', 'PowerPoint', 'Sistema Operacional']
-  },
-  {
-    id: 'excel',
-    termo: 'Excel',
-    categoria: 'Software',
-    video: 'https://youtu.be/n8wIUDdojJU',
-    imagem: '/images/excel.jpg',
-    descricao: 'Programa de planilhas do pacote Office usado para cálculos e gráficos.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Excel', 'PowerPoint', 'Sistema Operacional', 'Linux']
-  },
-  {
-    id: 'powerpoint',
-    termo: 'PowerPoint',
-    categoria: 'Software',
-    video: 'https://youtu.be/woU0ayM_7gc',
-    imagem: '/images/powerpoint.png',
-    descricao: 'Programa do pacote Office usado para criar apresentações de slides.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['PowerPoint', 'Sistema Operacional', 'Linux', 'Windows']
-  },
-
-  {
-    id: 'algoritmo',
-    termo: 'Algoritmo',
-    categoria: 'Programação',
-    video: 'https://youtu.be/OamBeitweGc',
-    imagem: '/images/algoritmo.gif',
-    descricao: 'Sequência finita de passos lógicos para resolver um problema.',
-    exemploPt: 'O algoritmo ordena a lista de nomes.',
-    exemploGlosa: 'ALGORITMO PASSO PASSO RESOLVER',
-    opcoes: ['Algoritmo', 'Variável', 'Laço de Repetição', 'Software']
-  },
-  {
-    id: 'variavel',
-    termo: 'Variável',
-    categoria: 'Programação',
-    video: 'https://youtu.be/8B6kuZ6wrUc',
-    imagem: '/images/variavel.jpg',
-    descricao: 'Espaço na memória reservado para armazenar dados que podem mudar.',
-    exemploPt: 'Declare uma variável para guardar a idade.',
-    exemploGlosa: 'VARIÁVEL MEMÓRIA GUARDAR MUDAR',
-    opcoes: ['Variável', 'Laço de Repetição', 'Software', 'Java']
-  },
-  {
-    id: 'laco-de-repeticao',
-    termo: 'Laço de Repetição',
-    categoria: 'Programação',
-    video: 'https://youtu.be/7UziHpNcHVA?si=M2LUOiDaWHOOP2-K',
-    imagem: '/images/laco-de-repeticao.png',
-    descricao: 'Estrutura que repete um bloco de comandos enquanto a condição for verdadeira.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Laço de Repetição', 'Operador', 'Java', 'HTML']
-  },
-  {
-    id: 'java',
-    termo: 'Java',
-    categoria: 'Programação',
-    video: 'https://youtu.be/Vq_wIkAJkis',
-    imagem: '/images/java.png',
-    descricao: 'Linguagem de programação orientada a objetos muito usada em sistemas corporativos.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Java', 'HTML', 'CSS', 'JavaScript']
-  },
-  {
-    id: 'html',
-    termo: 'HTML',
-    categoria: 'Programação',
-    video: 'https://youtu.be/okXyI6grl2E',
-    imagem: '/images/html.png',
-    descricao: 'Linguagem de marcação que estrutura o conteúdo das páginas web.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['HTML', 'CSS', 'JavaScript', 'Python']
-  },
-  {
-    id: 'css',
-    termo: 'CSS',
-    categoria: 'Programação',
-    video: 'https://youtu.be/FFMQiHcNZtA',
-    imagem: '/images/css.png',
-    descricao: 'Linguagem de estilo que define a aparência das páginas web.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['CSS', 'JavaScript', 'Python', 'NetBeans']
-  },
-  {
-    id: 'javascript',
-    termo: 'JavaScript',
-    categoria: 'Programação',
-    video: 'https://youtu.be/7FcSZUoqud8',
-    imagem: '/images/javascript.jpg',
-    descricao: 'Linguagem de programação que adiciona interatividade às páginas web.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['JavaScript', 'Python', 'NetBeans', 'GitHub']
-  },
-  {
-    id: 'python',
-    termo: 'Python',
-    categoria: 'Programação',
-    video: 'https://youtu.be/z9Hfw3o1wXA',
-    imagem: '/images/python.webp',
-    descricao: 'Linguagem de programação de alto nível conhecida pela sintaxe simples.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Python', 'NetBeans', 'GitHub', 'Repositório']
-  },
-  {
-    id: 'vscode',
-    termo: 'VSCode',
-    categoria: 'Programação',
-    video: 'https://youtu.be/cn67U06lYOw',
-    imagem: '/images/vscode.png',
-    descricao: 'Editor de código utilizado para escrever e editar programas.',
-    exemploPt: 'Estou utilizando o VSCode para programar.',
-    exemploGlosa: 'VSCODE EDITOR CÓDIGO PROGRAMAR',
-    opcoes: ['VSCode', 'HTML', 'GitHub', 'Java']
-  },
-  {
-    id: 'github',
-    termo: 'GitHub',
-    categoria: 'Programação',
-    video: 'https://youtu.be/4pBk1kw2o1Q',
-    imagem: '/images/github.jpg',
-    descricao: 'Plataforma de hospedagem de código que usa o sistema de controle de versão Git.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['GitHub', 'Repositório', 'Algoritmo', 'Variável']
-  },
-  {
-    id: 'potencia',
-    termo: 'Potência',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/a_A5ogbtHcM?si=VaPm71g0yF560YFa',
-    imagem: '/images/potencia.jpg',
-    descricao: 'Grandeza que mede a quantidade de energia elétrica consumida por segundo.',
-    exemploPt: 'A potência da fonte é de 500 Watts.',
-    exemploGlosa: 'POTÊNCIA ENERGIA FORÇA MEDIR',
-    opcoes: ['Potência', 'Resistor', 'Tensão', 'Corrente Elétrica']
-  },
-  {
-    id: 'resistor',
-    termo: 'Resistor',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/UJV7X_NUS9k?si=-FKP0NmpwASvAZL3',
-    imagem: '/images/resistor.jpg',
-    descricao: 'Componente elétrico que limita e opõe resistência à passagem de corrente.',
-    exemploPt: 'O resistor protege o LED contra sobrecarga.',
-    exemploGlosa: 'RESISTOR SEGURAR CORRENTE ELÉTRICA',
-    opcoes: ['Resistor', 'Tensão', 'Corrente Elétrica', 'Cabo']
-  },
-  {
-    id: 'tensao',
-    termo: 'Tensão',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/DPS2TrA5WS4?si=WbYuP0iHytTxfYFf',
-    imagem: '/images/tensao.png',
-    descricao: 'Diferença de potencial elétrico entre dois pontos do circuito, medida em volts.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Tensão', 'Corrente Elétrica', 'Cabo', 'Alicate']
-  },
-  {
-    id: 'corrente-eletrica',
-    termo: 'Corrente Elétrica',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/ZbFxBNpK-e4?si=bM56BcLisrS6X9k7',
-    imagem: '/images/corrente-eletrica.jpg',
-    descricao: 'Fluxo ordenado de cargas elétricas que percorre um condutor.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Corrente Elétrica', 'Cabo', 'Alicate', 'Condutor']
-  },
-  {
-    id: 'cabo',
-    termo: 'Cabo',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/DCKTVPxTaeo?si=fvChc4eHKtrg9uF6',
-    imagem: '/images/cabo.jpg',
-    descricao: 'Fio condutor coberto por isolante usado para ligar pontos de um circuito.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Cabo', 'Alicate', 'Condutor', 'LED']
-  },
-  {
-    id: 'circuito-serie',
-    termo: 'Circuito em Série',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/TlhuslesiCs?si=aNf0oCfS6fRS5dva',
-    imagem: '/images/circuito-serie.jpg',
-    descricao: 'Circuito onde os componentes estão conectados em sequência, formando um único caminho para a corrente.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Circuito em Série', 'Circuito em Paralelo', 'Cabo', 'Alicate']
-  },
-  {
-    id: 'circuito-paralelo',
-    termo: 'Circuito em Paralelo',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/GSGfPKdZQeU?si=t2sbedXidxh_uWKJ',
-    imagem: '/images/circuito-paralelo.jpg',
-    descricao: 'Circuito onde os componentes estão conectados em paralelo, formando múltiplos caminhos para a corrente.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Circuito em Paralelo', 'Circuito em Série', 'Alicate', 'Condutor']
-  },
-  {
-    id: 'alicate-universal',
-    termo: 'Alicate Universal',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/BNKFzPUGNOE?si=XnYYjcMKGmtHr8VD',
-    imagem: '/images/alicate.jpg',
-    descricao: 'Ferramenta de mão usada para segurar, cortar e dobrar fios elétricos.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Alicate Universal', 'Alicate de Corte', 'Alicate Decapador', 'Corrente Alternada']
-  },
-  {
-    id: 'alicate-de-corte',
-    termo: 'Alicate de Corte',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/ijbF7-GVPO8?si=4JejTkdfwIn764AO',
-    imagem: '/images/alicate-de-corte.jpg',
-    descricao: 'Ferramenta de mão usada para cortar fios elétricos.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Alicate Universal', 'Alicate Decapador', 'Alicate de Corte', 'Resistor']
-  },
-  {
-    id: 'alicate-decapador',
-    termo: 'Alicate Decapador',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/b43DLru7Smg?si=n8ZJ3__51SGnWFCm',
-    imagem: '/images/alicate-decapador.jpg',
-    descricao: 'Ferramenta de mão usada para remover o isolante dos fios elétricos.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Alicate Universal', 'Alicate de Corte', 'Alicate Decapador', 'Disjuntor']
-  },
-  {
-    id: 'multimetro',
-    termo: 'Multímetro',
-    categoria: 'Eletricidade',
-    video: 'https://youtu.be/sZqykCMfah0?si=tHPbjK_S6v8Cuqez',
-    imagem: '/images/multimetro.webp',
-    descricao: 'Instrumento de medição de tensão, corrente e resistência elétrica.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Multímetro', 'Potência', 'Resistor', 'Tensão']
-  },
-  {
-    id: 'navegador-de-internet',
-    termo: 'Navegador de Internet',
-    categoria: 'Redes',
-    video: 'https://youtu.be/DcG2AvcmKBo',
-    imagem: '/images/navegador-de-internet.png',
-    descricao: 'Software que permite acessar e visualizar páginas da World Wide Web.',
-    exemploPt: 'Abra o navegador de internet para pesquisar.',
-    exemploGlosa: 'NAVEGADOR PROGRAMA ENTRAR INTERNET',
-    opcoes: ['Navegador de Internet', 'Google Chrome', 'Edge', 'Firefox']
-  },
-  {
-    id: 'internet-explorer',
-    termo: 'Internet Explorer',
-    categoria: 'Redes',
-    video: 'https://youtu.be/AJ-4ZWEjDQE',
-    imagem: '/images/internet-explorer.jpg',
-    descricao: 'Navegador de internet desenvolvido pela Microsoft.',
-    exemploPt: 'O Internet Explorer era usado para acessar sites.',
-    exemploGlosa: 'INTERNET EXPLORER NAVEGADOR ACESSAR SITE',
-    opcoes: ['Internet Explorer', 'Edge', 'Firefox', 'Safari']
-  },
-  {
-    id: 'safari',
-    termo: 'Safari',
-    categoria: 'Redes',
-    video: 'https://youtu.be/mx6PX4aoZW4',
-    imagem: '/images/safari.jpg',
-    descricao: 'Navegador de internet desenvolvido pela Apple.',
-    exemploPt: 'O Safari permite acessar páginas da internet.',
-    exemploGlosa: 'SAFARI NAVEGADOR INTERNET ACESSAR',
-    opcoes: ['Safari', 'Edge', 'Firefox', 'Google Chrome']
-  },
-  {
-    id: 'edge',
-    termo: 'Edge',
-    categoria: 'Redes',
-    video: 'https://youtu.be/_bk2lTfn6nk',
-    imagem: '/images/edge.jpg',
-    descricao: 'Navegador de internet desenvolvido pela Microsoft.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Edge', 'Firefox', 'Abas', 'Safari']
-  }, 
-  {
-    id: 'Google Chrome',
-    termo: 'Google Chrome',
-    categoria: 'Redes',
-    video: 'https://youtu.be/i48YNW3HSX8',
-    imagem: '/images/google-chrome.jpg',
-    descricao: 'Navegador de internet desenvolvido pelo Google.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Google Chrome', 'Firefox', 'Edge', 'Safari']
-  },
-  {
-    id: 'firefox',
-    termo: 'Firefox',
-    categoria: 'Redes',
-    video: 'https://youtu.be/fMAb9zbOR6g',
-    imagem: '/images/firefox.jpg',
-    descricao: 'Navegador de internet de código aberto desenvolvido pela Mozilla.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Firefox', 'Internet Explorer', 'Edge', 'Google Chrome']
-  },
-  {
-    id: 'abas',
-    termo: 'Abas',
-    categoria: 'Redes',
-    video: 'https://youtu.be/M-gn5eWic6M',
-    imagem: '/images/abas.webp',
-    descricao: 'Recurso do navegador que permite abrir várias páginas na mesma janela.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Abas', 'Maximizar', 'Google', 'Vírus']
-  },
-  {
-    id: 'maximizar',
-    termo: 'Maximizar',
-    categoria: 'Redes',
-    video: 'https://youtu.be/-YT9LjKu8iU',
-    imagem: '/images/maximizar-e-minimizar.jpg',
-    descricao: 'Ação da janela que amplia o tamanho na tela.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Maximizar', 'Google', 'Vírus', 'Antivírus']
-  },
-  {
-    id: 'minimizar',
-    termo: 'Minimizar',
-    categoria: 'Redes',
-    video: 'https://youtu.be/pIaEnmk1VoE',
-    imagem: '/images/maximizar-e-minimizar.jpg',
-    descricao: 'Ação da janela que reduz o tamanho na tela.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Minimizar', 'Google', 'Vírus', 'Antivírus']
-  },
-  {
-    id: 'virus',
-    termo: 'Vírus',
-    categoria: 'Redes',
-    video: 'https://youtu.be/wlThu8NQibg',
-    imagem: '/images/virus.jpg',
-    descricao: 'Programa malicioso que se espalha e danifica os arquivos do computador.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Vírus', 'Antivírus', 'Backup', 'Link']
-  },
-  {
-    id: 'antivirus',
-    termo: 'Antivírus',
-    categoria: 'Redes',
-    video: 'https://youtu.be/EQNKofL3bCY',
-    imagem: '/images/antivirus.webp',
-    descricao: 'Programa que detecta e remove ameaças digitais do computador.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Antivírus', 'Backup', 'Link', 'Site']
-  },
-  {
-    id: 'backup',
-    termo: 'Backup',
-    categoria: 'Redes',
-    video: 'https://youtu.be/_f6AXldsugY',
-    imagem: '/images/backup.jpg',
-    descricao: 'Cópia de segurança dos arquivos para evitar perdas de dados.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Backup', 'Link', 'Site', 'Navegador de Internet']
-  },
-  {
-    id: 'link',
-    termo: 'Link',
-    categoria: 'Redes',
-    video: 'https://youtu.be/lT5_wyhkEAw',
-    imagem: '/images/link.jpg',
-    descricao: 'Endereço clicável que leva a outra página ou arquivo na internet.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Link', 'Site', 'Navegador de Internet', 'Google Chrome']
-  }
-];
-
-const TERMOS_LOCAIS = [
   {
     id: 'monitor',
     termo: 'Monitor',
@@ -682,8 +8,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/monitor.avif',
     descricao: 'Dispositivo de saída que exibe a interface visual do computador.',
     exemploPt: 'O monitor exibe a imagem em alta definição.',
-    exemploGlosa: 'MONITOR MOSTRAR IMAGEM BONITO',
-    opcoes: ['Monitor', 'Mouse', 'Teclado', 'Fone de ouvido']
+    exemploGlosa: 'MONITOR MOSTRAR IMAGEM BONITO'
   },
   {
     id: 'mouse',
@@ -693,8 +18,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/mouse.jpg',
     descricao: 'Periférico de entrada usado para mover o ponteiro na tela.',
     exemploPt: 'Clique com o botão direito do mouse.',
-    exemploGlosa: 'MOUSE APONTAR CLICAR TELA',
-    opcoes: ['Mouse', 'Teclado', 'Fone de ouvido', 'Microfone']
+    exemploGlosa: 'MOUSE APONTAR CLICAR TELA'
   },
   {
     id: 'teclado',
@@ -704,8 +28,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/teclado.jpg',
     descricao: 'Periférico de entrada com teclas para digitação de texto e comandos.',
     exemploPt: 'Estou digitando o código no teclado.',
-    exemploGlosa: 'TECLADO DIGITAR RÁPIDO CÓDIGO',
-    opcoes: ['Teclado', 'Fone de ouvido', 'Microfone', 'Webcam']
+    exemploGlosa: 'TECLADO DIGITAR RÁPIDO CÓDIGO'
   },
   {
     id: 'fone-de-ouvido',
@@ -715,8 +38,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/fone-de-ouvido.avif',
     descricao: 'Dispositivo de áudio individual colocado nas orelhas.',
     exemploPt: 'Coloque os fones de ouvido para ouvir a aula.',
-    exemploGlosa: 'FONE ORELHA OUVIR AULA',
-    opcoes: ['Fone de ouvido', 'Microfone', 'Webcam', 'Impressora']
+    exemploGlosa: 'FONE ORELHA OUVIR AULA'
   },
   {
     id: 'microfone',
@@ -726,8 +48,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/microfone.jpg',
     descricao: 'Equipamento que capta ondas sonoras e as converte em sinal elétrico.',
     exemploPt: 'O microfone está mudo na reunião.',
-    exemploGlosa: 'MICROFONE FALAR SOM ENTAR',
-    opcoes: ['Microfone', 'Webcam', 'Impressora', 'Placa Mãe']
+    exemploGlosa: 'MICROFONE FALAR SOM ENTAR'
   },
   {
     id: 'webcam',
@@ -737,8 +58,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/webcam.jpg',
     descricao: 'Câmera de vídeo conectada ao computador para transmissões ao vivo.',
     exemploPt: 'Ligue a webcam para a videochamada.',
-    exemploGlosa: 'WEBCAM MOSTRAR ROSTO REUNIÃO',
-    opcoes: ['Webcam', 'Impressora', 'Placa Mãe', 'Memória RAM']
+    exemploGlosa: 'WEBCAM MOSTRAR ROSTO REUNIÃO'
   },
   {
     id: 'impressora',
@@ -748,8 +68,17 @@ const TERMOS_LOCAIS = [
     imagem: '/images/impressora.jpg',
     descricao: 'Dispositivo que imprime documentos em papel.',
     exemploPt: 'A impressora precisa de mais papel.',
-    exemploGlosa: 'IMPRESSORA PAPEL SAIR TEXTO',
-    opcoes: ['Impressora', 'Placa Mãe', 'Memória RAM', 'Fonte de alimentação']
+    exemploGlosa: 'IMPRESSORA PAPEL SAIR TEXTO'
+  },
+  {
+    id: 'placa-mae',
+    termo: 'Placa Mãe',
+    categoria: 'Hardware',
+    video: '/videos/placa-mae.mp4',
+    imagem: '/images/placa-mae.jpg',
+    descricao: 'Placa principal que conecta e interliga todos os componentes do computador.',
+    exemploPt: '',
+    exemploGlosa: ''
   },
   {
     id: 'memoria-ram',
@@ -759,8 +88,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/memoria-ram.jpg',
     descricao: 'Memória volátil que guarda temporariamente os dados em uso pelo sistema.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Memória RAM', 'Fonte de alimentação', 'HD', 'SSD']
+    exemploGlosa: ''
   },
   {
     id: 'fonte-de-alimentacao',
@@ -770,8 +98,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/fonte-de-alimentacao.jpg',
     descricao: 'Componente que converte a energia da tomada nas tensões usadas pelo computador.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Fonte de alimentação', 'HD', 'SSD', 'Processador']
+    exemploGlosa: ''
   },
   {
     id: 'hd',
@@ -781,8 +108,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/hd.webp',
     descricao: 'Disco rígido magnético usado para armazenar arquivos de forma permanente.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['HD', 'SSD', 'Processador', 'Gabinete']
+    exemploGlosa: ''
   },
   {
     id: 'ssd',
@@ -792,8 +118,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/ssd.jpg',
     descricao: 'Unidade de armazenamento em estado sólido, mais rápida e silenciosa que o HD.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['SSD', 'Processador', 'Gabinete', 'Laptop']
+    exemploGlosa: ''
   },
   {
     id: 'processador',
@@ -803,8 +128,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/processador.jpg',
     descricao: 'Chip que executa as instruções e processa os dados do computador.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Processador', 'Gabinete', 'Laptop', 'Cooler']
+    exemploGlosa: ''
   },
   {
     id: 'gabinete',
@@ -814,8 +138,17 @@ const TERMOS_LOCAIS = [
     imagem: '/images/gabinete.jpg',
     descricao: 'Estrutura que abriga e protege os componentes internos do computador.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Gabinete', 'Laptop', 'Cooler', 'Pendrive']
+    exemploGlosa: ''
+  },
+  {
+    id: 'laptop',
+    termo: 'Laptop',
+    categoria: 'Hardware',
+    video: '/videos/laptop.mp4',
+    imagem: '/images/laptop.jpg',
+    descricao: 'Computador portátil que reúne tela, teclado e bateria em uma única peça.',
+    exemploPt: '',
+    exemploGlosa: ''
   },
   {
     id: 'cooler',
@@ -825,8 +158,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/cooler.jpg',
     descricao: 'Ventilador responsável por resfriar os componentes internos do computador.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Cooler', 'Pendrive', 'Monitor', 'Mouse']
+    exemploGlosa: ''
   },
   {
     id: 'pendrive',
@@ -836,8 +168,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/pendrive.jpg',
     descricao: 'Dispositivo removível de armazenamento conectado pela porta USB.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Pendrive', 'Monitor', 'Mouse', 'Teclado']
+    exemploGlosa: ''
   },
   {
     id: 'linux',
@@ -847,8 +178,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/linux.png',
     descricao: 'Sistema operacional de código aberto bastante utilizado por desenvolvedores.',
     exemploPt: 'Aprendemos a usar o terminal no Linux.',
-    exemploGlosa: 'LINUX SISTEMA LIVRE CÓDIGO',
-    opcoes: ['Linux', 'Windows', 'Office', 'Aplicativo']
+    exemploGlosa: 'LINUX SISTEMA LIVRE CÓDIGO'
   },
   {
     id: 'windows',
@@ -858,8 +188,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/windows.png',
     descricao: 'Sistema operacional desenvolvido pela empresa Microsoft.',
     exemploPt: 'O Windows atualizou ontem à noite.',
-    exemploGlosa: 'WINDOWS SISTEMA JANELAS POPULAR',
-    opcoes: ['Windows', 'Office', 'Aplicativo', 'Kernel']
+    exemploGlosa: 'WINDOWS SISTEMA JANELAS POPULAR'
   },
   {
     id: 'office',
@@ -869,8 +198,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/office.avif',
     descricao: 'Pacote de programas de escritório para textos, planilhas e apresentações.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Office', 'Aplicativo', 'Kernel', 'E-Mail']
+    exemploGlosa: ''
   },
   {
     id: 'aplicativo',
@@ -880,8 +208,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/aplicativo.png',
     descricao: 'Programa com função específica instalado no computador ou no celular.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Aplicativo', 'Kernel', 'E-Mail', 'Mac']
+    exemploGlosa: ''
   },
   {
     id: 'kernel',
@@ -891,8 +218,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/kernel.webp',
     descricao: 'Núcleo do sistema operacional que faz a ponte entre o software e o hardware.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Kernel', 'E-Mail', 'Mac', 'Word']
+    exemploGlosa: ''
   },
   {
     id: 'email',
@@ -902,8 +228,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/email.webp',
     descricao: 'Serviço de mensagens eletrônicas enviadas pela internet.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['E-Mail', 'Mac', 'Word', 'Excel']
+    exemploGlosa: ''
   },
   {
     id: 'mac',
@@ -913,8 +238,17 @@ const TERMOS_LOCAIS = [
     imagem: '/images/mac.jpg',
     descricao: 'Sistema operacional da Apple usado nos computadores Macintosh.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Mac', 'Word', 'Excel', 'PowerPoint']
+    exemploGlosa: ''
+  },
+  {
+    id: 'word',
+    termo: 'Word',
+    categoria: 'Software',
+    video: '/videos/word.mp4',
+    imagem: '/images/word.png',
+    descricao: 'Editor de textos do pacote Office usado para criar documentos.',
+    exemploPt: '',
+    exemploGlosa: ''
   },
   {
     id: 'excel',
@@ -924,8 +258,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/excel.jpg',
     descricao: 'Programa de planilhas do pacote Office usado para cálculos e gráficos.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Excel', 'PowerPoint', 'Sistema Operacional', 'Linux']
+    exemploGlosa: ''
   },
   {
     id: 'powerpoint',
@@ -935,10 +268,8 @@ const TERMOS_LOCAIS = [
     imagem: '/images/powerpoint.png',
     descricao: 'Programa do pacote Office usado para criar apresentações de slides.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['PowerPoint', 'Sistema Operacional', 'Linux', 'Windows']
+    exemploGlosa: ''
   },
-
   {
     id: 'algoritmo',
     termo: 'Algoritmo',
@@ -947,8 +278,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/algoritmo.gif',
     descricao: 'Sequência finita de passos lógicos para resolver um problema.',
     exemploPt: 'O algoritmo ordena a lista de nomes.',
-    exemploGlosa: 'ALGORITMO PASSO PASSO RESOLVER',
-    opcoes: ['Algoritmo', 'Variável', 'Laço de Repetição', 'Operador']
+    exemploGlosa: 'ALGORITMO PASSO PASSO RESOLVER'
   },
   {
     id: 'variavel',
@@ -958,8 +288,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/variavel.jpg',
     descricao: 'Espaço na memória reservado para armazenar dados que podem mudar.',
     exemploPt: 'Declare uma variável para guardar a idade.',
-    exemploGlosa: 'VARIÁVEL MEMÓRIA GUARDAR MUDAR',
-    opcoes: ['Variável', 'Laço de Repetição', 'Operador', 'Java']
+    exemploGlosa: 'VARIÁVEL MEMÓRIA GUARDAR MUDAR'
   },
   {
     id: 'laco-de-repeticao',
@@ -969,8 +298,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/laco-de-repeticao.png',
     descricao: 'Estrutura que repete um bloco de comandos enquanto a condição for verdadeira.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Laço de Repetição', 'Operador', 'Java', 'HTML']
+    exemploGlosa: ''
   },
   {
     id: 'java',
@@ -980,8 +308,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/java.png',
     descricao: 'Linguagem de programação orientada a objetos muito usada em sistemas corporativos.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Java', 'HTML', 'CSS', 'JavaScript']
+    exemploGlosa: ''
   },
   {
     id: 'html',
@@ -991,8 +318,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/html.png',
     descricao: 'Linguagem de marcação que estrutura o conteúdo das páginas web.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['HTML', 'CSS', 'JavaScript', 'Python']
+    exemploGlosa: ''
   },
   {
     id: 'css',
@@ -1002,19 +328,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/css.png',
     descricao: 'Linguagem de estilo que define a aparência das páginas web.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['CSS', 'JavaScript', 'Python', 'NetBeans']
-  },
-  {
-    id: 'vscode',
-    termo: 'VSCode',
-    categoria: 'Programação',
-    video: '/videos/vscode.mp4',
-    imagem: '/images/vscode.png',
-    descricao: 'Editor de código utilizado para escrever e editar programas.',
-    exemploPt: 'Estou utilizando o VSCode para programar.',
-    exemploGlosa: 'VSCODE EDITOR CÓDIGO PROGRAMAR',
-    opcoes: ['VSCode', 'NetBeans', 'GitHub', 'Java']
+    exemploGlosa: ''
   },
   {
     id: 'javascript',
@@ -1024,8 +338,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/javascript.jpg',
     descricao: 'Linguagem de programação que adiciona interatividade às páginas web.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['JavaScript', 'Python', 'NetBeans', 'GitHub']
+    exemploGlosa: ''
   },
   {
     id: 'python',
@@ -1035,8 +348,17 @@ const TERMOS_LOCAIS = [
     imagem: '/images/python.webp',
     descricao: 'Linguagem de programação de alto nível conhecida pela sintaxe simples.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Python', 'NetBeans', 'GitHub', 'Repositório']
+    exemploGlosa: ''
+  },
+  {
+    id: 'vscode',
+    termo: 'VSCode',
+    categoria: 'Programação',
+    video: '/videos/vscode.mp4',
+    imagem: '/images/vscode.png',
+    descricao: 'Editor de código utilizado para escrever e editar programas.',
+    exemploPt: 'Estou utilizando o VSCode para programar.',
+    exemploGlosa: 'VSCODE EDITOR CÓDIGO PROGRAMAR'
   },
   {
     id: 'github',
@@ -1046,8 +368,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/github.jpg',
     descricao: 'Plataforma de hospedagem de código que usa o sistema de controle de versão Git.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['GitHub', 'Repositório', 'Algoritmo', 'Variável']
+    exemploGlosa: ''
   },
   {
     id: 'potencia',
@@ -1057,8 +378,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/potencia.jpg',
     descricao: 'Grandeza que mede a quantidade de energia elétrica consumida por segundo.',
     exemploPt: 'A potência da fonte é de 500 Watts.',
-    exemploGlosa: 'POTÊNCIA ENERGIA FORÇA MEDIR',
-    opcoes: ['Potência', 'Resistor', 'Tensão', 'Corrente Elétrica']
+    exemploGlosa: 'POTÊNCIA ENERGIA FORÇA MEDIR'
   },
   {
     id: 'resistor',
@@ -1068,8 +388,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/resistor.jpg',
     descricao: 'Componente elétrico que limita e opõe resistência à passagem de corrente.',
     exemploPt: 'O resistor protege o LED contra sobrecarga.',
-    exemploGlosa: 'RESISTOR SEGURAR CORRENTE ELÉTRICA',
-    opcoes: ['Resistor', 'Tensão', 'Corrente Elétrica', 'Cabo']
+    exemploGlosa: 'RESISTOR SEGURAR CORRENTE ELÉTRICA'
   },
   {
     id: 'tensao',
@@ -1079,8 +398,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/tensao.png',
     descricao: 'Diferença de potencial elétrico entre dois pontos do circuito, medida em volts.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Tensão', 'Corrente Elétrica', 'Cabo', 'Alicate']
+    exemploGlosa: ''
   },
   {
     id: 'corrente-eletrica',
@@ -1090,8 +408,37 @@ const TERMOS_LOCAIS = [
     imagem: '/images/corrente-eletrica.jpg',
     descricao: 'Fluxo ordenado de cargas elétricas que percorre um condutor.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Corrente Elétrica', 'Cabo', 'Alicate', 'Condutor']
+    exemploGlosa: ''
+  },
+  {
+    id: 'cabo',
+    termo: 'Cabo',
+    categoria: 'Eletricidade',
+    video: '/videos/cabo.mp4',
+    imagem: '/images/cabo.jpg',
+    descricao: 'Fio condutor coberto por isolante usado para ligar pontos de um circuito.',
+    exemploPt: '',
+    exemploGlosa: ''
+  },
+  {
+    id: 'circuito-serie',
+    termo: 'Circuito em Série',
+    categoria: 'Eletricidade',
+    video: '/videos/circuito-serie.mp4',
+    imagem: '/images/circuito-serie.jpg',
+    descricao: 'Circuito onde os componentes estão conectados em sequência, formando um único caminho para a corrente.',
+    exemploPt: '',
+    exemploGlosa: ''
+  },
+  {
+    id: 'circuito-paralelo',
+    termo: 'Circuito em Paralelo',
+    categoria: 'Eletricidade',
+    video: '/videos/circuito-paralelo.mp4',
+    imagem: '/images/circuito-paralelo.jpg',
+    descricao: 'Circuito onde os componentes estão conectados em paralelo, formando múltiplos caminhos para a corrente.',
+    exemploPt: '',
+    exemploGlosa: ''
   },
   {
     id: 'alicate-universal',
@@ -1101,19 +448,17 @@ const TERMOS_LOCAIS = [
     imagem: '/images/alicate.jpg',
     descricao: 'Ferramenta de mão usada para segurar, cortar e dobrar fios elétricos.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Alicate Universal', 'Alicate de Corte', 'Alicate Decapador', 'Corrente Alternada']
+    exemploGlosa: ''
   },
   {
     id: 'alicate-de-corte',
     termo: 'Alicate de Corte',
     categoria: 'Eletricidade',
-    video: '/videos/alicate-de-corte.mp4',
+    video: '/videos/alicate-corte.mp4',
     imagem: '/images/alicate-de-corte.jpg',
     descricao: 'Ferramenta de mão usada para cortar fios elétricos.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Alicate Universal', 'Alicate Decapador', 'Alicate de Corte', 'Resistor']
+    exemploGlosa: ''
   },
   {
     id: 'alicate-decapador',
@@ -1123,19 +468,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/alicate-decapador.jpg',
     descricao: 'Ferramenta de mão usada para remover o isolante dos fios elétricos.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Alicate Universal', 'Alicate de Corte', 'Alicate Decapador', 'Disjuntor']
-  },
-  {
-    id: 'corrente-eletrica',
-    termo: 'Corrente Elétrica',
-    categoria: 'Eletricidade',
-    video: '/videos/corrente-eletrica.mp4',
-    imagem: '/images/corrente-eletrica.jpg',
-    descricao: 'Fluxo ordenado de cargas elétricas que percorre um condutor.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Corrente Elétrica', 'Disjuntor', 'Multímetro', 'Potência']
+    exemploGlosa: ''
   },
   {
     id: 'multimetro',
@@ -1145,8 +478,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/multimetro.webp',
     descricao: 'Instrumento de medição de tensão, corrente e resistência elétrica.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Multímetro', 'Alicate Universal', 'Potência', 'Tensão']
+    exemploGlosa: ''
   },
   {
     id: 'navegador-de-internet',
@@ -1156,30 +488,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/navegador-de-internet.png',
     descricao: 'Software que permite acessar e visualizar páginas da World Wide Web.',
     exemploPt: 'Abra o navegador de internet para pesquisar.',
-    exemploGlosa: 'NAVEGADOR PROGRAMA ENTRAR INTERNET',
-    opcoes: ['Navegador de Internet', 'Google Chrome', 'Edge', 'Firefox']
-  },
-  {
-    id: 'edge',
-    termo: 'Edge',
-    categoria: 'Redes',
-    video: '/videos/edge.mp4',
-    imagem: '/images/edge.jpg',
-    descricao: 'Navegador de internet desenvolvido pela Microsoft.',
-    exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Edge', 'Firefox', 'Abas', 'Maximizar e Minimizar']
-  }, 
-  {
-    id: 'safari',
-    termo: 'Safari',
-    categoria: 'Redes',
-    video: '/videos/safari.mp4',
-    imagem: '/images/safari.jpg',
-    descricao: 'Navegador de internet desenvolvido pela Apple.',
-    exemploPt: 'O Safari permite acessar páginas da internet.',
-    exemploGlosa: 'SAFARI NAVEGADOR INTERNET ACESSAR',
-    opcoes: ['Safari', 'Edge', 'Firefox', 'Google Chrome']
+    exemploGlosa: 'NAVEGADOR PROGRAMA ENTRAR INTERNET'
   },
   {
     id: 'internet-explorer',
@@ -1189,8 +498,47 @@ const TERMOS_LOCAIS = [
     imagem: '/images/internet-explorer.jpg',
     descricao: 'Navegador de internet desenvolvido pela Microsoft.',
     exemploPt: 'O Internet Explorer era usado para acessar sites.',
-    exemploGlosa: 'INTERNET EXPLORER NAVEGADOR ACESSAR SITE',
-    opcoes: ['Internet Explorer', 'Edge', 'Firefox', 'Safari']
+    exemploGlosa: 'INTERNET EXPLORER NAVEGADOR ACESSAR SITE'
+  },
+  {
+    id: 'safari',
+    termo: 'Safari',
+    categoria: 'Redes',
+    video: '/videos/safari.mp4',
+    imagem: '/images/safari.jpg',
+    descricao: 'Navegador de internet desenvolvido pela Apple.',
+    exemploPt: 'O Safari permite acessar páginas da internet.',
+    exemploGlosa: 'SAFARI NAVEGADOR INTERNET ACESSAR'
+  },
+  {
+    id: 'edge',
+    termo: 'Edge',
+    categoria: 'Redes',
+    video: '/videos/edge.mp4',
+    imagem: '/images/edge.jpg',
+    descricao: 'Navegador de internet desenvolvido pela Microsoft.',
+    exemploPt: '',
+    exemploGlosa: ''
+  },
+  {
+    id: 'Google Chrome',
+    termo: 'Google Chrome',
+    categoria: 'Redes',
+    video: '/videos/google-chrome.mp4',
+    imagem: '/images/google-chrome.jpg',
+    descricao: 'Navegador de internet desenvolvido pelo Google.',
+    exemploPt: '',
+    exemploGlosa: ''
+  },
+  {
+    id: 'firefox',
+    termo: 'Firefox',
+    categoria: 'Redes',
+    video: '/videos/firefox.mp4',
+    imagem: '/images/firefox.jpg',
+    descricao: 'Navegador de internet de código aberto desenvolvido pela Mozilla.',
+    exemploPt: '',
+    exemploGlosa: ''
   },
   {
     id: 'abas',
@@ -1200,8 +548,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/abas.webp',
     descricao: 'Recurso do navegador que permite abrir várias páginas na mesma janela.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Abas', 'Maximizar e Minimizar', 'Google', 'Vírus']
+    exemploGlosa: ''
   },
   {
     id: 'maximizar',
@@ -1211,8 +558,17 @@ const TERMOS_LOCAIS = [
     imagem: '/images/maximizar-e-minimizar.jpg',
     descricao: 'Ação da janela que amplia o tamanho na tela.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Maximizar', 'Google', 'Vírus', 'Antivírus']
+    exemploGlosa: ''
+  },
+  {
+    id: 'minimizar',
+    termo: 'Minimizar',
+    categoria: 'Redes',
+    video: '/videos/minimizar.mp4',
+    imagem: '/images/maximizar-e-minimizar.jpg',
+    descricao: 'Ação da janela que reduz o tamanho na tela.',
+    exemploPt: '',
+    exemploGlosa: ''
   },
   {
     id: 'virus',
@@ -1222,8 +578,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/virus.jpg',
     descricao: 'Programa malicioso que se espalha e danifica os arquivos do computador.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Vírus', 'Antivírus', 'Backup', 'Link']
+    exemploGlosa: ''
   },
   {
     id: 'antivirus',
@@ -1233,8 +588,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/antivirus.webp',
     descricao: 'Programa que detecta e remove ameaças digitais do computador.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Antivírus', 'Backup', 'Link', 'Site']
+    exemploGlosa: ''
   },
   {
     id: 'backup',
@@ -1244,8 +598,7 @@ const TERMOS_LOCAIS = [
     imagem: '/images/backup.jpg',
     descricao: 'Cópia de segurança dos arquivos para evitar perdas de dados.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Backup', 'Link', 'Site', 'Navegador de Internet']
+    exemploGlosa: ''
   },
   {
     id: 'link',
@@ -1255,8 +608,21 @@ const TERMOS_LOCAIS = [
     imagem: '/images/link.jpg',
     descricao: 'Endereço clicável que leva a outra página ou arquivo na internet.',
     exemploPt: '',
-    exemploGlosa: '',
-    opcoes: ['Link', 'Site', 'Navegador de Internet', 'Google Chrome']
+    exemploGlosa: ''
   }
 ];
 
+// O quiz usa os mesmos vídeos locais, com apenas os campos necessários.
+// As alternativas são o termo atual e os três seguintes da mesma categoria.
+// Os scripts do quiz embaralham essas opções ao exibir a pergunta.
+const TERMOS_LOCAIS = TERMOS.map(({ id, termo, categoria, video }) => {
+  const termosDaCategoria = TERMOS.filter((item) => item.categoria === categoria);
+  const indiceAtual = termosDaCategoria.findIndex((item) => item.id === id);
+
+  const opcoes = Array.from({ length: 4 }, (_, deslocamento) => {
+    const indiceOpcao = (indiceAtual + deslocamento) % termosDaCategoria.length;
+    return termosDaCategoria[indiceOpcao].termo;
+  });
+
+  return { id, termo, categoria, video, opcoes };
+});
