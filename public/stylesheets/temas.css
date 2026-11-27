@@ -237,6 +237,62 @@
   background: var(--cor-lilas-hover);
 }
 
+.acess-icone-tema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+
+.acess-icone-tema svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  transition: transform 0.35s ease, opacity 0.25s ease;
+}
+
+.acess-icone-tema svg.icone-sol {
+  color: #b45309;
+}
+
+:root[data-tema="escuro"] .acess-icone-tema svg.icone-sol {
+  color: #fbbf24;
+}
+
+.acess-icone-tema .icone-lua {
+  display: none;
+}
+
+:root[data-tema="escuro"] .acess-icone-tema .icone-sol {
+  display: none;
+}
+
+:root[data-tema="escuro"] .acess-icone-tema .icone-lua {
+  display: block;
+  color: #c4b5fd;
+}
+
+.acess-btn:hover .acess-icone-tema svg,
+.acess-btn:focus-visible .acess-icone-tema svg {
+  transform: rotate(35deg) scale(1.08);
+}
+
+.acess-btn:hover .acess-icone-tema .icone-lua,
+.acess-btn:focus-visible .acess-icone-tema .icone-lua {
+  transform: rotate(-14deg) scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acess-btn:hover .acess-icone-tema svg,
+  .acess-btn:focus-visible .acess-icone-tema svg,
+  .acess-btn:hover .acess-icone-tema .icone-lua,
+  .acess-btn:focus-visible .acess-icone-tema .icone-lua {
+    transform: none;
+  }
+}
+
 .acess-painel {
   position: absolute;
   top: calc(100% + 10px);

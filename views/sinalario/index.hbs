@@ -60,8 +60,11 @@
       </span>
       <div class="term-title-row">
         <h2 id="displayTerm">Monitor</h2>
-        <button class="btn-fav-large" id="btnMainFav" title="Favoritar Termo">
-          <i class="fa-regular fa-heart"></i>
+        <button class="btn-fav-large" id="btnMainFav" type="button" title="Favoritar termo" aria-pressed="false">
+          <svg class="icone-estrela" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <path d="M12 2.6l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.62l-5.88 3.09 1.12-6.55-4.76-4.64 6.58-.96L12 2.6Z"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+          </svg>
         </button>
       </div>
     </header>
@@ -97,29 +100,34 @@
               <path d="M3 7V3h4m6 0h4v4m0 6v4h-4m-6 0H3v-4"/>
             </svg>
           </button>
-        </div>
-        <div class="controle-velocidade">
-          <label for="velocidadeSinal">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <path d="M4.2 18a9 9 0 1 1 15.6 0H4.2ZM12 5v2M5.8 8.8l1.4 1.4M17.5 8.5l-4.3 4.3"/>
-              <circle cx="12" cy="14" r="1.5"/>
-            </svg>
-            Velocidade
-          </label>
-          <span class="velocidade-escolha">
-            <select id="velocidadeSinal">
-              <option value="0.25">0,25×</option>
-              <option value="0.5">0,5×</option>
-              <option value="0.75">0,75×</option>
-              <option value="1" selected>Normal</option>
-              <option value="1.5">1,5×</option>
-            </select>
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor"
-              stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-              <path d="m4 6 4 4 4-4"/>
-            </svg>
-          </span>
+          <div class="controle-velocidade">
+            <span class="velocidade-icone" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="M4.2 18a9 9 0 1 1 15.6 0H4.2ZM12 5v2M5.8 8.8l1.4 1.4M17.5 8.5l-4.3 4.3"/>
+                <circle cx="12" cy="14" r="1.5"/>
+              </svg>
+            </span>
+            <div class="velocidade-menu">
+              <button type="button" class="velocidade-toggle" id="velocidadeSinal"
+                aria-haspopup="listbox" aria-expanded="false" aria-label="Velocidade do vídeo">
+                <span id="velocidadeAtual">Normal</span>
+                <svg class="velocidade-seta" width="12" height="12" viewBox="0 0 16 16" fill="none"
+                  stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true" focusable="false">
+                  <path d="m4 6 4 4 4-4"/>
+                </svg>
+              </button>
+              <ul class="velocidade-lista" id="velocidadeLista" role="listbox" aria-label="Velocidade do vídeo" hidden>
+                <li role="option" data-taxa="0.25" tabindex="0">0,25×</li>
+                <li role="option" data-taxa="0.5" tabindex="0">0,5×</li>
+                <li role="option" data-taxa="0.75" tabindex="0">0,75×</li>
+                <li role="option" data-taxa="1" tabindex="0" aria-selected="true">Normal</li>
+                <li role="option" data-taxa="1.25" tabindex="0">1,25×</li>
+                <li role="option" data-taxa="1.5" tabindex="0">1,5×</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>

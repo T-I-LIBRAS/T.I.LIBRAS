@@ -26,7 +26,19 @@ function menuAcessibilidadeHtml() {
   return `
     <div class="acess-menu">
       <button type="button" class="acess-btn" id="acessBtn" aria-haspopup="true" aria-expanded="false" aria-controls="acessPainel" aria-label="Opções de acessibilidade" title="Acessibilidade">
-        <svg class="acess-icone" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="7.2" r="1.7" fill="currentColor"/><path d="M6.5 9.6l5.5.9 5.5-.9M12 10.5v3.2m0 0l-2.4 4.3m2.4-4.3l2.4 4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="acess-icone-tema" aria-hidden="true">
+          <svg class="icone-sol" viewBox="0 0 24 24" width="22" height="22" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            focusable="false">
+            <circle cx="12" cy="12" r="4.1" fill="currentColor" stroke="none" />
+            <path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.2 5.2l1.65 1.65M17.15 17.15l1.65 1.65M18.8 5.2l-1.65 1.65M6.85 17.15L5.2 18.8" />
+          </svg>
+          <svg class="icone-lua" viewBox="0 0 24 24" width="22" height="22" fill="currentColor"
+            stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+            focusable="false">
+            <path d="M20.9 14.3A9.2 9.2 0 0 1 9.7 3.1a7.3 7.3 0 1 0 11.2 11.2Z" />
+          </svg>
+        </span>
       </button>
       <div class="acess-painel" id="acessPainel" role="group" aria-label="Opções de acessibilidade" hidden>
         <h2 class="acess-titulo">Acessibilidade</h2>

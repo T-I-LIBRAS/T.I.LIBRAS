@@ -10,8 +10,8 @@ const MAPA_DE_PONTOS = {
 };
 
 const CORES_DAS_AREAS = {
-  Hardware: '#783cc8',
-  Software: '#3c8cdc',
+  Hardware: '#8B5CF6',
+  Software: '#2E86DE',
   'Programação': '#f59e0b',
   Eletricidade: '#ef4444',
   Redes: '#10b981'
@@ -48,6 +48,35 @@ let instanteAnterior = 0;
 
 function normalizar(texto) {
   return String(texto).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+// Estrela do favorito: quando favoritada, usa um degradê quente de rosa vibrante,
+// coral e amarelo dourado (#EC4899 -> #F97316 45% -> #FACC15), sem contorno e sem sombra.
+// Quando não favoritada, fica vazada com contorno fino na cor do tema.
+// O stroke usa o próprio degradê apenas para arredondar levemente as pontas.
+let contadorGradienteEstrela = 0;
+
+function estrelaFavoritoHtml(preenchida) {
+  const idGradiente = `logo-star-gradient-${++contadorGradienteEstrela}`;
+  const defs = preenchida
+    ? `<defs>
+        <linearGradient id="${idGradiente}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#EC4899" />
+          <stop offset="45%" stop-color="#F97316" />
+          <stop offset="100%" stop-color="#FACC15" />
+        </linearGradient>
+      </defs>`
+    : '';
+
+  return `
+    <svg class="icone-estrela${preenchida ? ' preenchida' : ''}" viewBox="0 0 24 24"
+      width="20" height="20" aria-hidden="true" focusable="false">
+      ${defs}
+      <path d="M12 2.6l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.62l-5.88 3.09 1.12-6.55-4.76-4.64 6.58-.96L12 2.6Z"
+        fill="${preenchida ? `url(#${idGradiente})` : 'none'}"
+        stroke="${preenchida ? `url(#${idGradiente})` : 'currentColor'}"
+        stroke-width="${preenchida ? '1.6' : '2'}" stroke-linejoin="round" stroke-linecap="round" />
+    </svg>`;
 }
 
 function videoDoSinal() {
@@ -207,6 +236,13 @@ function conectarVideo() {
     posicao.value = String(atual);
     tempo.textContent = `${formatarTempo(atual)} / ${formatarTempo(duracao)}`;
     posicao.setAttribute('aria-valuetext', tempo.textContent);
+
+    // Percentual preenchido da timeline (usado no degradê da barra).
+    const percentual = duracao > 0 ? (atual / duracao) * 100 : 0;
+    posicao.style.setProperty(
+      '--progresso-sinal',
+      `${Math.max(0, Math.min(100, percentual))}%`
+    );
   }
 
   function alternarReproducao() {
@@ -251,25 +287,75 @@ function conectarVideo() {
     definirVideoIndisponivel(true);
   });
 
-  const seletor = document.getElementById('velocidadeSinal');
-  if (!seletor) return;
+  const menuVelocidade = document.querySelector('.velocidade-menu');
+  const botaoVelocidade = document.getElementById('velocidadeSinal');
+  const listaVelocidade = document.getElementById('velocidadeLista');
+  const rotuloVelocidade = document.getElementById('velocidadeAtual');
 
-  seletor.addEventListener('change', () => {
-    const taxa = Number(seletor.value);
-    video.defaultPlaybackRate = taxa;
-    video.playbackRate = taxa;
-  });
+  if (menuVelocidade && botaoVelocidade && listaVelocidade && rotuloVelocidade
+      && !menuVelocidade.dataset.pronto) {
+    menuVelocidade.dataset.pronto = 'true';
 
-  // Mantém o seletor sincronizado com mudanças na reprodução.
-  video.addEventListener('ratechange', () => {
-    const taxa = video.playbackRate;
-    const valor = String(taxa);
-    seletor.value = valor;
-    if (seletor.selectedIndex < 0) {
-      seletor.add(new Option(`${taxa.toLocaleString('pt-BR')}×`, valor, false, true));
-    }
-    if (video.defaultPlaybackRate !== taxa) video.defaultPlaybackRate = taxa;
-  });
+    const rotuloDaTaxa = (taxa) => (Number(taxa) === 1
+      ? 'Normal'
+      : `${Number(taxa).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}×`);
+
+    const marcarTaxa = (taxa) => {
+      rotuloVelocidade.textContent = rotuloDaTaxa(taxa);
+      Array.from(listaVelocidade.querySelectorAll('[data-taxa]')).forEach((item) => {
+        item.setAttribute('aria-selected', String(Number(item.dataset.taxa) === Number(taxa)));
+      });
+    };
+
+    const abrirLista = (abrir) => {
+      listaVelocidade.hidden = !abrir;
+      botaoVelocidade.setAttribute('aria-expanded', String(abrir));
+    };
+
+    const aplicarTaxa = (taxa) => {
+      video.defaultPlaybackRate = taxa;
+      video.playbackRate = taxa;
+      marcarTaxa(taxa);
+    };
+
+    botaoVelocidade.addEventListener('click', (evento) => {
+      evento.stopPropagation();
+      abrirLista(listaVelocidade.hidden);
+    });
+
+    const escolherItem = (evento) => {
+      const item = evento.target.closest('[data-taxa]');
+      if (!item) return;
+      evento.preventDefault();
+      aplicarTaxa(Number(item.dataset.taxa));
+      abrirLista(false);
+      botaoVelocidade.focus();
+    };
+
+    listaVelocidade.addEventListener('click', escolherItem);
+    listaVelocidade.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Enter' || evento.key === ' ') escolherItem(evento);
+    });
+
+    document.addEventListener('click', (evento) => {
+      if (!(evento.target instanceof Element) || !evento.target.closest('.velocidade-menu')) {
+        abrirLista(false);
+      }
+    });
+
+    document.addEventListener('keydown', (evento) => {
+      if (evento.key === 'Escape') abrirLista(false);
+    });
+
+    // Mantém o rótulo sincronizado com mudanças na reprodução.
+    video.addEventListener('ratechange', () => {
+      const taxa = video.playbackRate;
+      marcarTaxa(taxa);
+      if (video.defaultPlaybackRate !== taxa) video.defaultPlaybackRate = taxa;
+    });
+
+    marcarTaxa(Number(video.playbackRate) || 1);
+  }
 }
 
 function alternarFavorito(nomeDoTermo) {
@@ -308,7 +394,7 @@ function renderizarLista() {
   filtrados.forEach((item) => {
     const ativo = !!(termoAtual && termoAtual.termo === item.termo);
     const ehFavorito = favoritos.includes(item.termo);
-    const cor = CORES_DAS_AREAS[item.categoria] || '#783cc8';
+    const cor = CORES_DAS_AREAS[item.categoria] || '#8B5CF6';
 
     const linha = document.createElement('div');
     linha.className = `term-item${ativo ? ' active' : ''}`;
@@ -320,10 +406,9 @@ function renderizarLista() {
           <small>${item.categoria}</small>
         </div>
       </div>
-      <button class="btn-fav" title="Favoritar">
-        ${ehFavorito
-          ? '<i class="fa-solid fa-heart"></i>'
-          : '<i class="fa-regular fa-heart"></i>'}
+      <button class="btn-fav" type="button" title="${ehFavorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"
+        aria-pressed="${ehFavorito ? 'true' : 'false'}">
+        ${estrelaFavoritoHtml(ehFavorito)}
       </button>
     `;
 
@@ -357,7 +442,7 @@ function exibirTermoAtual() {
 
   const favoritos = obterFavoritos();
   const ehFavorito = favoritos.includes(termoAtual.termo);
-  const cor = CORES_DAS_AREAS[termoAtual.categoria] || '#783cc8';
+  const cor = CORES_DAS_AREAS[termoAtual.categoria] || '#8B5CF6';
 
   const cabecalho = document.getElementById('termHeader');
   if (cabecalho) cabecalho.style.background = cor;
@@ -396,9 +481,10 @@ function exibirTermoAtual() {
 
   const botaoFavorito = document.getElementById('btnMainFav');
   if (botaoFavorito) {
-    botaoFavorito.innerHTML = ehFavorito
-      ? '<i class="fa-solid fa-heart"></i>'
-      : '<i class="fa-regular fa-heart"></i>';
+    botaoFavorito.innerHTML = estrelaFavoritoHtml(ehFavorito);
+    botaoFavorito.title = ehFavorito ? 'Remover dos favoritos' : 'Favoritar termo';
+    botaoFavorito.setAttribute('aria-pressed', ehFavorito ? 'true' : 'false');
+    botaoFavorito.classList.toggle('favoritado', ehFavorito);
   }
 }
 

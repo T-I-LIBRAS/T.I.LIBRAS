@@ -1,3 +1,10 @@
+const FORMAS_DAS_ALTERNATIVAS = [
+  { classe: 'forma-a', letra: 'A' },
+  { classe: 'forma-b', letra: 'B' },
+  { classe: 'forma-c', letra: 'C' },
+  { classe: 'forma-d', letra: 'D' }
+];
+
 const CATEGORIAS_DO_QUIZ = {
   hardware: 'Hardware',
   software: 'Software',
@@ -90,11 +97,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     atualizarIconeDoVideo();
   }
 
-  function montarOpcao(opcao, pergunta) {
+  function montarOpcao(opcao, pergunta, indice) {
     const botao = document.createElement('button');
     botao.type = 'button';
     botao.className = 'option-btn';
     botao.dataset.termo = opcao.termo;
+
+    const forma = FORMAS_DAS_ALTERNATIVAS[indice % FORMAS_DAS_ALTERNATIVAS.length];
+    const marcador = document.createElement('span');
+    marcador.className = `forma-opcao ${forma.classe}`;
+    marcador.textContent = forma.letra;
+    marcador.setAttribute('aria-hidden', 'true');
+    botao.appendChild(marcador);
 
     const bloco = document.createElement('div');
 
@@ -136,9 +150,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     carregarVideoDaPergunta(pergunta);
 
-    TentativasQuiz.embaralhar(nomesDasOpcoes(pergunta)).forEach((nome) => {
+    TentativasQuiz.embaralhar(nomesDasOpcoes(pergunta)).forEach((nome, indice) => {
       const opcao = termoPorNome(nome);
-      if (opcao) gradeOpcoes.appendChild(montarOpcao(opcao, pergunta));
+      if (opcao) gradeOpcoes.appendChild(montarOpcao(opcao, pergunta, indice));
     });
   }
 

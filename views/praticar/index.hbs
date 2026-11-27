@@ -14,21 +14,17 @@
           <div class="progress-dots" id="progressDots" aria-hidden="true"></div>
         </div>
       </div>
-      <p class="progress-message" id="progressMessage">Vamos começar? Escolha uma categoria abaixo!</p>
       <button class="btn btn-outline" type="button" id="recarregarPratica" hidden>Tentar carregar novamente</button>
     </section>
 
     <section class="categories-panel">
       <header class="categories-header">
-        <h2><i class="fa-solid fa-bullseye"></i> Praticar Quiz de TI em Libras</h2>
-        <p class="categories-sub">Escolha uma categoria para testar seus conhecimentos. No final, você vê quantas
-          questões acertou e quantas errou.</p>
+        <h2><i class="fa-solid fa-bullseye"></i> Quizzes por Área</h2>
       </header>
 
       <div class="selection-grid" id="selectionGrid">
         <article class="category-card cat-hardware" id="card-Hardware">
           <div class="card-top">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             <span class="badge-icon"><i class="fa-solid fa-desktop"></i></span>
             <h3>Hardware</h3>
           </div>
@@ -44,23 +40,18 @@
               </div>
             </div>
             <ul class="card-stats">
-              <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span
+              <li><span class="card-stat-pill"><span data-stat="concluidas">0</span> / <span
                     data-stat="total">0</span> questões</span></li>
-              <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong
-                    data-stat="resultado">--</strong></span></li>
             </ul>
           </div>
           <div class="card-actions">
             <button class="btn-card-start" type="button" disabled onclick="iniciarQuiz('Hardware')"><i
                 class="fa-solid fa-play"></i> <span data-acao-quiz>Começar</span></button>
-            <a href="sinalario.html?cat=Hardware" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i>
-              Consultar</a>
           </div>
         </article>
 
         <article class="category-card cat-software" id="card-Software">
           <div class="card-top">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             <span class="badge-icon"><i class="fa-solid fa-compact-disc"></i></span>
             <h3>Software</h3>
           </div>
@@ -76,23 +67,18 @@
               </div>
             </div>
             <ul class="card-stats">
-              <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span
+              <li><span class="card-stat-pill"><span data-stat="concluidas">0</span> / <span
                     data-stat="total">0</span> questões</span></li>
-              <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong
-                    data-stat="resultado">--</strong></span></li>
             </ul>
           </div>
           <div class="card-actions">
             <button class="btn-card-start" type="button" disabled onclick="iniciarQuiz('Software')"><i
                 class="fa-solid fa-play"></i> <span data-acao-quiz>Começar</span></button>
-            <a href="sinalario.html?cat=Software" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i>
-              Consultar</a>
           </div>
         </article>
 
         <article class="category-card cat-programacao" id="card-Programação">
           <div class="card-top">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             <span class="badge-icon"><i class="fa-solid fa-laptop-code"></i></span>
             <h3>Programação</h3>
           </div>
@@ -108,23 +94,18 @@
               </div>
             </div>
             <ul class="card-stats">
-              <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span
+              <li><span class="card-stat-pill"><span data-stat="concluidas">0</span> / <span
                     data-stat="total">0</span> questões</span></li>
-              <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong
-                    data-stat="resultado">--</strong></span></li>
             </ul>
           </div>
           <div class="card-actions">
             <button class="btn-card-start" type="button" disabled onclick="iniciarQuiz('Programação')"><i
                 class="fa-solid fa-play"></i> <span data-acao-quiz>Começar</span></button>
-            <a href="sinalario.html?cat=Programacao" class="btn-card-consult"><i
-                class="fa-solid fa-magnifying-glass"></i> Consultar</a>
           </div>
         </article>
 
         <article class="category-card cat-eletricidade" id="card-Eletricidade">
           <div class="card-top">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             <span class="badge-icon"><i class="fa-solid fa-plug"></i></span>
             <h3>Eletricidade</h3>
           </div>
@@ -140,23 +121,18 @@
               </div>
             </div>
             <ul class="card-stats">
-              <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span
+              <li><span class="card-stat-pill"><span data-stat="concluidas">0</span> / <span
                     data-stat="total">0</span> questões</span></li>
-              <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong
-                    data-stat="resultado">--</strong></span></li>
             </ul>
           </div>
           <div class="card-actions">
             <button class="btn-card-start" type="button" disabled onclick="iniciarQuiz('Eletricidade')"><i
                 class="fa-solid fa-play"></i> <span data-acao-quiz>Começar</span></button>
-            <a href="sinalario.html?cat=Eletricidade" class="btn-card-consult"><i
-                class="fa-solid fa-magnifying-glass"></i> Consultar</a>
           </div>
         </article>
 
         <article class="category-card cat-redes" id="card-Redes">
           <div class="card-top">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             <span class="badge-icon"><i class="fa-solid fa-tower-broadcast"></i></span>
             <h3>Redes</h3>
           </div>
@@ -172,22 +148,17 @@
               </div>
             </div>
             <ul class="card-stats">
-              <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span
+              <li><span class="card-stat-pill"><span data-stat="concluidas">0</span> / <span
                     data-stat="total">0</span> questões</span></li>
-              <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong
-                    data-stat="resultado">--</strong></span></li>
             </ul>
           </div>
           <div class="card-actions">
             <button class="btn-card-start" type="button" disabled onclick="iniciarQuiz('Redes')"><i class="fa-solid fa-play"></i> <span data-acao-quiz>Começar</span></button>
-            <a href="sinalario.html?cat=Redes" class="btn-card-consult"><i class="fa-solid fa-magnifying-glass"></i>
-              Consultar</a>
           </div>
         </article>
 
         <article class="category-card cat-todos" id="card-Todos">
           <div class="card-top">
-            <span class="completed-badge"><i class="fa-solid fa-check"></i> Concluído</span>
             <span class="badge-icon"><i class="fa-solid fa-trophy"></i></span>
             <h3>Simulado Geral</h3>
           </div>
@@ -199,19 +170,15 @@
               </svg>
               <div class="donut-center">
                 <span class="donut-pct">0%</span>
-                <span class="donut-status">Não iniciado</span>
               </div>
             </div>
             <ul class="card-stats">
-              <li><i class="fa-solid fa-circle-check"></i> <span><span data-stat="concluidas">0</span> / <span
+              <li><span class="card-stat-pill"><span data-stat="concluidas">0</span> / <span
                     data-stat="total">0</span> questões</span></li>
-              <li><i class="fa-solid fa-clipboard-check"></i> <span>Último: <strong
-                    data-stat="resultado">--</strong></span></li>
             </ul>
           </div>
           <div class="card-actions">
             <button class="btn-card-start" type="button" disabled onclick="iniciarQuiz('Todos')"><i class="fa-solid fa-play"></i> <span data-acao-quiz>Começar</span></button>
-            <a href="sinalario.html" class="btn-card-consult"><i class="fa-solid fa-book-open"></i> Consultar</a>
           </div>
         </article>
       </div>

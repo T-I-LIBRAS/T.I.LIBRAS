@@ -369,13 +369,13 @@
 }
 
 .cat-tile.cat-hardware {
-  --tile-cor: var(--cor-lilas);
-  --tile-tint: #6d28d914;
+  --tile-cor: #8B5CF6;
+  --tile-tint: #8B5CF614;
 }
 
 .cat-tile.cat-software {
-  --tile-cor: var(--cor-azul);
-  --tile-tint: #a855f714;
+  --tile-cor: #2E86DE;
+  --tile-tint: #2E86DE14;
 }
 
 @media (max-width: 1100px) {

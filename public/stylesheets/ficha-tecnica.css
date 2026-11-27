@@ -15,6 +15,17 @@
   margin-bottom: 28px;
 }
 
+.ficha-voltar-wrap {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
+
+.ficha-voltar {
+  font-size: 0.9rem;
+  padding: 8px 16px;
+}
+
 .ficha-selo {
   display: inline-flex;
   align-items: center;

@@ -74,22 +74,32 @@
       </a>
     </section>
 
-    <!-- Progresso e última atividade -->
+    <!-- Ofensiva e última atividade -->
     <section class="home-painel">
-      <div class="home-box">
+      <div class="home-box home-streak">
         <div class="home-box-topo">
-          <h2 class="home-box-titulo"><i class="fa-solid fa-chart-simple"></i> Seu progresso</h2>
-          <a href="perfil.html" class="home-box-link">Ver detalhes <i class="fa-solid fa-arrow-right"></i></a>
+          <h2 class="home-box-titulo"><i class="fa-solid fa-fire-flame-curved"></i> Ofensiva</h2>
         </div>
-        <div class="home-progresso">
-          <div class="home-barra" role="progressbar" aria-label="Progresso total" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barraProgresso">
-            <span class="home-barra-preenchida" id="barraProgressoPreenchida"></span>
+        <div class="streak-main">
+          <span class="streak-flame" id="streakFlame" aria-hidden="true"><i class="fa-solid fa-fire"></i></span>
+          <div class="streak-count">
+            <strong id="streakDias">0</strong>
+            <span class="streak-dias-label" id="streakDiasLabel">dias de ofensiva</span>
           </div>
-          <span class="home-progresso-valor" id="textoProgresso">0%</span>
         </div>
+        <div class="streak-week" id="streakSemana" role="list" aria-label="Dias praticados nesta semana">
+          <span class="streak-day" role="listitem">D</span>
+          <span class="streak-day" role="listitem">S</span>
+          <span class="streak-day" role="listitem">T</span>
+          <span class="streak-day" role="listitem">Q</span>
+          <span class="streak-day" role="listitem">Q</span>
+          <span class="streak-day" role="listitem">S</span>
+          <span class="streak-day" role="listitem">S</span>
+        </div>
+        <p class="streak-status" id="streakStatus">Estude hoje para começar sua ofensiva!</p>
       </div>
 
-      <div class="home-box">
+      <div class="home-box home-historico">
         <div class="home-box-topo">
           <h2 class="home-box-titulo"><i class="fa-solid fa-calendar-days"></i> Última atividade</h2>
         </div>

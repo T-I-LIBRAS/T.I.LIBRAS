@@ -1,5 +1,12 @@
 const PERIMETRO_DO_ANEL = 2 * Math.PI * 52;
 
+const FORMAS_DAS_ALTERNATIVAS = [
+  { classe: 'forma-a', letra: 'A' },
+  { classe: 'forma-b', letra: 'B' },
+  { classe: 'forma-c', letra: 'C' },
+  { classe: 'forma-d', letra: 'D' }
+];
+
 let categoriaAtual = 'Hardware';
 let perguntasAtivas = [];
 let perguntaAtual = 0;
@@ -93,12 +100,20 @@ function desenharAnel(categoria, resumo) {
   if (!centro) return;
 
   if (resumo.concluido) {
-    centro.innerHTML = '<i class="fa-solid fa-check donut-check"></i><span class="donut-pct">100%</span><span class="donut-status">Concluído!</span>';
+    centro.innerHTML = '<span class="donut-pct">100%</span>';
+    return;
+  }
+
+  const pct = `<span class="donut-pct">${resumo.porcentagem}%</span>`;
+
+  // No Simulado Geral o círculo mostra apenas o percentual.
+  if (categoria === 'Todos') {
+    centro.innerHTML = pct;
     return;
   }
 
   const status = resumo.emAndamento ? 'Em andamento' : 'Não iniciado';
-  centro.innerHTML = `<span class="donut-pct">${resumo.porcentagem}%</span><span class="donut-status">${status}</span>`;
+  centro.innerHTML = `${pct}<span class="donut-status">${status}</span>`;
 }
 
 function atualizarDadosDoCard(categoria, resumo) {
@@ -109,8 +124,7 @@ function atualizarDadosDoCard(categoria, resumo) {
 
   const botao = card.querySelector('.btn-card-start');
   botao.disabled = !progressoPronto || resumo.total === 0;
-  botao.querySelector('[data-acao-quiz]').textContent =
-    resumo.emAndamento ? 'Continuar' : resumo.concluido ? 'Refazer' : 'Começar';
+  botao.querySelector('[data-acao-quiz]').textContent = 'Começar';
 
   const concluidasEl = card.querySelector('[data-stat="concluidas"]');
   if (concluidasEl) concluidasEl.textContent = String(resumo.concluidas);
@@ -167,18 +181,10 @@ function desenharBarraDeProgresso(concluidos, total) {
     return;
   }
 
-  const largura = total > 1 ? ((concluidos - 1) / (total - 1)) * 100 : 100;
+  // A barra vai de ponta a ponta; cada estrela conquistada preenche até o
+  // centro dela e, ao concluir tudo, o preenchimento vai até o fim da trilha.
+  const largura = concluidos >= total ? 100 : ((concluidos - 0.5) / total) * 100;
   preenchimento.style.width = `${Math.max(0, Math.min(100, largura))}%`;
-}
-
-function mensagemDeProgresso(concluidos, total) {
-  if (concluidos === 0) return 'Vamos começar? Escolha uma categoria abaixo!';
-  if (concluidos < total / 2) {
-    return `Bom começo! Você já concluiu ${concluidos} quiz${concluidos > 1 ? 'zes' : ''}, continue praticando.`;
-  }
-  if (concluidos < total - 1) return 'Você está indo muito bem, continue assim!';
-  if (concluidos < total) return `Quase lá! Falta só mais ${total - concluidos} para concluir tudo.`;
-  return 'Parabéns! Você concluiu todos os quizzes! 🎉';
 }
 
 function atualizarProgresso() {
@@ -196,9 +202,6 @@ function atualizarProgresso() {
 
   const textoEl = document.getElementById('progressText');
   if (textoEl) textoEl.textContent = `${concluidos.length} / ${total} Concluídos (${porcentagem}%)`;
-
-  const mensagemEl = document.getElementById('progressMessage');
-  if (mensagemEl) mensagemEl.textContent = mensagemDeProgresso(concluidos.length, total);
 
   desenharEstrelas(concluidos.length);
   desenharBarraDeProgresso(concluidos.length, total);
@@ -344,7 +347,7 @@ function carregarPergunta(indice) {
   const container = document.getElementById('optionsContainer');
   container.innerHTML = '';
 
-  TentativasQuiz.embaralhar(nomesDasOpcoes(pergunta)).forEach((nome) => {
+  TentativasQuiz.embaralhar(nomesDasOpcoes(pergunta)).forEach((nome, indice) => {
     const opcao = termoPorNome(nome);
     if (!opcao) return;
 
@@ -354,10 +357,17 @@ function carregarPergunta(indice) {
     card.dataset.termo = opcao.termo;
     card.addEventListener('click', () => verificarResposta(opcao.termo, pergunta.termo, card));
 
+    const forma = FORMAS_DAS_ALTERNATIVAS[indice % FORMAS_DAS_ALTERNATIVAS.length];
+    const marcador = document.createElement('span');
+    marcador.className = `forma-opcao ${forma.classe}`;
+    marcador.textContent = forma.letra;
+    marcador.setAttribute('aria-hidden', 'true');
+
     const texto = document.createElement('span');
     texto.className = 'option-term-text';
     texto.textContent = opcao.termo;
 
+    card.appendChild(marcador);
     card.appendChild(texto);
     container.appendChild(card);
   });
@@ -448,7 +458,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   progressoPronto = await TentativasQuiz.carregar();
   atualizarProgresso();
   if (!progressoPronto) {
-    document.getElementById('progressMessage').textContent = 'Não foi possível carregar seu progresso.';
+    const textoEl = document.getElementById('progressText');
+    if (textoEl) textoEl.textContent = 'Não foi possível carregar seu progresso.';
     recarregar.hidden = false;
     return;
   }

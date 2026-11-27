@@ -168,6 +168,7 @@ function sinaisVistos() {
 function adicionarSinalVisto(termo) {
   if (!termo || dadosProgresso.sinais_vistos.includes(termo)) return false;
   dadosProgresso.sinais_vistos.push(termo);
+  registrarAtividadeDoDia();
   agendarGravacao();
   return true;
 }
@@ -216,6 +217,7 @@ function quizConcluido(categoria) {
 function concluirQuiz(categoria) {
   if (!categoria || quizConcluido(categoria)) return false;
   dadosProgresso.quizzes_concluidos.push(categoria);
+  registrarAtividadeDoDia();
   agendarGravacao();
   return true;
 }
@@ -285,7 +287,126 @@ function registrarUltimaAtividade(tipo, rotulo) {
     rotulo: rotulo,
     data: new Date().toISOString()
   });
+  registrarAtividadeDoDia();
 }
+
+// ------------------------------------------------------------------
+// Ofensiva diária (streak), guardada no localStorage.
+// Conta dias consecutivos de estudo/prática, voltando a zero quando
+// o aluno passa um dia sem nenhuma atividade.
+// ------------------------------------------------------------------
+const CHAVE_OFENSIVA = 'ti-libras:ofensiva';
+const LIMITE_DIAS_OFENSIVA = 180;
+
+function chaveOfensiva() {
+  const uid = idDoUsuarioAtual();
+  return uid ? `${CHAVE_OFENSIVA}:${uid}` : CHAVE_OFENSIVA;
+}
+
+function diaLocalChave(data) {
+  const d = data || new Date();
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0')
+  ].join('-');
+}
+
+function lerOfensiva() {
+  const base = { dias: [], recorde: 0 };
+  try {
+    const bruto = localStorage.getItem(chaveOfensiva());
+    if (!bruto) return base;
+    const salvo = JSON.parse(bruto);
+    const dias = Array.isArray(salvo.dias)
+      ? salvo.dias.filter((dia) => typeof dia === 'string')
+      : [];
+    const recorde = Number(salvo.recorde);
+    return {
+      dias,
+      recorde: Number.isFinite(recorde) ? Math.max(0, Math.trunc(recorde)) : 0
+    };
+  } catch {
+    return base;
+  }
+}
+
+function salvarOfensiva(estado) {
+  try {
+    localStorage.setItem(chaveOfensiva(), JSON.stringify(estado));
+  } catch { /* Sem armazenamento: a ofensiva vale só nesta sessão. */ }
+}
+
+// Conta os dias seguidos terminando hoje (ou ontem, se hoje ainda não houve atividade).
+function calcularSequencia(dias) {
+  const conjunto = new Set(dias);
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+
+  if (!conjunto.has(diaLocalChave(cursor))) {
+    cursor.setDate(cursor.getDate() - 1);
+    if (!conjunto.has(diaLocalChave(cursor))) return 0;
+  }
+
+  let total = 0;
+  while (conjunto.has(diaLocalChave(cursor))) {
+    total += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return total;
+}
+
+function registrarAtividadeDoDia() {
+  const hoje = diaLocalChave();
+  const estado = lerOfensiva();
+
+  if (!estado.dias.includes(hoje)) estado.dias.push(hoje);
+
+  estado.dias = [...new Set(estado.dias)].sort().slice(-LIMITE_DIAS_OFENSIVA);
+  estado.recorde = Math.max(estado.recorde || 0, calcularSequencia(estado.dias));
+
+  salvarOfensiva(estado);
+  window.dispatchEvent(new CustomEvent('ofensiva-atualizada'));
+  return estado;
+}
+
+// Resumo pronto para a interface: total atual, recorde e a semana atual (D S T Q Q S S).
+function resumoOfensiva() {
+  const estado = lerOfensiva();
+  const conjunto = new Set(estado.dias);
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const hojeChave = diaLocalChave(hoje);
+  const atual = calcularSequencia(estado.dias);
+  const letras = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const diaDaSemana = hoje.getDay();
+
+  const semana = letras.map((letra, indice) => {
+    const dia = new Date(hoje);
+    dia.setDate(dia.getDate() - diaDaSemana + indice);
+    const chave = diaLocalChave(dia);
+    return {
+      letra,
+      ativo: conjunto.has(chave),
+      hoje: chave === hojeChave,
+      data: chave
+    };
+  });
+
+  return {
+    atual,
+    recorde: Math.max(estado.recorde || 0, atual),
+    ativoHoje: conjunto.has(hojeChave),
+    semana
+  };
+}
+
+window.Ofensiva = {
+  registrar: registrarAtividadeDoDia,
+  resumo: resumoOfensiva,
+  chave: chaveOfensiva
+};
 
 // Devolve { tipo: 'sinal' | 'quiz', rotulo, data } ou null.
 // Também olha a data de conclusão dos quizzes antigos, que já existia antes deste recurso.

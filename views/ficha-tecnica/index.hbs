@@ -4,6 +4,12 @@
   <div class="container ficha-container">
 
     <header class="ficha-topo">
+      <div class="ficha-voltar-wrap">
+        <button type="button" class="btn btn-outline ficha-voltar"
+          onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = 'home.html'; }">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Voltar
+        </button>
+      </div>
       <span class="ficha-selo"><i class="fa-solid fa-hands" aria-hidden="true"></i> Projeto de extensão</span>
       <h1>Ficha Técnica</h1>
       <p>O <strong>T.I. Libras</strong> é uma plataforma web interativa que reúne sinalário técnico, vídeos em Libras e quizzes para o ensino de Libras aplicado à Tecnologia da Informação.</p>

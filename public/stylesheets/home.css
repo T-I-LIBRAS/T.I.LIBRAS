@@ -132,16 +132,23 @@
 
 .quick-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(91, 33, 182, 0.28);
+  box-shadow: none;
+}
+
+.quick-card:focus,
+.quick-card:focus-visible,
+.quick-card:active {
+  outline: none;
+  box-shadow: none;
 }
 
 .quick-card.amarelo {
-  color: var(--cor-sobre-amarelo);
+  color: #ffffff;
   background: linear-gradient(120deg, #f5b301 0%, #fbbf24 100%);
 }
 
 .quick-card.amarelo:hover {
-  box-shadow: 0 10px 24px rgba(245, 179, 1, 0.35);
+  box-shadow: none;
 }
 
 .quick-card-icon {
@@ -156,7 +163,11 @@
 }
 
 .quick-card.amarelo .quick-card-icon {
-  background: rgba(46, 16, 101, 0.12);
+  background: rgba(46, 16, 101, 0.2);
+}
+
+.quick-card.amarelo .quick-card-text span {
+  opacity: 1;
 }
 
 .quick-card-text {
@@ -189,22 +200,26 @@
 }
 
 .quick-card.amarelo .quick-card-seta {
-  background: rgba(46, 16, 101, 0.14);
+  background: rgba(46, 16, 101, 0.2);
 }
 
 /* ---------- Progresso e última atividade ---------- */
 .home-painel {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: stretch;
   gap: clamp(12px, 1.6vw, 18px);
   margin-bottom: 8px;
 }
 
 .home-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--cor-card);
   border: var(--borda);
   border-radius: 14px;
-  padding: 20px 24px;
+  padding: 18px 22px;
 }
 
 .home-box-topo {
@@ -271,6 +286,106 @@
   color: var(--cor-lilas-2-texto);
 }
 
+/* ---------- Ofensiva (streak) ---------- */
+.home-streak {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px 22px 16px;
+}
+
+.home-streak .home-box-topo {
+  margin-bottom: 10px;
+}
+
+.streak-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.streak-flame {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 1.7rem;
+  background: var(--cor-lilas-claro);
+  color: var(--cor-texto-claro);
+  transition: var(--transicao);
+}
+
+.streak-flame.ativa {
+  background: linear-gradient(140deg, #f5b301, #ef7d00);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(245, 179, 1, 0.35);
+}
+
+.streak-count {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.streak-count strong {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--cor-titulo);
+}
+
+.streak-dias-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+
+.streak-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.streak-day {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 40px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: var(--borda);
+  background: var(--cor-fundo-alt);
+  color: var(--cor-texto-claro);
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: var(--transicao);
+}
+
+.streak-day.ativo {
+  background: linear-gradient(150deg, #7c3aed, #5b21b6);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.streak-day.hoje {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.22);
+}
+
+.streak-status {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--cor-lilas-claro);
+  color: var(--cor-lilas-2-texto);
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .home-box-vazio {
   padding: 14px 16px;
   border-radius: 10px;
@@ -282,6 +397,24 @@
 .home-box-vazio a {
   color: var(--cor-lilas-texto);
   font-weight: 700;
+}
+
+/* Card de histórico: ocupa a mesma altura da Ofensiva e distribui o conteúdo */
+.home-historico {
+  justify-content: space-between;
+  padding: 15px 22px 16px;
+}
+
+.home-historico .home-box-topo {
+  margin-bottom: 10px;
+}
+
+.home-historico #ultimaAtividade {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
 }
 
 /* Última atividade */

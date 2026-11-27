@@ -21,27 +21,27 @@ const paginas = [
     urls: ['/', '/index.html'],
     view: 'index',
     title: 'T.I. Libras - Aprenda TI em Libras',
-    styles: [FONT_AWESOME_6_5_1, '/stylesheets/style.css', '/stylesheets/inicio.css', '/stylesheets/auth.css'],
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js'],
+    styles: [FONT_AWESOME_6_5_1, '/stylesheets/style.css?v=2', '/stylesheets/inicio.css', '/stylesheets/auth.css'],
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js'],
     scripts: ['/javascripts/inicio.js', '/javascripts/auth.js', '/javascripts/auth-guard.js']
   },
   {
     urls: ['/home.html'],
     view: 'home/index',
     title: 'T.I Libras - Início',
-    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/home.css'],
+    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css?v=2', '/stylesheets/home.css?v=2'],
     // termos.js entra aqui para o "Progresso total" saber quantos termos existem
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/home.js?v=3']
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js', '/data/termos.js'],
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=4', '/javascripts/home.js?v=4']
   },
   {
     urls: ['/perfil.html'],
     view: 'perfil/index',
     title: 'T.I Libras - Meu Perfil',
-    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/perfil.css'],
+    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css?v=2', '/stylesheets/perfil.css'],
     // termos.js entra aqui para o progresso geral saber quantos termos existem
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/perfil.js?v=3']
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js', '/data/termos.js'],
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=4', '/javascripts/perfil.js?v=3']
   },
   {
     urls: ['/praticar.html'],
@@ -49,42 +49,42 @@ const paginas = [
     title: 'T.I Libras - Quiz Prático',
     // Aqui o Font Awesome vem DEPOIS do CSS do site (era assim no <head> original).
     // quiz.css também é carregado porque as duas páginas de quiz dividem .quiz-card e .quiz-header.
-    styles: ['/stylesheets/style.css', '/stylesheets/praticar.css', '/stylesheets/quiz.css', FONT_AWESOME_6_5_2],
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/tentativas-quiz.js', '/javascripts/youtube-video.js', '/javascripts/praticar.js?v=57']
+    styles: ['/stylesheets/style.css?v=2', '/stylesheets/praticar.css?v=2', '/stylesheets/quiz.css', FONT_AWESOME_6_5_2],
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js', '/data/termos.js'],
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=4', '/javascripts/tentativas-quiz.js', '/javascripts/youtube-video.js', '/javascripts/praticar.js?v=58']
   },
   {
     urls: ['/quiz.html'],
     view: 'quiz/index',
     title: 'T.I. Libras - Quiz Interativo',
     // Sem Font Awesome (como no original). praticar.css entra porque quiz-card/quiz-header estão definidos nele também.
-    styles: ['/stylesheets/style.css', '/stylesheets/praticar.css', '/stylesheets/quiz.css'],
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/tentativas-quiz.js', '/javascripts/youtube-video.js', '/javascripts/quizes.js?v=50']
+    styles: ['/stylesheets/style.css?v=2', '/stylesheets/praticar.css?v=2', '/stylesheets/quiz.css'],
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js', '/data/termos.js'],
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=4', '/javascripts/tentativas-quiz.js', '/javascripts/youtube-video.js', '/javascripts/quizes.js?v=50']
   },
   {
     urls: ['/ficha-tecnica.html'],
     view: 'ficha-tecnica/index',
     title: 'T.I Libras - Ficha Técnica',
-    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/ficha-tecnica.css'],
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js'],
+    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css?v=2', '/stylesheets/ficha-tecnica.css'],
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js'],
     scripts: ['/javascripts/auth.js']
   },
   {
     urls: ['/termos.html'],
     view: 'termos/index',
     title: 'T.I Libras - Termos de Uso e Privacidade',
-    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/termos.css'],
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js'],
+    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css?v=2', '/stylesheets/termos.css'],
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js'],
     scripts: ['/javascripts/auth.js']
   },
   {
     urls: ['/sinalario.html'],
     view: 'sinalario/index',
     title: 'T.I Libras - Sinalário',
-    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css', '/stylesheets/sinalario.css'],
-    headScripts: ['/javascripts/components.js', '/javascripts/api-config.js', '/data/termos.js'],
-    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=3', '/javascripts/youtube-video.js', '/javascripts/busca-sinalario.js', '/javascripts/sinalario.js?v=51']
+    styles: [FONT_AWESOME_6_5_2, '/stylesheets/style.css?v=2', '/stylesheets/sinalario.css?v=2'],
+    headScripts: ['/javascripts/components.js?v=3', '/javascripts/api-config.js', '/data/termos.js'],
+    scripts: ['/javascripts/auth.js', '/data/categorias-quiz.js', '/javascripts/progresso.js?v=4', '/javascripts/youtube-video.js', '/javascripts/busca-sinalario.js', '/javascripts/sinalario.js?v=52']
   }
 ];
 
