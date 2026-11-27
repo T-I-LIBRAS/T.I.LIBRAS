@@ -271,6 +271,26 @@ const TERMOS = [
     exemploGlosa: ''
   },
   {
+    id: 'app',
+    termo: 'Aplicativo',
+    categoria: 'Software',
+    video: '/videos/app.mp4',
+    imagem: '/images/app.png',
+    descricao: 'Programa com função específica instalado no computador ou no celular.',
+    exemploPt: '',
+    exemploGlosa: ''
+  },
+  {
+    id: 'sistema-operacional',
+    termo: 'Sistema Operacional',
+    categoria: 'Software',
+    video: '/videos/sistema-operacional.mp4',
+    imagem: '/images/sistema-operacional.png',
+    descricao: 'Programa que gerencia os recursos do computador e permite a execução de outros programas.',
+    exemploPt: '',
+    exemploGlosa: ''
+  },
+  {
     id: 'algoritmo',
     termo: 'Algoritmo',
     categoria: 'Programação',
@@ -607,6 +627,26 @@ const TERMOS = [
     video: '/videos/link.mp4',
     imagem: '/images/link.jpg',
     descricao: 'Endereço clicável que leva a outra página ou arquivo na internet.',
+    exemploPt: '',
+    exemploGlosa: ''
+  },
+  {
+    id: 'upload',
+    termo: 'Upload',
+    categoria: 'Redes',
+    video: '/videos/upload.mp4',
+    imagem: '/images/upload.jpg',
+    descricao: 'Processo de envio de arquivos para um servidor na internet.',
+    exemploPt: '',
+    exemploGlosa: ''
+  }, 
+  {
+    id: 'download',
+    termo: 'Download',
+    categoria: 'Redes',
+    video: '/videos/download.mp4',
+    imagem: '/images/download.jpg',
+    descricao: 'Processo de recebimento de arquivos de um servidor na internet.',
     exemploPt: '',
     exemploGlosa: ''
   }
